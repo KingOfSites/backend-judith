@@ -66,10 +66,11 @@ model User {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  sessions      Session[]
-  reminders     Reminder[]
-  usage         UsageEvent[]
-  subscriptions Subscription[]
+  sessions       Session[]
+  reminders      Reminder[]
+  usage          UsageEvent[]
+  subscriptions  Subscription[]
+  avulsoCompras  AvulsoCompra[]
 
   @@index([whatsappNumber])
 }
@@ -228,6 +229,36 @@ model Payment {
   updatedAt       DateTime      @updatedAt
 
   @@index([subscriptionId, createdAt])
+  @@index([status, createdAt])
+}
+
+// Compra avulsa (v6 §7.2): porta de entrada pra quem não assina, e reforço
+// pós-cota pra quem estourou o limite do plano no mês. 1 compra = 1 uso de 1 serviço.
+model AvulsoCompra {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  servico         UsageKind
+  precoCentavos   Int
+  metodo          PaymentMethod
+  status          PaymentStatus @default(PENDING)
+
+  // Referência externa Mercado Pago (payment.id ou preference.id)
+  mpPaymentId     String?       @unique
+  mpPreferenceId  String?
+  pixQrCode       String?       @db.Text
+  pixQrCodeImage  String?       @db.Text
+  pixCopyPaste    String?       @db.Text
+  cardCheckoutUrl String?       @db.Text
+
+  paidAt          DateTime?
+  // Marcado pelo serviço que atende o WhatsApp quando o crédito é gasto.
+  consumidoEm     DateTime?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId, servico, status])
   @@index([status, createdAt])
 }
 

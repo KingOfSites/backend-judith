@@ -22,6 +22,11 @@ const schema = z.object({
   // Sobrescreve a URL dos termos/privacidade (útil em dev com ngrok).
   // Se não definido, usa https://{JUDITH_DOMAIN}/termos
   URL_TERMOS: z.string().url().optional(),
+
+  // Compra avulsa (porta de entrada / pós-cota) — chama o web-judith, que tem
+  // as credenciais do Mercado Pago. Mesma INTERNAL_API_KEY configurada lá.
+  WEB_JUDITH_URL: z.string().url().default("https://web-judith.vercel.app"),
+  INTERNAL_API_KEY: z.string().min(1, "INTERNAL_API_KEY obrigatória (mesma do web-judith)"),
 });
 
 const parsed = schema.safeParse(process.env);

@@ -2,6 +2,7 @@ import { MessageRole, User } from "@prisma/client";
 import { prisma } from "../db/client.js";
 import { askJudith, ChatTurn } from "./claude.js";
 import { processarOnboarding } from "./onboarding/flow.js";
+import { checarCota, registrarUso } from "./quota.js";
 import { routeIntent } from "./router.js";
 
 // Limite de histórico de sessão (Seção 4.5 do briefing v6): 8 turnos cheios.
@@ -64,9 +65,26 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     };
   }
 
-  // 2. Onboarding deixou seguir — chama IA com o texto efetivo
-  const session = await getOrCreateActiveSession(user.id);
+  // 2. Onboarding deixou seguir — checa assinatura/cota antes de chamar IA
   const route = routeIntent({ text: resultado.mensagemParaIA, hasAttachment: input.hasAttachment });
+
+  const cota = await checarCota(user, route.funcao);
+  if (!cota.allowed) {
+    if (cota.motivo === "cota_estourada") {
+      return {
+        replies: [
+          `Você já usou tudo que seu plano inclui esse mês pra ${cota.servicoLabel}. Pra continuar agora, sem esperar o mês virar, é só pagar avulso por esse link:\n\n${cota.linkCompra}`,
+        ],
+        userId: user.id,
+      };
+    }
+    return {
+      replies: ["Sua assinatura não está ativa no momento. Manda um oi que a gente resolve o acesso pra você. 🙂"],
+      userId: user.id,
+    };
+  }
+
+  const session = await getOrCreateActiveSession(user.id);
   const history = await loadHistory(session.id);
 
   const result = await askJudith({
@@ -102,6 +120,8 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
       data: { lastSeenAt: new Date() },
     }),
   ]);
+
+  await registrarUso(user.id, route.funcao);
 
   return {
     replies: [...(resultado.mensagensExtras ?? []), result.text],
