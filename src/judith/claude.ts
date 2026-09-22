@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { ModelTier, User } from "@prisma/client";
 import { env } from "../config/env.js";
 import { getPromptAnalise, getPromptPrincipal, getPromptRedacao } from "./prompts/principal.js";
+import { getBaseConhecimento } from "./conhecimento.js";
 
 const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 
@@ -53,7 +54,8 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   // System em blocos, na ordem estático → dinâmico (spec §1/§7):
   //   1. Seção A (sempre, cacheada)
   //   2. Seção B (redação) ou C (análise), sob demanda, também cacheada
-  //   3. Perfil enxuto do usuário — muda por usuário, fica fora do cache
+  //   3. Fichas publicadas no admin, cacheadas
+  //   4. Perfil enxuto do usuário — muda por usuário, fica fora do cache
   const system: Anthropic.TextBlockParam[] = [
     {
       type: "text",
@@ -65,6 +67,10 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
     system.push({ type: "text", text: await getPromptRedacao(), cache_control: { type: "ephemeral" } });
   } else if (input.funcao === "analise") {
     system.push({ type: "text", text: await getPromptAnalise(), cache_control: { type: "ephemeral" } });
+  }
+  const conhecimento = await getBaseConhecimento();
+  if (conhecimento) {
+    system.push({ type: "text", text: conhecimento, cache_control: { type: "ephemeral" } });
   }
   system.push({ type: "text", text: userProfileBlock(input.user) });
 

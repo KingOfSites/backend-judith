@@ -26,6 +26,11 @@ async function carregarSecoes(): Promise<Secoes> {
     );
   }
 
+  for (const texto of [row.secaoA, row.secaoB, row.secaoC]) {
+    if (texto.trim().length < 1000 || /\[Cole aqui/i.test(texto)) {
+      throw new Error("PromptConfig inválido: as três seções devem conter o prompt real (mínimo de 1000 caracteres).");
+    }
+  }
   const secoes: Secoes = { A: row.secaoA, B: row.secaoB, C: row.secaoC, versao: row.versao };
   cache = { secoes, expiraEm: Date.now() + TTL_MS };
   return secoes;
