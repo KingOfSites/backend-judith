@@ -70,6 +70,12 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
 
   const cota = await checarCota(user, route.funcao);
   if (!cota.allowed) {
+    if (cota.motivo === "pagamento_indisponivel") {
+      return {
+        replies: ["Sua cota para este serviço acabou e não consegui gerar o link de pagamento agora. Tente novamente em instantes; nenhum crédito foi consumido."],
+        userId: user.id,
+      };
+    }
     if (cota.motivo === "cota_estourada") {
       return {
         replies: [
@@ -95,15 +101,18 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     userMessage: resultado.mensagemParaIA,
   });
 
-  await prisma.$transaction([
-    prisma.message.create({
+  if (!result.text.trim()) throw new Error("A IA retornou uma resposta vazia");
+
+  await prisma.$transaction(async (db) => {
+    await registrarUso(db, user.id, route.funcao);
+    await db.message.create({
       data: {
         sessionId: session.id,
         role: MessageRole.USER,
         content: resultado.mensagemParaIA,
       },
-    }),
-    prisma.message.create({
+    });
+    await db.message.create({
       data: {
         sessionId: session.id,
         role: MessageRole.ASSISTANT,
@@ -114,14 +123,12 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
         cacheReadTokens: result.cacheReadTokens,
         cacheWriteTokens: result.cacheWriteTokens,
       },
-    }),
-    prisma.session.update({
+    });
+    await db.session.update({
       where: { id: session.id },
       data: { lastSeenAt: new Date() },
-    }),
-  ]);
-
-  await registrarUso(user.id, route.funcao);
+    });
+  }, { isolationLevel: "ReadCommitted" });
 
   return {
     replies: [...(resultado.mensagensExtras ?? []), result.text],

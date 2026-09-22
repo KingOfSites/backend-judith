@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User, UsageKind, PlanCatalog } from "@prisma/client";
+import { User, Prisma, PlanCatalog } from "@prisma/client";
 import { env } from "../config/env.js";
 import { prisma } from "../db/client.js";
 import type { Funcao } from "./claude.js";
@@ -27,7 +27,8 @@ const LABEL: Record<"DUVIDA" | "ANALISE" | "REDACAO", string> = {
 };
 
 export type QuotaResult =
-  | { allowed: true }
+  | { allowed: true; creditoId?: string }
+  | { allowed: false; motivo: "pagamento_indisponivel" }
   | { allowed: false; motivo: "sem_assinatura_ativa" }
   | { allowed: false; motivo: "cota_estourada"; linkCompra: string; servicoLabel: string };
 
@@ -36,8 +37,8 @@ function inicioDoMes(): Date {
   return new Date(now.getFullYear(), now.getMonth(), 1);
 }
 
-async function assinaturaAtiva(user: User): Promise<boolean> {
-  const sub = await prisma.subscription.findFirst({
+async function assinaturaAtiva(user: User, db: Prisma.TransactionClient): Promise<boolean> {
+  const sub = await db.subscription.findFirst({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
   });
@@ -52,17 +53,6 @@ async function assinaturaAtiva(user: User): Promise<boolean> {
   return false; // PENDING, PAST_DUE, CANCELED, SUSPENDED
 }
 
-async function consumirCreditoAvulso(userId: string, kind: UsageKind): Promise<boolean> {
-  const credito = await prisma.avulsoCompra.findFirst({
-    where: { userId, servico: kind, status: "APPROVED", consumidoEm: null },
-    orderBy: { paidAt: "asc" },
-  });
-  if (!credito) return false;
-
-  await prisma.avulsoCompra.update({ where: { id: credito.id }, data: { consumidoEm: new Date() } });
-  return true;
-}
-
 async function gerarLinkAvulso(whatsapp: string, servico: "DUVIDA" | "ANALISE" | "REDACAO"): Promise<string | null> {
   try {
     const { data } = await axios.post(
@@ -70,46 +60,59 @@ async function gerarLinkAvulso(whatsapp: string, servico: "DUVIDA" | "ANALISE" |
       { whatsapp, servico, metodo: "PIX" },
       { headers: { "x-internal-key": env.INTERNAL_API_KEY }, timeout: 15_000 }
     );
-    return data?.url ?? null;
+    return typeof data?.url === "string" && data.url.trim() ? data.url : null;
   } catch {
     return null;
   }
 }
 
-// Chamado antes de acionar a IA. Consome crédito avulso automaticamente se existir;
-// se estourou a cota do plano e não tem crédito, gera o link de compra avulsa.
-export async function checarCota(user: User, funcao: Funcao): Promise<QuotaResult> {
+// Consulta sem consumir: primeiro usa o plano, depois uma compra aprovada.
+async function disponibilidade(user: User, funcao: Funcao, db: Prisma.TransactionClient) {
   const kind = FUNCAO_TO_KIND[funcao];
-
-  if (!(await assinaturaAtiva(user))) {
-    return { allowed: false, motivo: "sem_assinatura_ativa" };
-  }
-
-  if (await consumirCreditoAvulso(user.id, kind)) {
-    return { allowed: true };
-  }
-
-  const plano = await prisma.planCatalog.findUnique({ where: { codigo: user.plano } });
-  const campo = KIND_TO_PLAN_FIELD[kind];
-  const limite = (plano?.[campo] as number | null | undefined) ?? null;
-
-  if (limite !== null && limite !== undefined) {
-    const usos = await prisma.usageEvent.count({
-      where: { userId: user.id, kind, createdAt: { gte: inicioDoMes() } },
-    });
-    if (usos >= limite) {
-      const link = await gerarLinkAvulso(user.whatsappNumber, kind);
-      if (link) {
-        return { allowed: false, motivo: "cota_estourada", linkCompra: link, servicoLabel: LABEL[kind] };
-      }
-      // Falha ao gerar o link (Mercado Pago fora do ar, etc.) — não trava o usuário.
-      return { allowed: true };
+  const ativa = await assinaturaAtiva(user, db);
+  if (ativa) {
+    const plano = await db.planCatalog.findUnique({ where: { codigo: user.plano } });
+    if (plano) {
+      const limite = plano[KIND_TO_PLAN_FIELD[kind]] as number | null;
+      if (limite === null) return { allowed: true } as const;
+      const usos = await db.usageEvent.count({
+        where: { userId: user.id, kind, createdAt: { gte: inicioDoMes() } },
+      });
+      if (usos < limite) return { allowed: true } as const;
     }
   }
-
-  return { allowed: true };
+  const credito = await db.avulsoCompra.findFirst({
+    where: { userId: user.id, servico: kind, status: "APPROVED", consumidoEm: null },
+    orderBy: [{ paidAt: "asc" }, { id: "asc" }],
+  });
+  if (credito) return { allowed: true, creditoId: credito.id } as const;
+  return { allowed: false, motivo: ativa ? "cota_estourada" : "sem_assinatura_ativa" } as const;
 }
 
-export async function registrarUso(userId: string, funcao: Funcao): Promise<void> {
-  await prisma.usageEvent.create({ data: { userId, kind: FUNCAO_TO_KIND[funcao] } });
+export async function checarCota(user: User, funcao: Funcao): Promise<QuotaResult> {
+  const acesso = await disponibilidade(user, funcao, prisma);
+  if (acesso.allowed) return acesso;
+  if (acesso.motivo === "sem_assinatura_ativa") return { allowed: false, motivo: "sem_assinatura_ativa" };
+  const kind = FUNCAO_TO_KIND[funcao];
+  const link = await gerarLinkAvulso(user.whatsappNumber, kind);
+  if (!link) return { allowed: false, motivo: "pagamento_indisponivel" };
+  return { allowed: false, motivo: "cota_estourada", linkCompra: link, servicoLabel: LABEL[kind] };
+}
+
+// Executada junto com o histórico, somente após a IA retornar uma resposta.
+// O lock por usuário serializa a confirmação de mensagens concorrentes.
+export async function registrarUso(db: Prisma.TransactionClient, userId: string, funcao: Funcao): Promise<void> {
+  await db.$queryRaw`SELECT id FROM User WHERE id = ${userId} FOR UPDATE`;
+  const user = await db.user.findUniqueOrThrow({ where: { id: userId } });
+  const acesso = await disponibilidade(user, funcao, db);
+  if (!acesso.allowed) throw new Error("Cota indisponível ao confirmar resposta");
+  const kind = FUNCAO_TO_KIND[funcao];
+  if (acesso.creditoId) {
+    const consumo = await db.avulsoCompra.updateMany({
+      where: { id: acesso.creditoId, userId, servico: kind, status: "APPROVED", consumidoEm: null },
+      data: { consumidoEm: new Date() },
+    });
+    if (consumo.count !== 1) throw new Error("Crédito avulso indisponível ao confirmar resposta");
+  }
+  await db.usageEvent.create({ data: { userId, kind } });
 }
