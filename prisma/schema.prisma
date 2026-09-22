@@ -444,6 +444,48 @@ model TipDicaOnboarding {
   @@index([perfil, ativo])
 }
 
+// ============================================================
+// PAINEL DE CONTEÚDO — prompt e base de conhecimento editáveis pelo fundador.
+// ============================================================
+
+// Prompt único da JUDITH (Seções A/B/C), antes vivia só como .md na VPS.
+// Singleton identificado por "chave" — hoje só existe a linha "PRINCIPAL".
+model PromptConfig {
+  id            String   @id @default(cuid())
+  chave         String   @unique @default("PRINCIPAL")
+  versao        String
+  secaoA        String   @db.Text
+  secaoB        String   @db.Text
+  secaoC        String   @db.Text
+  atualizadoPor String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum FichaStatus {
+  RASCUNHO
+  EM_REVISAO
+  PUBLICADA
+}
+
+// Fichas temáticas da base de conhecimento jurídico (antes eram .md soltos
+// em knowledge/). Ainda não consumidas pelo bot em runtime.
+model FichaConhecimento {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  titulo    String
+  area      String
+  status    FichaStatus @default(RASCUNHO)
+  fontes    Json        @default("[]")
+  conteudo  String      @db.Text
+  ordem     Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([status])
+  @@index([area])
+}
+
 // Auditoria de uso por plano (limites da Seção 7.2 do briefing v6).
 enum UsageKind {
   DUVIDA

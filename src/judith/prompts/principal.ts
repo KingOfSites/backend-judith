@@ -1,62 +1,50 @@
-// Prompt único da JUDITH — carregado do arquivo entregue pelo fundador
-// (prompts/JUDITH-prompt-unico-PRODUCAO.md). O texto NÃO é editado pelo dev:
-// ajuste de conteúdo é mudança de produto e passa pelo fundador (00-LEIA-ME).
+// Prompt único da JUDITH — antes carregado do arquivo entregue pelo fundador
+// (prompts/JUDITH-prompt-unico-PRODUCAO.md), agora vem da tabela PromptConfig
+// (linha singleton "PRINCIPAL"), editável pelo painel admin-judith.
 //
-// Seção A → injetada em toda conversa (bloco estático, cacheado).
+// Cache de 60s em memória: evita 1 SELECT por mensagem, e ainda deixa uma
+// edição no painel valer dentro de 1 minuto, sem precisar reiniciar o processo.
+//
+// Seção A → injetada em toda conversa (bloco estático, cacheado no Claude).
 // Seção B → só em redação de documento.  Seção C → só em análise de contrato.
 // A ordem estático → dinâmico é o que ativa o prompt caching (spec §1 e §7).
 
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import { prisma } from "../../db/client.js";
 
-// Versão = data da entrega consolidada. Mudou o .md → mudar aqui (quebra o cache de propósito).
-export const JUDITH_VERSAO = "v22072026";
+type Secoes = { A: string; B: string; C: string; versao: string };
 
-// Build é CommonJS: __dirname resolve pra src/judith/prompts (tsx) ou dist/judith/prompts (node).
-const ARQUIVO_PROMPT = path.resolve(__dirname, "../../../prompts/JUDITH-prompt-unico-PRODUCAO.md");
+const TTL_MS = 60_000;
+let cache: { secoes: Secoes; expiraEm: number } | null = null;
 
-type Secoes = { A: string; B: string; C: string };
+async function carregarSecoes(): Promise<Secoes> {
+  if (cache && Date.now() < cache.expiraEm) return cache.secoes;
 
-// Remove só o que é anotação interna do documento (uso/injeção e rodapés),
-// sem tocar no conteúdo das regras.
-function limparSecao(bruto: string): string {
-  const linhas = bruto.split("\n").filter((l) => {
-    const t = l.trim();
-    if (/^\*\*(Ativo em todas as conversas|Injetado sob demanda)/.test(t)) return false;
-    if (/^\*JUDITH v.*Confidencial\*$/.test(t)) return false;
-    return true;
-  });
-  return linhas
-    .join("\n")
-    .replace(/^(\s*---\s*\n)+/, "")
-    .replace(/(\n\s*---\s*)+\s*$/, "")
-    .trim();
+  const row = await prisma.promptConfig.findUnique({ where: { chave: "PRINCIPAL" } });
+  if (!row) {
+    throw new Error(
+      "PromptConfig 'PRINCIPAL' não encontrado no banco — rode o seed ou crie pelo painel admin-judith."
+    );
+  }
+
+  const secoes: Secoes = { A: row.secaoA, B: row.secaoB, C: row.secaoC, versao: row.versao };
+  cache = { secoes, expiraEm: Date.now() + TTL_MS };
+  return secoes;
 }
 
-function carregarSecoes(): Secoes {
-  const md = readFileSync(ARQUIVO_PROMPT, "utf8").replace(/\r\n/g, "\n");
-  const partes = md.split(/^## SEÇÃO ([ABC]) — .*$/m);
-  const achadas: Partial<Secoes> = {};
-  for (let i = 1; i + 1 < partes.length; i += 2) {
-    const letra = partes[i] as keyof Secoes;
-    achadas[letra] = limparSecao(partes[i + 1] ?? "");
-  }
-  for (const letra of ["A", "B", "C"] as const) {
-    const texto = achadas[letra];
-    if (!texto || texto.length < 1000) {
-      throw new Error(
-        `Prompt: Seção ${letra} não encontrada ou vazia em ${ARQUIVO_PROMPT}`
-      );
-    }
-  }
-  return achadas as Secoes;
+/** Versão do prompt em uso (campo livre, definido pelo fundador no painel). */
+export async function getPromptVersao(): Promise<string> {
+  return (await carregarSecoes()).versao;
 }
-
-const secoes = carregarSecoes();
 
 /** Seção A — Prompt Principal. Ativo em todas as conversas. */
-export const PROMPT_PRINCIPAL = secoes.A;
+export async function getPromptPrincipal(): Promise<string> {
+  return (await carregarSecoes()).A;
+}
 /** Seção B — Redação de documentos. Só quando o usuário pede pra redigir. */
-export const PROMPT_REDACAO = secoes.B;
+export async function getPromptRedacao(): Promise<string> {
+  return (await carregarSecoes()).B;
+}
 /** Seção C — Análise de contratos. Só quando o usuário envia contrato pra analisar. */
-export const PROMPT_ANALISE = secoes.C;
+export async function getPromptAnalise(): Promise<string> {
+  return (await carregarSecoes()).C;
+}

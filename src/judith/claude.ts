@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ModelTier, User } from "@prisma/client";
 import { env } from "../config/env.js";
-import { PROMPT_ANALISE, PROMPT_PRINCIPAL, PROMPT_REDACAO } from "./prompts/principal.js";
+import { getPromptAnalise, getPromptPrincipal, getPromptRedacao } from "./prompts/principal.js";
 
 const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 
@@ -57,14 +57,14 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   const system: Anthropic.TextBlockParam[] = [
     {
       type: "text",
-      text: PROMPT_PRINCIPAL,
+      text: await getPromptPrincipal(),
       cache_control: { type: "ephemeral" },
     },
   ];
   if (input.funcao === "redacao") {
-    system.push({ type: "text", text: PROMPT_REDACAO, cache_control: { type: "ephemeral" } });
+    system.push({ type: "text", text: await getPromptRedacao(), cache_control: { type: "ephemeral" } });
   } else if (input.funcao === "analise") {
-    system.push({ type: "text", text: PROMPT_ANALISE, cache_control: { type: "ephemeral" } });
+    system.push({ type: "text", text: await getPromptAnalise(), cache_control: { type: "ephemeral" } });
   }
   system.push({ type: "text", text: userProfileBlock(input.user) });
 

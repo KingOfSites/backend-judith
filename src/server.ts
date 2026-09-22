@@ -8,7 +8,7 @@ import { handleInbound } from "./judith/conversation.js";
 import { transcreverAudio } from "./judith/whisper.js";
 import { registerLegalRoutes } from "./routes/legal.js";
 import { processarMensagemBot } from "./bot/handler.js";
-import { JUDITH_VERSAO } from "./judith/prompts/principal.js";
+import { getPromptVersao } from "./judith/prompts/principal.js";
 
 const app = Fastify({
   logger: {
@@ -24,7 +24,7 @@ const app = Fastify({
 app.register(sensible);
 registerLegalRoutes(app);
 
-app.get("/health", async () => ({ status: "ok", versao: JUDITH_VERSAO }));
+app.get("/health", async () => ({ status: "ok", versao: await getPromptVersao() }));
 
 // Webhook do Evolution API. Configure no Evolution para apontar para:
 //   {PUBLIC_URL}/webhook/evolution
