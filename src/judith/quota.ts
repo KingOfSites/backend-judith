@@ -27,7 +27,7 @@ const LABEL: Record<"DUVIDA" | "ANALISE" | "REDACAO", string> = {
 };
 
 export type QuotaResult =
-  | { allowed: true; creditoId?: string }
+  | { allowed: true; creditoId?: string; cortesiaId?: string }
   | { allowed: false; motivo: "pagamento_indisponivel" }
   | { allowed: false; motivo: "sem_assinatura_ativa" }
   | { allowed: false; motivo: "cota_estourada"; linkCompra: string; servicoLabel: string };
@@ -66,7 +66,7 @@ async function gerarLinkAvulso(whatsapp: string, servico: "DUVIDA" | "ANALISE" |
   }
 }
 
-// Consulta sem consumir: primeiro usa o plano, depois uma compra aprovada.
+// Consulta sem consumir: plano, cortesia do admin e, por último, compra aprovada.
 async function disponibilidade(user: User, funcao: Funcao, db: Prisma.TransactionClient) {
   const kind = FUNCAO_TO_KIND[funcao];
   const ativa = await assinaturaAtiva(user, db);
@@ -81,6 +81,11 @@ async function disponibilidade(user: User, funcao: Funcao, db: Prisma.Transactio
       if (usos < limite) return { allowed: true } as const;
     }
   }
+  const cortesia = await db.creditoCortesia.findFirst({
+    where: { userId: user.id, servico: kind, saldo: { gt: 0 } },
+    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+  });
+  if (cortesia) return { allowed: true, cortesiaId: cortesia.id } as const;
   const credito = await db.avulsoCompra.findFirst({
     where: { userId: user.id, servico: kind, status: "APPROVED", consumidoEm: null },
     orderBy: [{ paidAt: "asc" }, { id: "asc" }],
@@ -107,6 +112,13 @@ export async function registrarUso(db: Prisma.TransactionClient, userId: string,
   const acesso = await disponibilidade(user, funcao, db);
   if (!acesso.allowed) throw new Error("Cota indisponível ao confirmar resposta");
   const kind = FUNCAO_TO_KIND[funcao];
+  if (acesso.cortesiaId) {
+    const consumo = await db.creditoCortesia.updateMany({
+      where: { id: acesso.cortesiaId, userId, servico: kind, saldo: { gt: 0 } },
+      data: { saldo: { decrement: 1 } },
+    });
+    if (consumo.count !== 1) throw new Error("Crédito de cortesia indisponível ao confirmar resposta");
+  }
   if (acesso.creditoId) {
     const consumo = await db.avulsoCompra.updateMany({
       where: { id: acesso.creditoId, userId, servico: kind, status: "APPROVED", consumidoEm: null },

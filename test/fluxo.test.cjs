@@ -22,7 +22,7 @@ async function main() {
   global.fetch = deny;
   let state;
   function reset(extra = {}) {
-    state = { user: { id: 'smoke-user', whatsappNumber: '0000000000000', nome: 'Synthetic Test', plano: 'TEST', onboarding: 'CONCLUIDO', trialFimEm: null }, subscription: { status: 'ACTIVE' }, credit: null, limit: 2, used: 0, messages: [], calls: [], sends: [], consumed: 0, usages: [], payments: [], paymentFail: false, aiFail: false, ...extra };
+    state = { user: { id: 'smoke-user', whatsappNumber: '0000000000000', nome: 'Synthetic Test', plano: 'TEST', onboarding: 'CONCLUIDO', trialFimEm: null }, subscription: { status: 'ACTIVE' }, credit: null, courtesy: 0, courtesyKind: 'DUVIDA', limit: 2, used: 0, messages: [], calls: [], sends: [], consumed: 0, usages: [], payments: [], paymentFail: false, aiFail: false, ...extra };
   }
   reset();
   let transactionTail = Promise.resolve();
@@ -31,6 +31,22 @@ async function main() {
     fichaConhecimento: { findMany: async (q) => { assert.equal(q.where.status, 'PUBLICADA'); return [{ titulo: 'Synthetic published reference', area: 'test', fontes: [], conteudo: 'PUBLISHED_KNOWLEDGE_TEST' }]; } },
     user: { findUnique: async () => state.user, findUniqueOrThrow: async () => state.user, update: async ({ data }) => Object.assign(state.user, data) },
     subscription: { findFirst: async () => state.subscription },
+    creditoCortesia: {
+      findFirst: async ({ where }) => {
+        assert.equal(where.userId, state.user.id);
+        assert.equal(where.saldo.gt, 0);
+        return state.courtesy > 0 && where.servico === state.courtesyKind ? { id: 'courtesy-test' } : null;
+      },
+      updateMany: async ({ where, data }) => {
+        assert.equal(where.id, 'courtesy-test');
+        assert.equal(where.userId, state.user.id);
+        assert.equal(where.servico, state.courtesyKind);
+        assert.equal(where.saldo.gt, 0);
+        assert.equal(data.saldo.decrement, 1);
+        if (state.courtesy < 1 || state.race) return { count: 0 };
+        state.courtesy--; return { count: 1 };
+      },
+    },
     avulsoCompra: { findFirst: async () => state.consumed ? null : state.credit, updateMany: async ({ where }) => { assert.equal(where.consumidoEm, null); assert.equal(where.status, 'APPROVED'); if (state.consumed || state.race) return { count: 0 }; state.consumed++; return { count: 1 }; } },
     planCatalog: { findUnique: async () => ({ duvidasMes: state.limit, analisesMes: state.limit, redacoesMes: state.limit }) },
     usageEvent: { count: async () => state.used + state.usages.length, create: async ({ data }) => { state.usages.push(data); return data; } },
@@ -43,7 +59,7 @@ async function main() {
       let release;
       transactionTail = new Promise(resolve => { release = resolve; });
       await previous;
-      const backup = structuredClone({ consumed: state.consumed, usages: state.usages, messages: state.messages });
+      const backup = structuredClone({ consumed: state.consumed, courtesy: state.courtesy, usages: state.usages, messages: state.messages });
       try { const result = await fn(prisma); assert.equal(state.locked, true); return result; }
       catch (e) { Object.assign(state, backup); throw e; }
       finally { release(); }
@@ -138,6 +154,28 @@ async function main() {
   await Promise.all([webhook('Qual o prazo?'), webhook('Qual o prazo?')]);
   assert.equal(state.usages.length, 1); assert.equal(state.messages.length, 2);
   passed.push('Concurrent replies cannot confirm beyond remaining plan quota');
+  reset({ subscription: { status: 'CANCELED' }, courtesy: 2 }); await webhook('Qual o prazo?');
+  assert.equal(state.courtesy, 1); assert.equal(state.usages.length, 1); assert.equal(state.payments.length, 0);
+  passed.push('Courtesy works without subscription and without payment');
+  reset({ courtesy: 2 }); await webhook('Qual o prazo?');
+  assert.equal(state.courtesy, 2); assert.equal(state.usages.length, 1);
+  passed.push('Plan quota is used before courtesy');
+  reset({ used: 2, courtesy: 2, credit: { id: 'synthetic-credit' } }); await webhook('Qual o prazo?');
+  assert.equal(state.courtesy, 1); assert.equal(state.consumed, 0);
+  passed.push('Courtesy is used before paid one-off credits');
+  reset({ subscription: { status: 'CANCELED' }, courtesy: 2, courtesyKind: 'ANALISE' }); await webhook('Qual o prazo?');
+  assert.equal(state.courtesy, 2); assert.equal(state.calls.length, 0);
+  passed.push('Courtesy is specific to the granted service');
+  for (const flag of ['aiFail', 'aiEmpty', 'historyFail', 'race']) {
+    reset({ used: 2, courtesy: 2, [flag]: true }); await webhook('Qual o prazo?');
+    assert.equal(state.courtesy, 2); assert.equal(state.usages.length, 0); assert.equal(state.messages.length, 0);
+    passed.push('Courtesy preserved on ' + flag);
+  }
+  reset({ used: 2, courtesy: 1 });
+  await Promise.all([webhook('Qual o prazo?'), webhook('Qual o prazo?')]);
+  assert.equal(state.courtesy, 0); assert.equal(state.usages.length, 1);
+  assert.equal(state.sends.filter(x => x.text === 'SIMULATED RESPONSE').length, 1);
+  passed.push('Concurrent responses cannot spend the same courtesy twice');
   await app.close();
   console.log(JSON.stringify({ passed, findings, isolation: 'Only initial prompt SELECT used real database; all writes, AI, checkout and WhatsApp simulated; network blocked afterwards' }, null, 2));
 }

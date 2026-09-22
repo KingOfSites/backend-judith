@@ -71,6 +71,7 @@ model User {
   usage          UsageEvent[]
   subscriptions  Subscription[]
   avulsoCompras  AvulsoCompra[]
+  creditosCortesia CreditoCortesia[]
 
   @@index([whatsappNumber])
 }
@@ -504,4 +505,19 @@ model UsageEvent {
 
   @@index([userId, createdAt])
   @@index([userId, kind, createdAt])
+}
+
+// Créditos gratuitos concedidos pelo admin; não são pagamentos nem assinaturas.
+model CreditoCortesia {
+  id         String    @id
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  servico    UsageKind
+  quantidade Int
+  saldo      Int
+  criadoPor  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId, servico, saldo])
 }
