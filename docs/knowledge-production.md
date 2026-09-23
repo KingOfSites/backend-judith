@@ -1,5 +1,13 @@
 # Publicação da base de conhecimento — 23/09/2026
 
+## Estado atual — indexação por chunk, 5d0f2cc
+
+- Em execução: `5d0f2cc014b32aa23dd7d7c52a25e1a36ad144fb`, branch da VPS `release-incr-5d0f2cc`, imagem `judith-backend:incr-5d0f2cc` (`sha256:30db70b57a13bb23fd083b74f99be5d42a907418a9b8ce52ad16b6c017c88abf`). Parser `markdown-v2`. Serviço de embeddings inalterado (`judith-embeddings:local-3c1e265`).
+- Primeira tentativa: a verificação pós-troca exigia `OPENAI_API_KEY` vazia, mas essa chave é do Whisper (`src/judith/whisper.ts`). O rollback automático restaurou `3c1e265` com saúde 200. Verificação corrigida: `dist/knowledge` sem referência a OpenAI, provedor da base local com 1024 dimensões e chave do Whisper preservada. Segunda tentativa reutilizou a imagem após conferir a revisão.
+- Saúde local/pública 200, zero reinícios, override inalterado. Fichas e prompts idênticos antes/depois (17 EM_REVISAO; `9f5993…` / `1e57c3…`), índice de produção vazio, nenhum job novo.
+- Busca pós-deploy em MariaDB descartável com a imagem publicada e conteúdo sintético: filtro por área antes do embedding da pergunta, sem vazamento entre gêmeos `lgpd`/`trabalhista`, capítulo irmão herdando a marcação do módulo, marcação em `###` restrita à subseção. Recursos descartáveis removidos.
+- Rollback: `backups/incr-5d0f2cc/rollback.sh`, imagem `judith-backend-rollback:pre-incr-5d0f2cc` (`sha256:8a6782…`, revisão `3c1e265`).
+
 ## Estado atual — embeddings locais, 19:16 UTC
 
 **Deploy e busca semântica real validados com conteúdo sintético isolado.** A pendência anterior de saldo OpenAI foi eliminada do caminho de embeddings, substituído por modelo local gratuito. Nenhum crédito de embeddings foi comprado, serviço contratado ou plano da VPS ampliado.
