@@ -10,6 +10,10 @@ export type PreparedDocument = { sourceId: string; fingerprint: string; model: s
 export type EmbeddingStore = { get(id: string): Promise<number[] | null>; put(id: string, model: string, vector: number[]): Promise<void> };
 
 export function vector(value: unknown): number[] {
+  // MariaDB stores JSON as LONGTEXT; raw queries may return a JSON string.
+  if (typeof value === "string") {
+    try { value = JSON.parse(value); } catch { throw new Error("INVALID_VECTOR"); }
+  }
   if (!Array.isArray(value) || !value.length || !value.every(n => typeof n === "number" && Number.isFinite(n)) || !value.some(n => n !== 0)) throw new Error("INVALID_VECTOR");
   return value;
 }

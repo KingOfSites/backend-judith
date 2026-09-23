@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { KnowledgeValidationError } from "./areas.js";
-import { fingerprint, prepareDocument, PreparedDocument, SemanticProvider, Source, vector } from "./core.js";
+import { fingerprint, prepareDocument, PreparedDocument, SemanticProvider, vector } from "./core.js";
 
 export const LEASE_MS = 300_000;
 const lease = () => new Date(Date.now() + LEASE_MS);
@@ -73,7 +73,9 @@ export async function processNextJob(db: PrismaClient, provider: SemanticProvide
       const fenced = await tx.knowledgeJob.updateMany({ where: { id: job.id, status: "processing", leaseUntil: { gt: new Date() } }, data: { leaseUntil: lease() } });
       if (!fenced.count) throw new Error("LEASE_LOST");
       // Shared Admin writes wait only during this short swap, never during API calls.
-      const current = await tx.$queryRaw<Source[]>`SELECT id, slug, titulo, area, status, fontes, conteudo, ordem FROM FichaConhecimento ORDER BY id FOR UPDATE`;
+      await tx.$queryRaw`SELECT id FROM FichaConhecimento ORDER BY id FOR UPDATE`;
+      // Read JSON via Prisma so MySQL and MariaDB use the same decoded shape.
+      const current = await tx.fichaConhecimento.findMany({ orderBy: { id: "asc" } });
       if (current.length !== sources.length || current.some((s, i) => fingerprint(s) !== fingerprint(sources[i]!))) throw new Error("SOURCE_CHANGED");
       if (removed.length) await tx.knowledgeDocument.deleteMany({ where: { sourceId: { in: removed } } });
       for (const doc of changed) {

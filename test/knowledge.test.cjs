@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { AREAS, validateAreas } = require('../dist/knowledge/areas.js');
 const { parseNotebook } = require('../dist/knowledge/parser.js');
-const { prepareDocument, retrieve, fingerprint, cosine } = require('../dist/knowledge/core.js');
+const { prepareDocument, retrieve, fingerprint, cosine, vector } = require('../dist/knowledge/core.js');
 const fixture = name => fs.readFileSync(path.join(__dirname, 'fixtures', name + '.md'), 'utf8');
 const source = (overrides = {}) => ({ id: 'one', slug: 'civil-contratos', titulo: 'Contrato', area: 'civil', status: 'PUBLICADA', fontes: [], ordem: 0, conteudo: '## Contratos\nAção com acentuação.', ...overrides });
 
@@ -14,6 +14,10 @@ test('áreas: lista exata, vírgulas, desconhecidos, vazios e slug separado', ()
   assert.deepEqual(validateAreas('civil, consumidor'), ['civil', 'consumidor']);
   for (const area of ['financeiro', 'civil-contratos', '', 'Civil', 'consumo', 'civil,', 'civil, financeiro', null, ['civil']]) assert.throws(() => validateAreas(area));
   assert.equal(parseNotebook(source().conteudo, source().area).length, 1);
+});
+test('MariaDB: vetores JSON em LONGTEXT e valores inválidos', () => {
+  assert.deepEqual(vector('[1,0]'), [1, 0]);
+  for (const value of ['invalid', '{}', '[]', '[0,0]', '[null,1]']) assert.throws(() => vector(value), /INVALID_VECTOR/);
 });
 test('parser: capítulos/subcapítulos sem duplicação, herança e sobrescrita com escopo', () => {
   const text = '## Contratos\n**Área:** consumidor, civil\nIntrodução única\n### A\nTexto A\n### B\n**Área:** autoral\nTexto B\n### C\nTexto C\n## Outro\nTexto D\n';
