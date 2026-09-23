@@ -2,7 +2,7 @@
 
 ## Estado da entrega
 
-Implementação local. Nenhum deploy, migração aplicada, alteração de prompts aprovados ou escrita no banco compartilhado. A análise inicial está em [knowledge-analysis.md](knowledge-analysis.md). Não há importação automática dos Markdown históricos nem publicação automática de fichas.
+Implementação publicada na VPS em 23/09/2026 após autorização explícita do usuário para migração e deploy. Consulte [knowledge-production.md](knowledge-production.md) para versão, backup, testes reais e pendências operacionais. Prompts e fichas foram preservados. A análise inicial está em [knowledge-analysis.md](knowledge-analysis.md). Não há importação automática dos Markdown históricos nem publicação automática de fichas.
 
 ## Arquivos
 
@@ -42,7 +42,7 @@ Novas tabelas:
 
 Única alteração em tabela existente: `FichaConhecimento.conteudo` TEXT → LONGTEXT, explicitamente utf8mb4. Não altera outros campos, enums, dados, prompts ou status. Não há FK nova para FichaConhecimento, evitando modificar o contrato de exclusão dos outros sistemas; FKs com cascade existem somente entre tabelas derivadas novas. Índices únicos impedem chunks duplicados por posição e duas execuções ativas.
 
-A migration foi gerada comparando schemas locais e revisada; não foi aplicada. O repositório não possuía histórico de migrations. **Não executar `migrate dev`, `db push` ou `migrate deploy` indiscriminadamente no banco compartilhado.** Antes de adoção, o responsável precisa conferir schema real/charset/engine (InnoDB), backup, baseline do histórico e política única de migrations, testar o SQL em cópia isolada e planejar janela de DDL. MySQL pode reconstruir/bloquear a tabela durante o alargamento; não se afirma que esse ALTER seja online em toda versão. Não há rollback automático para TEXT, pois isso poderia truncar dados novos.
+A migration foi gerada comparando schemas locais, testada em MariaDB isolado e aplicada ao banco compartilhado em 23/09/2026, após backup e autorização. O repositório não possuía histórico de migrations. **Não reaplicar esta migration nem executar `migrate dev`, `db push` ou `migrate deploy` indiscriminadamente no banco compartilhado.** Evoluções futuras exigem baseline do histórico e política única de migrations. MySQL pode reconstruir/bloquear a tabela durante alargamentos; não se afirma que esse ALTER seja online em toda versão. Não há rollback automático para TEXT, pois isso poderia truncar dados novos.
 
 Repositórios identificados para coordenação (não editados nesta entrega):
 
@@ -50,7 +50,7 @@ Repositórios identificados para coordenação (não editados nesta entrega):
 2. `WEB JUDITH/web-judith`: seu schema local já omite FichaConhecimento/PromptConfig. Se for usado para evolução do banco, precisa ser sincronizado com o schema canônico, incluindo as tabelas novas; não permitir que um `db push` tente removê-las. Runtime de pagamentos não depende dessas tabelas.
 3. `WEB JUDITH/backend-judith`: cópia local alternativa do Backend identificada; confirmar qual checkout é canônico antes de geração de clientes/migrations ou futura publicação.
 
-O estado real do banco e de repositórios remotos não foi inspecionado.
+O banco real foi inspecionado na publicação: MariaDB 10.11.14, InnoDB, utf8mb4. O estado remoto dos outros repositórios ainda depende da integração do Admin.
 
 ## Busca
 
@@ -133,7 +133,7 @@ Comuns: 401 UNAUTHORIZED, 400 INVALID_PAYLOAD, 404 JOB_NOT_FOUND, 413 INVALID_PA
 
 ## Configuração e adoção futura
 
-Mantém `DATABASE_URL`, `ANTHROPIC_API_KEY`, `JUDITH_MODEL_HAIKU`, `OPENAI_API_KEY`, `INTERNAL_API_KEY`. OpenAI key passa a ser necessária para construir representações e buscar com candidatos; requer acesso/cota de embeddings. Há custo adicional de classificação e embeddings. Nenhuma chamada real foi feita nesta entrega.
+Mantém `DATABASE_URL`, `ANTHROPIC_API_KEY`, `JUDITH_MODEL_HAIKU`, `OPENAI_API_KEY`, `INTERNAL_API_KEY`. OpenAI key passa a ser necessária para construir representações e buscar com candidatos; requer acesso/cota de embeddings. Há custo adicional de classificação e embeddings. Na publicação, classificação real funcionou; o teste de embeddings foi recusado por `credit_balance_exhausted`.
 
 `KNOWLEDGE_WORKER_ENABLED=false` é o padrão seguro antes da migração. Depois de migração validada/aplicada pelo responsável, schemas sincronizados e credenciais disponíveis, configurar `true`, iniciar serviço, solicitar primeira indexação e acompanhar completed. Antes do primeiro índice, não haverá trechos disponíveis. Não há fallback para a concatenação antiga. Instalar este código sem as tabelas não é suportado.
 
@@ -143,6 +143,6 @@ Mantém `DATABASE_URL`, `ANTHROPIC_API_KEY`, `JUDITH_MODEL_HAIKU`, `OPENAI_API_K
 
 Cobertura: 12 áreas/listas/erros/slug, parser ##/###/herança/sobrescrita/código, dois casos solicitados com fixtures, arquivos históricos reais LGPD/contratos, filtro SQL antes da similaridade, publicação, obsolescência, top 5/menos/sem fallback/integralidade, UTF-8 >169 mil caracteres e 117 chunks, classificação estrita, particionamento completo dos embeddings, primeira indexação/alterações/repetição/exclusão/falhas/rollback/fencing/concorrência, HTTP/autenticação/status e fluxos existentes de quotas/créditos/onboarding.
 
-Executados: build, 21 testes node:test, 28 cenários do teste de fluxo; todos passaram na revisão desta entrega. A suíte não comprova locks/DDL/charset/performance reais de MySQL, disponibilidade/custo/relevância dos provedores, nem compatibilidade com os cadernos ativos ausentes. Não havia MySQL/Docker disponível para ensaio isolado. Nenhum número de cadernos/chunks é limite no código.
+Executados: build, 22 testes node:test e 28 cenários do teste de fluxo, todos aprovados. Posteriormente, `test/knowledge-mysql.cjs` passou em MariaDB isolado na VPS, incluindo DDL, conteúdo Unicode grande, JSON, rollback e concorrência reais. Relevância/performance com a futura coleção completa ainda precisam de avaliação. Nenhum número de cadernos/chunks é limite no código.
 
-Pendências antes de produção: obter cadernos ativos e conferir especialmente base-propaganda/base-guias, corrigir áreas legadas mediante decisão editorial explícita, integrar Admin e ampliar seu transporte/validação, ensaiar migração/concorrência/rollback/charset em MySQL isolado, sincronizar os schemas e testar relevância com perguntas reais. Publicação e aplicação da migração permanecem fora desta entrega.
+Pendências operacionais: repor saldo OpenAI, disponibilizar os cadernos novos (especialmente base-propaganda/base-guias), corrigir as 12 áreas legadas mediante decisão editorial explícita, integrar Admin e ampliar seu transporte/validação, sincronizar os schemas relacionados e testar relevância com perguntas reais. Backend e migration já publicados; nenhum caderno foi publicado automaticamente.
