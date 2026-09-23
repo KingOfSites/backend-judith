@@ -1,6 +1,44 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { KnowledgeValidationError } from "./areas.js";
-import { fingerprint, prepareDocument, PreparedDocument, SemanticProvider, vector } from "./core.js";
+import { ChunkPlan, fingerprint, planChunks, prepareDocument, PreparedDocument, SemanticProvider, vector } from "./core.js";
+
+/**
+ * chunksUpdated: text, headings, representation or areas changed (record kept).
+ * chunksRepositioned: only ordinal/line changed because other blocks were inserted, removed or grew.
+ */
+export type ChunkCounts = { chunksCreated: number; chunksUpdated: number; chunksRepositioned: number; chunksUnchanged: number; chunksRemoved: number; areaLinksAdded: number; areaLinksRemoved: number };
+
+/** Applies a chunk plan for one document. Must run inside the swap transaction. */
+async function applyPlan(tx: Prisma.TransactionClient, doc: PreparedDocument, plan: ChunkPlan, counts: ChunkCounts) {
+  if (plan.remove.length) await tx.knowledgeChunk.deleteMany({ where: { id: { in: plan.remove } } });
+  // (sourceId, ordinal) is unique. Blocks kept in relative order can move in one pass (upward moves
+  // from the highest, downward from the lowest); reordered blocks go through negative temporaries.
+  const moves = plan.update.filter(u => u.fields.ordinal !== undefined);
+  const byOld = [...moves].sort((a, b) => a.from - b.from);
+  const ordered = byOld.every((u, i) => i === 0 || u.index > byOld[i - 1]!.index);
+  if (!ordered) for (const [k, u] of moves.entries()) await tx.knowledgeChunk.update({ where: { id: u.id }, data: { ordinal: -(k + 1) } });
+  const sequence = ordered
+    ? [...byOld.filter(u => u.index > u.from).reverse(), ...byOld.filter(u => u.index < u.from)]
+    : moves;
+  const first = new Set(sequence.map(u => u.id));
+  for (const u of [...sequence, ...plan.update.filter(u => !first.has(u.id))]) {
+    if (Object.keys(u.fields).length) await tx.knowledgeChunk.update({ where: { id: u.id }, data: u.fields });
+    if (u.removeAreas.length) await tx.knowledgeChunkArea.deleteMany({ where: { chunkId: u.id, area: { in: u.removeAreas } } });
+    if (u.addAreas.length) await tx.knowledgeChunkArea.createMany({ data: u.addAreas.map(area => ({ chunkId: u.id, area })) });
+    counts.areaLinksAdded += u.addAreas.length; counts.areaLinksRemoved += u.removeAreas.length;
+  }
+  for (const index of plan.create) {
+    const c = doc.chunks[index]!;
+    await tx.knowledgeChunk.create({ data: {
+      sourceId: doc.sourceId, ordinal: index, chapter: c.chapter, subchapter: c.subchapter, line: c.line,
+      content: c.content, embeddingId: c.embeddingId, areas: { create: c.areas.map(area => ({ area })) },
+    } });
+    counts.areaLinksAdded += c.areas.length;
+  }
+  const repositioned = plan.update.filter(u => !u.addAreas.length && !u.removeAreas.length && Object.keys(u.fields).every(k => k === "ordinal" || k === "line")).length;
+  counts.chunksCreated += plan.create.length; counts.chunksUpdated += plan.update.length - repositioned; counts.chunksRepositioned += repositioned;
+  counts.chunksUnchanged += plan.unchanged; counts.chunksRemoved += plan.remove.length;
+}
 
 export const LEASE_MS = 300_000;
 const lease = () => new Date(Date.now() + LEASE_MS);
@@ -53,7 +91,12 @@ export async function processNextJob(db: PrismaClient, provider: SemanticProvide
       const prev = old.get(source.id);
       if (prev?.fingerprint === fingerprint(source) && prev.model === provider.model) unchanged++;
       else {
+        // Full parse recalculates inheritance; embeddings already referenced by this document are not reloaded.
+        const known = prev?.model === provider.model
+          ? new Set((await db.knowledgeChunk.findMany({ where: { sourceId: source.id }, select: { embeddingId: true } })).map(c => c.embeddingId))
+          : new Set<string>();
         const prepared = await prepareDocument(source, provider, {
+          known,
           get: async id => { const e = await db.knowledgeEmbedding.findUnique({ where: { id } }); return e ? vector(e.vector) : null; },
           put: async (id, model, v) => { await db.knowledgeEmbedding.upsert({ where: { id }, create: { id, model, dimensions: v.length, vector: v }, update: {} }); },
         }, heartbeat).catch(error => {
@@ -78,20 +121,21 @@ export async function processNextJob(db: PrismaClient, provider: SemanticProvide
       // Read JSON via Prisma so MySQL and MariaDB use the same decoded shape.
       const current = await tx.fichaConhecimento.findMany({ where: { status: "PUBLICADA" }, orderBy: { id: "asc" } });
       if (current.length !== sources.length || current.some((s, i) => fingerprint(s) !== fingerprint(sources[i]!))) throw new Error("SOURCE_CHANGED");
-      if (removed.length) await tx.knowledgeDocument.deleteMany({ where: { sourceId: { in: removed } } });
+      const counts: ChunkCounts = { chunksCreated: 0, chunksUpdated: 0, chunksRepositioned: 0, chunksUnchanged: 0, chunksRemoved: 0, areaLinksAdded: 0, areaLinksRemoved: 0 };
+      if (removed.length) {
+        counts.chunksRemoved += await tx.knowledgeChunk.count({ where: { sourceId: { in: removed } } });
+        await tx.knowledgeDocument.deleteMany({ where: { sourceId: { in: removed } } });
+      }
       for (const doc of changed) {
         await tx.knowledgeDocument.upsert({ where: { sourceId: doc.sourceId }, create: { sourceId: doc.sourceId, fingerprint: doc.fingerprint, model: doc.model, published: doc.published }, update: { fingerprint: doc.fingerprint, model: doc.model, published: doc.published } });
-        await tx.knowledgeChunk.deleteMany({ where: { sourceId: doc.sourceId } });
-        for (const [ordinal, c] of doc.chunks.entries()) {
-          await tx.knowledgeChunk.create({ data: {
-            sourceId: doc.sourceId, ordinal, chapter: c.chapter, subchapter: c.subchapter, line: c.line,
-            content: c.content, embeddingId: c.embeddingId, areas: { create: c.areas.map(area => ({ area })) },
-          } });
-        }
+        // Diff against rows read inside the transaction, so the plan matches what is committed.
+        const stored = (await tx.knowledgeChunk.findMany({ where: { sourceId: doc.sourceId }, include: { areas: true }, orderBy: { ordinal: "asc" } }))
+          .map(c => ({ ...c, areas: c.areas.map(a => a.area) }));
+        await applyPlan(tx, doc, planChunks(stored, doc.chunks), counts);
       }
       await tx.knowledgeJob.update({ where: { id: job.id }, data: {
         status: "completed", activeKey: null, leaseUntil: null,
-        result: { changed: changed.length, unchanged, removed: removed.length, embeddingsCreated: created, embeddingsReused: reused, chunks: changed.reduce((sum, d) => sum + d.chunks.length, 0) },
+        result: { changed: changed.length, unchanged, removed: removed.length, embeddingsCreated: created, embeddingsReused: reused, chunks: changed.reduce((sum, d) => sum + d.chunks.length, 0), ...counts },
       } });
     }, { isolationLevel: "Serializable", timeout: 60_000, maxWait: 10_000 });
   } catch (error) {

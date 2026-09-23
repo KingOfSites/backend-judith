@@ -22,11 +22,53 @@ test('MariaDB: vetores JSON em LONGTEXT e valores inválidos', () => {
 test('parser: capítulos/subcapítulos sem duplicação, herança e sobrescrita com escopo', () => {
   const text = '## Contratos\n**Área:** consumidor, civil\nIntrodução única\n### A\nTexto A\n### B\n**Área:** autoral\nTexto B\n### C\nTexto C\n## Outro\nTexto D\n';
   const chunks = parseNotebook(text, 'administrativo');
-  assert.deepEqual(chunks.map(c => c.areas), [['consumidor', 'civil'], ['consumidor', 'civil'], ['autoral'], ['consumidor', 'civil'], ['administrativo']]);
+  // Chapter marker holds "dali pra baixo" until another marker; the ### marker stays in its subchapter.
+  assert.deepEqual(chunks.map(c => c.areas), [['consumidor', 'civil'], ['consumidor', 'civil'], ['autoral'], ['consumidor', 'civil'], ['consumidor', 'civil']]);
   assert.equal(chunks.map(c => c.content).join(''), text);
   assert.ok(!chunks[0].content.includes('Texto A'));
   assert.equal(chunks[2].chapter, 'Contratos');
   assert.equal(chunks[2].subchapter, 'B');
+});
+test('parser: marcação de módulo vale para capítulos seguintes até outra marcação (caso Módulo 4 de base-guias)', () => {
+  const text = '## MÓDULO 3\n**Área:** civil, empresarial\nProtesto.\n## MÓDULO 4\n**Área:** empresarial, tributario, administrativo\nIntrodução.\n## Tipos de empresa\nMEI, ME, EPP.\n## Regimes tributários\nSimples.\n### Detalhe\nAnexos.\n## MÓDULO 5\n**Área:** empresarial, administrativo\nEncerramento.\n';
+  const chunks = parseNotebook(text, 'administrativo');
+  assert.deepEqual(chunks.map(c => [c.chapter, c.subchapter, c.areas.join(',')]), [
+    ['MÓDULO 3', null, 'civil,empresarial'],
+    ['MÓDULO 4', null, 'empresarial,tributario,administrativo'],
+    ['Tipos de empresa', null, 'empresarial,tributario,administrativo'],
+    ['Regimes tributários', null, 'empresarial,tributario,administrativo'],
+    ['Regimes tributários', 'Detalhe', 'empresarial,tributario,administrativo'],
+    ['MÓDULO 5', null, 'empresarial,administrativo'],
+  ]);
+  // Without any marker the notebook field stays the default everywhere.
+  assert.ok(parseNotebook('## A\nx\n## B\ny\n', 'eca').every(c => c.areas.join() === 'eca'));
+  // An explicit return to the default is written as another marker.
+  assert.deepEqual(parseNotebook('## A\n**Área:** lgpd\nx\n## B\n**Área:** eca\ny\n', 'eca').map(c => c.areas.join()), ['lgpd', 'eca']);
+});
+test('parser: blocos só com títulos, separadores ou marcações não viram chunks', () => {
+  const text = '# Título do caderno\n\n**Área:** consumidor\n\n---\n\n## Módulo\n**Área:** autoral\n\n***\n### Sub\nConteúdo real.\n\n---\n## Vazio\n## Final\n- item\n';
+  const chunks = parseNotebook(text, 'consumidor');
+  assert.deepEqual(chunks.map(c => [c.chapter, c.subchapter, c.areas.join()]), [['Módulo', 'Sub', 'autoral'], ['Final', null, 'autoral']]);
+  // Titles stay available as context of the blocks with content; separators after content are kept.
+  assert.equal(chunks[0].content, '### Sub\nConteúdo real.\n\n---\n');
+  assert.ok(chunks.every(c => c.semanticText.trim()));
+  // Substantive text is never dropped: every non-structural line is in exactly one chunk.
+  const substantive = text.split('\n').filter(l => l.trim() && !/^#|^(-{3,}|\*{3,})$|^\*\*Área/.test(l));
+  for (const l of substantive) assert.equal(chunks.filter(c => c.content.split('\n').includes(l)).length, 1, l);
+  // Code and lists count as content.
+  assert.equal(parseNotebook('## A\n```\n---\n```\n', 'civil').length, 1);
+  assert.equal(parseNotebook('## A\n**Negrito**\n', 'civil').length, 1);
+});
+test('parser: todos os erros de área com linha e capítulo', () => {
+  assert.throws(() => parseNotebook('## A\n**Área:** tributário\nx\n## B\n**Área:** penal\ny\n### C\n**Área:** civil, empresarial-tributario\nz\n', 'civil, financeiro'), e => {
+    assert.deepEqual(e.issues.map(i => [i.origem, i.valor, i.linha, i.capitulo]), [
+      ['metadados', 'financeiro', undefined, undefined],
+      ['markdown', 'tributário', 2, 'A'],
+      ['markdown', 'penal', 5, 'B'],
+      ['markdown', 'empresarial-tributario', 8, 'B'],
+    ]);
+    return true;
+  });
 });
 test('parser: marcação após prosa só afeta os blocos seguintes', () => {
   const chunks = parseNotebook('## A\nantes\n**Área:** autoral\ndepois\n### B\nsub\n', 'civil');
