@@ -1,5 +1,17 @@
 # Publicação da base de conhecimento — 23/09/2026
 
+## Estado atual — embeddings locais, 19:16 UTC
+
+**Deploy e busca semântica real validados com conteúdo sintético isolado.** A pendência anterior de saldo OpenAI foi eliminada do caminho de embeddings, substituído por modelo local gratuito. Nenhum crédito de embeddings foi comprado, serviço contratado ou plano da VPS ampliado.
+
+- Release: `3c1e265171f799a59af4692597a01d654aaffd4b`, branch `release-local-3c1e265`. Backend: `sha256:8a6782ff59728c9c9eb802ba151e0796e6817053dfbdf274d7b9a8442120daed`.
+- Serviço local: `judith-embeddings:local-3c1e265`, imagem `sha256:75ac08ff63f56c2c614046c73a8af81c839149c2495193f223cf3496729c86ee`, rede Docker interna sem porta publicada, limite de 1 vCPU/3 GiB. Modelo E5 multilingual large INT8, 1024 dimensões, pesos e tokenizador fixados. Saúde local/pública 200 e zero reinícios após verificação/limpeza.
+- `npm test`: build, 24 testes e 28 cenários aprovados. MariaDB descartável, dois testes de tokenização, qualidade com vetores reais, filtros de área, concorrência, índice incremental e indisponibilidade real aprovados. Avaliação sintética: 17/19 top-1, 19/19 top-5; consultas completas por `civil` e `lgpd` comprovadas após deploy.
+- Job real do cliente `cmuehhfj400003yevxb9ukfjb` completed apesar das revisões inválidas. Nenhuma das 17 fichas foi alterada/publicada; hashes das fichas e prompts preservados. A base de produção continua sem publicados e sem chunks; a comprovação de recuperação usou exclusivamente banco descartável com a imagem publicada e o serviço local de produção.
+- Evidências, recursos, qualidade, limites e rollback sem reativação de embeddings pagos: [local-embeddings.md](local-embeddings.md). A conferência visual do Admin continua separada e não foi objeto de alteração funcional.
+
+As seções abaixo são o histórico das implantações anteriores.
+
 ## Atualização do escopo — b22d764 (18:30 UTC)
 
 **Deploy concluído; busca semântica real pendente de créditos de embeddings.** As seções seguintes registram o deploy inicial e seu estado histórico.

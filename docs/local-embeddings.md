@@ -35,3 +35,18 @@ O arquivo `services/embeddings/compose.yml` deve ser mesclado à configuração 
 5. `services/embeddings/benchmark.py`: tempos seriais, quatro clientes concorrentes, normalização e rejeição de entradas inválidas, sem contato com provedores.
 
 Os cadernos do cliente não são alterados nem publicados nesses testes. Exemplos sintéticos são apenas fixtures de recuperação, não orientação jurídica. Os resultados medem um conjunto pequeno e não substituem avaliação editorial futura em cadernos autorizados.
+
+## Resultado na VPS — 23/09/2026
+
+- Release em execução: `3c1e265171f799a59af4692597a01d654aaffd4b`. Backend e serviço de embeddings saudáveis após implantação; zero reinícios e OOM nos contêineres observados dos bots.
+- Qualidade no MariaDB real descartável: 17/19 top-1 (89,5%) e 19/19 top-5. Indexação inicial: 25 documentos, 20 embeddings novos, cinco reutilizados, cerca de 4,28 s. Repetição integral sem novos embeddings; testes de metadados, despublicação, exclusão e conteúdo obsoleto aprovados.
+- Duas consultas completas antes e depois do deploy, com classificador Anthropic existente: `civil` retornou inventário/herança em primeiro entre cinco chunks; `lgpd` retornou eliminação de dados em primeiro entre três. Depois do deploy usou-se a imagem publicada do backend e o serviço de modelo em produção, mantendo o banco sintético separado. Job isolado final `cmuehhofr0000opvyp2s7prn0`, completed.
+- Falha real por parada do serviço: job `cmuehcg4p00006aijbxr3uyhf`, failed/LOCAL_EMBEDDING_UNAVAILABLE; documentos e chunks anteriores idênticos e fonte editada excluída da busca. Nenhum fallback pago.
+- Embedding curto serial: mediana 85,05 ms, máximo 107,49 ms em dez chamadas. Quatro clientes concorrentes: mediana 331,73 ms, máximo 372,36 ms em 12 chamadas. Enquanto uma passagem de 12 janelas era processada, dez consultas ficaram entre 76,92 ms e 3,69 s. Não extrapolar esses números para tráfego de produção maior.
+- Saúde do backend durante a avaliação: 120/120 HTTP 200; mediana 7 ms, p95 22,67 ms, máximo 472,97 ms. Isso comprova disponibilidade observada, não um ensaio de conversas reais em WhatsApp.
+- Memória final do modelo: aproximadamente 1,1 GiB; pico observado 1.223.307.264 bytes (cerca de 1,14 GiB). Limites: 1 vCPU e 3 GiB. Imagem reportada pelo Docker: 592.914.543 bytes. Após limpeza: 25.521 MiB de RAM disponíveis e 331 GiB livres; builds e imagens de rollback também ocupam disco.
+- SHA-256 dos pesos ONNX: `46f5d13dba7ade0160c67d346087d870162950882be17ff9319f873cf6fedff1`; tokenizer: `62c24cdc13d4c9952d63718d6c9fa4c287974249e16b7ade6d5a85e7bbb75626`.
+- Job real no banco do cliente `cmuehhfj400003yevxb9ukfjb`: completed, zero publicados a processar, apesar de 12 revisões inválidas. As 17 fichas seguem EM_REVISAO e os hashes de fichas/prompts são idênticos antes/depois. Validação de área inválida continua em 422.
+- Banco, contêineres e rede de teste, imagens dos modelos descartados e arquivos temporários com credenciais foram removidos. Evidências e rollback estão em `/opt/judith-backend/backups/local-embeddings`, com acesso restrito. Nenhuma credencial está neste documento.
+
+O rollback usa `rollback.sh` nessa pasta e a imagem `judith-backend-rollback:pre-local-embeddings`. Como a versão anterior ainda continha embeddings pagos, o rollback desabilita o worker e deixa `OPENAI_API_KEY` vazia no override, impedindo cobrança: a indexação fica indisponível até restaurar a versão local. Não reativar o provedor pago como recuperação automática. Não houve migration nem contratação de serviço ou aumento de plano.
