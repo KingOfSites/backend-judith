@@ -1,5 +1,20 @@
 # Publicação da base de conhecimento — 23/09/2026
 
+## Atualização do escopo — b22d764 (18:30 UTC)
+
+**Deploy concluído; busca semântica real pendente de créditos de embeddings.** As seções seguintes registram o deploy inicial e seu estado histórico.
+
+- Commit em execução: `b22d7648319d1a608110622d9600b075a3eea693`, branch da VPS `release-scope-b22d764`. Imagem `judith-knowledge:b22d764`, digest `sha256:b93e6cc504e2e3722468077900383cf5a2585fc2b2512e1743371e991f0dd727`.
+- Confirmados: imagem do contêiner igual à imagem construída, label de revisão igual ao commit e ambos os filtros `PUBLICADA` presentes no indexador compilado. Health local e público 200 (`status=ok`), contêiner running, zero reinícios após os testes e limpeza.
+- Acesso recuperado pelo mesmo método do deploy anterior: SSH com Paramiko e credencial local existente, sem reproduzir seu valor. Não foi necessário console Hostinger nem alterar credenciais.
+- Rollback preservado: imagem `judith-backend-rollback:pre-b22d764` (digest `sha256:0ec77cb03c3042175d01e1647350952c5eea778ab206923b0bd2ab49e4a829b3`), configuração e revisão anteriores em `/opt/judith-backend/backups/scope-b22d764`. Script restrito `rollback.sh` nessa pasta restaura imagem e checkout anteriores. Nenhuma migration foi necessária.
+- `npm test` do commit: build, 24 testes e 28 cenários aprovados. Na VPS, `test/knowledge-mysql.cjs` atualizado passou em MariaDB 10.11 descartável: revisão inválida não bloqueia publicado válido, fonte legada preservada, 117 chunks, filtro por área, idempotência, despublicação, rollback real, concorrência e exclusão. Nesse teste de integração os vetores são simulados; ele não comprova busca semântica real.
+- Job real de produção `cmuefuehr0000qfgj9vsuenqi`, requestKey `scope-b22d764-production-check`: **completed**, total/processados/chunks = 0, sem erros, apesar de 12 cadernos em revisão com áreas inválidas. As 17 fichas continuam em revisão, sem publicações. Hashes de todas as fichas e prompts idênticos antes/depois. Validação autenticada de área inválida continua retornando 422.
+- Teste com o provedor real em banco descartável `judith_knowledge_test`, com dois publicados sintéticos (`civil` e `lgpd`) e uma revisão inválida: job `cmuefut5f0002b21sa62inyad`, total 2, failed/INDEXING_FAILED. Erro original capturado: HTTP **429**, código **credit_balance_exhausted**, tipo **insufficient_quota**, mensagem “You have no credits remaining. Add credits to continue using the API”. Nenhum chunk parcial foi publicado; revisão legada permaneceu intacta. Claude classificou a pergunta sintética como `civil`, mas indexação e consulta semântica com filtro por área não foram concluídas por falta de embeddings.
+- Recibos sem credenciais: `mysql-test.txt`, `deployment.txt`, `production-check.json` e `real-search.json` na pasta de backup acima. Contêineres/rede/banco descartáveis e arquivos temporários com credenciais foram removidos. Nenhum conteúdo sintético entrou no banco do cliente.
+
+Pendência: repor créditos ou disponibilizar acesso válido ao provedor de embeddings e repetir o teste isolado de indexação e consulta por área. Deploy saudável não equivale a busca validada. Conferência visual do Admin permanece pendente de navegador conectado; nenhuma mudança funcional adicional foi feita no Admin.
+
 Publicação e migração autorizadas explicitamente pelo usuário após a entrega inicial sem deploy.
 
 ## Ambiente e versão
