@@ -1,0 +1,23 @@
+# Merge with the deployment's compose files. No host port or runtime Internet access.
+services:
+  embeddings:
+    image: judith-embeddings:e5-large-int8-v1
+    restart: unless-stopped
+    cpus: 1.0
+    mem_limit: 3g
+    memswap_limit: 3g
+    pids_limit: 64
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [knowledge-local]
+  backend:
+    environment:
+      LOCAL_EMBEDDINGS_URL: http://embeddings:8080
+    networks: [default, knowledge-local]
+    depends_on:
+      embeddings:
+        condition: service_healthy
+networks:
+  knowledge-local:
+    internal: true

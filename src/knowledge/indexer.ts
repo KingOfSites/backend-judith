@@ -6,7 +6,7 @@ export const LEASE_MS = 300_000;
 const lease = () => new Date(Date.now() + LEASE_MS);
 export function publicError(error: unknown): Prisma.InputJsonValue {
   if (error instanceof KnowledgeValidationError) return { code: "VALIDATION", issues: JSON.parse(JSON.stringify(error.issues)) };
-  const known = ["SOURCE_CHANGED", "LEASE_LOST", "OPENAI_API_KEY_REQUIRED", "INVALID_VECTOR", "VECTOR_DIMENSION_MISMATCH"];
+  const known = ["SOURCE_CHANGED", "LEASE_LOST", "LOCAL_EMBEDDING_UNAVAILABLE", "EMBEDDING_MODEL_MISMATCH", "INVALID_VECTOR", "VECTOR_DIMENSION_MISMATCH"];
   const code = error instanceof Error && known.includes(error.message) ? error.message : "INDEXING_FAILED";
   // Never persist raw SDK/Prisma messages: they may contain connection details or content.
   return { code, mensagem: "Indexação não concluída; corrija a causa e solicite uma nova execução." };

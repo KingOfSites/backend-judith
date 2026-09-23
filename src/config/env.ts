@@ -18,6 +18,7 @@ const schema = z.object({
   EVOLUTION_INSTANCE: z.string().min(1),
 
   OPENAI_API_KEY: z.string().optional(),
+  LOCAL_EMBEDDINGS_URL: z.string().url().default("http://embeddings:8080"),
   KNOWLEDGE_WORKER_ENABLED: z.enum(["true", "false"]).default("false").transform(v => v === "true"),
   JUDITH_DOMAIN: z.string().default("judith.com.br"),
   // Sobrescreve a URL dos termos/privacidade (útil em dev com ngrok).

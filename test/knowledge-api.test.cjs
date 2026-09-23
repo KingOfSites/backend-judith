@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const base = path.resolve(__dirname, '../dist');
 const inject = (file, exports) => { require.cache[require.resolve(path.join(base, file))] = { exports }; };
-const env = { INTERNAL_API_KEY: 'test-only-key', KNOWLEDGE_WORKER_ENABLED: true, ANTHROPIC_API_KEY: 'test', OPENAI_API_KEY: 'test', JUDITH_MODEL_HAIKU: 'test' };
+const env = { INTERNAL_API_KEY: 'test-only-key', KNOWLEDGE_WORKER_ENABLED: true, ANTHROPIC_API_KEY: 'test', LOCAL_EMBEDDINGS_URL: 'http://embeddings:8080', JUDITH_MODEL_HAIKU: 'test' };
 inject('config/env.js', { env });
 const jobs = [];
 const prisma = {
@@ -75,17 +75,35 @@ test('repositório: SQL parametrizado filtra área/publicação; fonte editada o
   current = null; assert.equal((await loadCandidates('civil', 'test')).length, 0);
 });
 
-test('provedor: classificação estrita; embeddings completos sem truncar UTF-8', async () => {
+test('provedor: classificação estrita e embeddings locais completos, sem fallback pago', async () => {
   let answer = 'civil'; const inputs = [];
   require.cache[require.resolve('@anthropic-ai/sdk')] = { exports: class { messages = { create: async () => ({ content: [{ type: 'text', text: answer }] }) }; } };
-  require.cache[require.resolve('openai')] = { exports: class { embeddings = { create: async r => { inputs.push(r.input); assert.equal(r.model, 'text-embedding-3-small'); return { data: [{ embedding: new Array(1536).fill(0).map((_, i) => i === 0 ? 1 : 0) }] }; } }; } };
-  const { createProvider, embeddingParts } = require('../dist/knowledge/provider.js');
+  require.cache[require.resolve('openai')] = { exports: class { constructor() { assert.fail('Paid embedding provider constructed'); } } };
+  const { createProvider, LOCAL_EMBEDDING_MODEL } = require('../dist/knowledge/provider.js');
   const provider = createProvider();
   assert.equal(await provider.classify('pergunta'), 'civil');
   answer = 'nenhuma'; assert.equal(await provider.classify('?'), null);
-  answer = 'financeiro'; await assert.rejects(provider.classify('?'), /inválida/);
+  answer = 'financeiro'; await assert.rejects(provider.classify('?'));
   answer = 'civil, consumidor'; await assert.rejects(provider.classify('?'), /CLASSIFICATION_INVALID/);
-  const text = 'Ação e proteção 🦉 '.repeat(12000);
-  const parts = embeddingParts(text); assert.equal(parts.join(''), text); assert.ok(parts.every(p => Buffer.byteLength(p, 'utf8') <= 6000));
-  assert.equal((await provider.embed(text)).length, 1536); assert.equal(inputs.join(''), text);
+  const originalFetch = global.fetch;
+  let response = { model: LOCAL_EMBEDDING_MODEL, vector: Array.from({length:1024},(_,i)=>i===0?1:0) };
+  global.fetch = async (url, options) => {
+    assert.equal(String(url), 'http://embeddings:8080/embed');
+    assert.equal(options.redirect, 'error'); inputs.push(JSON.parse(options.body));
+    return { ok: true, json: async () => response };
+  };
+  try {
+    const text = 'Ação e proteção 🦉 '.repeat(12000);
+    assert.equal((await provider.embed(text, 'passage')).length, 1024);
+    assert.deepEqual(inputs[0], {text, kind:'passage'});
+    await provider.embed('Pergunta', 'query'); assert.equal(inputs[1].kind, 'query');
+    response = { ...response, model: 'wrong' };
+    await assert.rejects(provider.embed('texto'), /EMBEDDING_MODEL_MISMATCH/);
+    response = { model: LOCAL_EMBEDDING_MODEL, vector: [1,0] };
+    await assert.rejects(provider.embed('texto'), /VECTOR_DIMENSION_MISMATCH/);
+    global.fetch = async () => ({ ok: false });
+    await assert.rejects(provider.embed('texto'), /LOCAL_EMBEDDING_UNAVAILABLE/);
+    global.fetch = async () => { throw new Error('offline'); };
+    await assert.rejects(provider.embed('texto'), /LOCAL_EMBEDDING_UNAVAILABLE/);
+  } finally { global.fetch = originalFetch; }
 });
