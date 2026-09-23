@@ -15,39 +15,6 @@ function fresh(file) {
   return require(id);
 }
 
-test('fichas: filtro de publicação, fontes, cache, edição e despublicação', async (t) => {
-  let now = 0;
-  t.mock.method(Date, 'now', () => now);
-  let rows = [{ titulo: 'Ficha teste', area: 'teste', fontes: ['Fonte teste', 42], conteudo: 'Conteúdo inicial' }];
-  let reads = 0;
-  t.mock.method(prisma.fichaConhecimento, 'findMany', async (query) => {
-    reads++;
-    assert.deepEqual(query.where, { status: 'PUBLICADA' });
-    assert.deepEqual(query.orderBy, [{ ordem: 'asc' }, { titulo: 'asc' }, { id: 'asc' }]);
-    return rows;
-  });
-  const { getBaseConhecimento } = fresh('judith/conhecimento.js');
-  const initial = await getBaseConhecimento();
-  assert.match(initial, /Conteúdo inicial/);
-  assert.match(initial, /Fonte teste/);
-  assert.doesNotMatch(initial, /42/);
-  rows = [{ ...rows[0], conteudo: 'Conteúdo editado' }];
-  now = 59_999;
-  assert.equal(await getBaseConhecimento(), initial);
-  assert.equal(reads, 1);
-  now = 60_000;
-  assert.match(await getBaseConhecimento(), /Conteúdo editado/);
-  rows = [];
-  now = 120_000;
-  assert.equal(await getBaseConhecimento(), '');
-  assert.equal(reads, 3);
-});
-
-test('fichas: não usa conteúdo desatualizado quando a consulta falha', async (t) => {
-  t.mock.method(prisma.fichaConhecimento, 'findMany', async () => { throw new Error('banco indisponível'); });
-  await assert.rejects(fresh('judith/conhecimento.js').getBaseConhecimento(), /banco indisponível/);
-});
-
 test('prompt: rejeita ausente, curto e placeholder, relê edição após 60s', async (t) => {
   let now = 0;
   t.mock.method(Date, 'now', () => now);
@@ -67,7 +34,7 @@ test('prompt: rejeita ausente, curto e placeholder, relê edição após 60s', a
   assert.equal(await api.getPromptVersao(), 'teste2');
 });
 
-test('respostas incluem fichas em dúvida, redação e análise antes do perfil', async (t) => {
+test('respostas consultam base somente em duvida e preservam prompts/perfil', async (t) => {
   const envId = require.resolve(path.join(base, 'config/env.js'));
   const sdkId = require.resolve('@anthropic-ai/sdk');
   const oldEnv = require.cache[envId];
@@ -88,14 +55,16 @@ test('respostas incluem fichas em dúvida, redação e análise antes do perfil'
   t.mock.method(prisma.promptConfig, 'findUnique', async () => ({ secaoA: 'A'.repeat(1000), secaoB: 'B'.repeat(1000), secaoC: 'C'.repeat(1000), versao: 'teste' }));
   t.mock.method(prisma.fichaConhecimento, 'findMany', async () => [{ titulo: 'Referência teste', area: 'teste', fontes: [], conteudo: 'Material de referência teste' }]);
   fresh('judith/prompts/principal.js');
-  fresh('judith/conhecimento.js');
+  let searches = 0;
+  require.cache[require.resolve(path.join(base, 'judith/conhecimento.js'))] = { exports: { getBaseConhecimento: async question => { searches++; assert.equal(question, 'pergunta simulada'); return 'Material de referência teste'; } } };
   const { askJudith } = fresh('judith/claude.js');
   for (const funcao of ['duvida', 'redacao', 'analise']) {
     const result = await askJudith({ tier: 'HAIKU', funcao, user: null, history: [], userMessage: 'pergunta simulada' });
     assert.equal(result.text, 'resposta simulada');
     assert.equal(request.system[0].text, 'A'.repeat(1000));
     if (funcao !== 'duvida') assert.equal(request.system[1].text, (funcao === 'redacao' ? 'B' : 'C').repeat(1000));
-    assert.match(request.system.at(-2).text, /Material de referência teste/);
+    assert.equal(request.system.some(b => b.text.includes('Material de referência teste')), funcao === 'duvida');
+    assert.equal(searches, 1);
     assert.deepEqual(request.system.at(-2).cache_control, { type: 'ephemeral' });
     assert.match(request.system.at(-1).text, /Perfil do usuário/);
   }

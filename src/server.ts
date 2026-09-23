@@ -9,6 +9,8 @@ import { transcreverAudio } from "./judith/whisper.js";
 import { registerLegalRoutes } from "./routes/legal.js";
 import { processarMensagemBot } from "./bot/handler.js";
 import { getPromptVersao } from "./judith/prompts/principal.js";
+import { registerKnowledgeRoutes } from "./routes/knowledge.js";
+import { registerKnowledgeWorker } from "./knowledge/worker.js";
 
 const app = Fastify({
   logger: {
@@ -23,6 +25,8 @@ const app = Fastify({
 
 app.register(sensible);
 registerLegalRoutes(app);
+registerKnowledgeRoutes(app);
+registerKnowledgeWorker(app);
 
 app.get("/health", async () => ({ status: "ok", versao: await getPromptVersao() }));
 

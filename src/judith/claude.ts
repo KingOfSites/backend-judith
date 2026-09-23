@@ -54,7 +54,7 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   // System em blocos, na ordem estático → dinâmico (spec §1/§7):
   //   1. Seção A (sempre, cacheada)
   //   2. Seção B (redação) ou C (análise), sob demanda, também cacheada
-  //   3. Fichas publicadas no admin, cacheadas
+  //   3. Até cinco chunks publicados, somente na função duvida
   //   4. Perfil enxuto do usuário — muda por usuário, fica fora do cache
   const system: Anthropic.TextBlockParam[] = [
     {
@@ -68,7 +68,7 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   } else if (input.funcao === "analise") {
     system.push({ type: "text", text: await getPromptAnalise(), cache_control: { type: "ephemeral" } });
   }
-  const conhecimento = await getBaseConhecimento();
+  const conhecimento = input.funcao === "duvida" ? await getBaseConhecimento(input.userMessage) : "";
   if (conhecimento) {
     system.push({ type: "text", text: conhecimento, cache_control: { type: "ephemeral" } });
   }

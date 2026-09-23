@@ -6,13 +6,14 @@ caracteres e não pode conter o placeholder de migração.
 
 As fichas são editadas em `/fichas`. Somente fichas `PUBLICADA`, com conteúdo,
 entram no contexto da JUDITH jurídica. Rascunhos e fichas em revisão não entram.
-O contexto inclui título, área, fontes e conteúdo, em ordem estável. A base
-publicada completa é enviada como referência, usando o cache de prompt do modelo.
-O volume de fichas publicadas contribui para o tamanho e o custo do contexto.
+Somente a função `duvida` consulta a base. O contexto inclui até cinco chunks
+integrais, filtrados por área antes da similaridade semântica, com título e fontes.
+Indexação, autenticação do Admin e migração estão em [Base de conhecimento](../docs/knowledge-base.md).
 
-Prompt e fichas são consultados novamente após 60 segundos de cache. Depois do
-deploy desta integração, editar, publicar, despublicar ou excluir pelo admin não
-exige reiniciar o bot. Isso não altera as personas dos bots de clientes.
+O prompt mantém seu cache de 60 segundos. A base usa índice persistido e verifica
+publicação e versão atuais da fonte; alterações exigem reindexação para aparecer,
+sem reiniciar o bot. Despublicações/exclusões deixam de ser elegíveis na busca.
+Isso não altera as personas dos bots de clientes.
 
 Os arquivos confidenciais `JUDITH-*.md` continuam fora do Git. A cópia na VPS é
 referência da migração; o backend atualizado não depende dela para responder.

@@ -72,6 +72,7 @@ async function main() {
   replace(base + 'evolution/client.js', { sendTyping: async () => {}, sendText: async (number, text) => { state.sends.push({ number, text }); } });
   replace(base + 'evolution/media.js', { downloadMediaBase64: deny });
   replace(base + 'judith/whisper.js', { transcreverAudio: deny });
+  replace(base + 'judith/conhecimento.js', { getBaseConhecimento: async () => 'PUBLISHED_KNOWLEDGE_TEST' });
   replace(base + 'bot/handler.js', { processarMensagemBot: deny });
   const Fastify = require('fastify');
   let app;
@@ -99,7 +100,7 @@ async function main() {
     assert.equal(state.calls[0].system[0].text, row.secaoA);
     if (section) assert.equal(state.calls[0].system[1].text, section);
     assert.equal(state.calls[0].model, model);
-    assert.ok(state.calls[0].system.some(block => block.text.includes('PUBLISHED_KNOWLEDGE_TEST')));
+    assert.equal(state.calls[0].system.some(block => block.text.includes('PUBLISHED_KNOWLEDGE_TEST')), kind === 'DUVIDA');
     assert.equal(state.sends[0].text, 'SIMULATED RESPONSE');
     assert.equal(state.messages.length, 2);
     assert.equal(state.usages[0].kind, kind);
@@ -177,6 +178,6 @@ async function main() {
   assert.equal(state.sends.filter(x => x.text === 'SIMULATED RESPONSE').length, 1);
   passed.push('Concurrent responses cannot spend the same courtesy twice');
   await app.close();
-  console.log(JSON.stringify({ passed, findings, isolation: 'Only initial prompt SELECT used real database; all writes, AI, checkout and WhatsApp simulated; network blocked afterwards' }, null, 2));
+  console.log(JSON.stringify({ passed, findings, isolation: process.env.JUDITH_TEST_READ_DB === '1' ? 'Optional initial read-only prompt SELECT; all writes and APIs mocked' : 'All database access, AI, checkout and WhatsApp mocked; network blocked' }, null, 2));
 }
 main().then(() => process.exit(0)).catch(e => { console.error(e.stack); process.exit(1); });

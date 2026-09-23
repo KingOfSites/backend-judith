@@ -470,7 +470,7 @@ enum FichaStatus {
 }
 
 // Fichas temáticas da base de conhecimento jurídico (antes eram .md soltos
-// em knowledge/). Ainda não consumidas pelo bot em runtime.
+// em knowledge/). Fonte compartilhada do índice consumido na função duvida.
 model FichaConhecimento {
   id        String      @id @default(cuid())
   slug      String      @unique
@@ -478,13 +478,68 @@ model FichaConhecimento {
   area      String
   status    FichaStatus @default(RASCUNHO)
   fontes    Json        @default("[]")
-  conteudo  String      @db.Text
+  conteudo  String      @db.LongText
   ordem     Int         @default(0)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
   @@index([status])
   @@index([area])
+}
+
+// Índice derivado: sem FK para a fonte compartilhada, não altera seus escritores.
+model KnowledgeDocument {
+  sourceId    String @id
+  fingerprint String @db.Char(64)
+  model       String @db.VarChar(191)
+  published   Boolean
+  chunks      KnowledgeChunk[]
+}
+
+model KnowledgeChunk {
+  id          String @id @default(cuid())
+  sourceId    String
+  document    KnowledgeDocument @relation(fields: [sourceId], references: [sourceId], onDelete: Cascade)
+  ordinal     Int
+  chapter     String @db.LongText
+  subchapter  String? @db.LongText
+  line        Int
+  content     String @db.LongText
+  embeddingId String @db.Char(64)
+  embedding   KnowledgeEmbedding @relation(fields: [embeddingId], references: [id])
+  areas       KnowledgeChunkArea[]
+  @@unique([sourceId, ordinal])
+}
+
+model KnowledgeChunkArea {
+  chunkId String
+  area    String @db.VarChar(32)
+  chunk   KnowledgeChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+  @@id([chunkId, area])
+  @@index([area, chunkId])
+}
+
+model KnowledgeEmbedding {
+  id         String @id @db.Char(64)
+  model      String @db.VarChar(191)
+  dimensions Int
+  vector     Json
+  chunks     KnowledgeChunk[]
+}
+
+model KnowledgeJob {
+  id          String @id @default(cuid())
+  requestKey  String @unique @db.VarChar(191)
+  activeKey   String? @unique @db.VarChar(32)
+  status      String @default("pending") @db.VarChar(16)
+  total       Int @default(0)
+  processed   Int @default(0)
+  result      Json?
+  errors      Json?
+  leaseUntil  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([status, createdAt])
 }
 
 // Auditoria de uso por plano (limites da Seção 7.2 do briefing v6).
