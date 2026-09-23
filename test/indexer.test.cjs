@@ -22,7 +22,7 @@ function database() {
       updateMany: async ({ where, data }) => { const rows = state.jobs.filter(j => match(j, where)); rows.forEach(j => Object.assign(j, data)); return { count: rows.length }; },
       update: async ({ where, data }) => { const j = state.jobs.find(j => match(j, where)); Object.assign(j, data); return j; },
     },
-    fichaConhecimento: { findMany: async () => structuredClone(state.sources) },
+    fichaConhecimento: { findMany: async ({ where } = {}) => structuredClone(state.sources.filter(s => !where || match(s, where))) },
     knowledgeDocument: {
       findMany: async () => structuredClone(state.docs),
       upsert: async ({ where, create, update }) => { const d = state.docs.find(d => d.sourceId === where.sourceId); if (d) Object.assign(d, update); else state.docs.push(create); },
@@ -56,7 +56,7 @@ test('indexador: criação, repetição idempotente, metadados, área, conteúdo
   assert.deepEqual(state.chunks[0].areas.create, [{ area: 'consumidor' }]);
   state.sources[0].fontes = ['nova']; await run(); assert.equal(calls, 2);
   state.sources[0].conteudo += ' Mudou.'; await run(); assert.equal(calls, 3);
-  state.sources[0].status = 'RASCUNHO'; await run(); assert.equal(state.docs[0].published, false); assert.equal(calls, 3);
+  state.sources[0].status = 'RASCUNHO'; await run(); assert.equal(state.docs.length, 0); assert.equal(state.chunks.length, 0); assert.equal(calls, 3);
   state.sources[0].status = 'PUBLICADA'; await run(); assert.equal(state.docs[0].published, true); assert.equal(calls, 3);
   state.sources = []; await run(); assert.equal(state.docs.length, 0); assert.equal(state.chunks.length, 0); assert.equal(state.jobs.at(-1).result.removed, 1);
 });
@@ -96,6 +96,41 @@ test('indexador: worker expirado, fencing e validação antes de indexar', async
   await requestIndex(db, 'fenced'); await processNextJob(db, { model: 'test', embed: async () => [1, 0] });
   assert.equal(state.jobs.at(-1).errors.code, 'LEASE_LOST'); assert.equal(state.docs.length, 0);
 });
+test('indexador: legados inválidos em revisão/rascunho não bloqueiam publicado válido', async () => {
+  const { db, state } = database();
+  for (const status of ['EM_REVISAO', 'RASCUNHO']) {
+    state.sources.push({ ...state.sources[0], id: status, slug: status, status, area: 'civil-contratual', conteudo: '## Legado\nÁrea: invalida\nConteúdo legado.' });
+    state.docs.push({ sourceId: status, published: true, fingerprint: 'obsolete', model: 'test' });
+    state.chunks.push({ sourceId: status, content: 'obsolete' });
+  }
+  const before = structuredClone(state.sources);
+  let calls = 0;
+  await requestIndex(db, 'legacy');
+  await processNextJob(db, { model: 'test', embed: async () => { calls++; return [1, 0]; } });
+  assert.equal(state.jobs[0].status, 'completed');
+  assert.equal(state.jobs[0].total, 1);
+  assert.equal(state.jobs[0].processed, 1);
+  assert.equal(state.jobs[0].result.removed, 2);
+  assert.equal(calls, 2);
+  assert.deepEqual(state.docs.map(d => d.sourceId), ['a']);
+  assert.equal(state.chunks.length, 2);
+  assert.ok(state.chunks.every(c => c.sourceId === 'a'));
+  assert.deepEqual(state.sources, before);
+});
+
+test('indexador: publicação ou despublicação durante preparação aborta swap', async () => {
+  for (const publish of [true, false]) {
+    const { db, state } = database();
+    state.sources.push({ ...state.sources[0], id: 'review', slug: 'review', status: 'EM_REVISAO' });
+    state.beforeSwap = () => { state.sources[publish ? 1 : 0].status = publish ? 'PUBLICADA' : 'RASCUNHO'; };
+    await requestIndex(db, 'publication-race');
+    await processNextJob(db, { model: 'test', embed: async () => [1, 0] });
+    assert.equal(state.jobs[0].errors.code, 'SOURCE_CHANGED');
+    assert.equal(state.docs.length, 0);
+    assert.equal(state.chunks.length, 0);
+  }
+});
+
 test('indexador: dois workers não processam o mesmo job', async () => {
   const { db, state } = database(); let calls = 0;
   await requestIndex(db, 'concurrent');

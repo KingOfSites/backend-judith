@@ -42,7 +42,8 @@ export async function processNextJob(db: PrismaClient, provider: SemanticProvide
   const timer = setInterval(() => { void heartbeat().catch(() => {}); }, 30_000);
   timer.unref();
   try {
-    const sources = await db.fichaConhecimento.findMany({ orderBy: { id: "asc" } });
+    // Legacy drafts/reviews are not index sources. Admin save validation remains mandatory.
+    const sources = await db.fichaConhecimento.findMany({ where: { status: "PUBLICADA" }, orderBy: { id: "asc" } });
     const previous = await db.knowledgeDocument.findMany();
     const old = new Map(previous.map(d => [d.sourceId, d]));
     const changed: PreparedDocument[] = [];
@@ -75,7 +76,7 @@ export async function processNextJob(db: PrismaClient, provider: SemanticProvide
       // Shared Admin writes wait only during this short swap, never during API calls.
       await tx.$queryRaw`SELECT id FROM FichaConhecimento ORDER BY id FOR UPDATE`;
       // Read JSON via Prisma so MySQL and MariaDB use the same decoded shape.
-      const current = await tx.fichaConhecimento.findMany({ orderBy: { id: "asc" } });
+      const current = await tx.fichaConhecimento.findMany({ where: { status: "PUBLICADA" }, orderBy: { id: "asc" } });
       if (current.length !== sources.length || current.some((s, i) => fingerprint(s) !== fingerprint(sources[i]!))) throw new Error("SOURCE_CHANGED");
       if (removed.length) await tx.knowledgeDocument.deleteMany({ where: { sourceId: { in: removed } } });
       for (const doc of changed) {

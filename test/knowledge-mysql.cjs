@@ -26,8 +26,12 @@ async function main() {
   const content = Array.from({ length: 117 }, (_, i) => `## Capitulo ${i}\n${'Ação, coração, proteção 🦉. '.repeat(65)}\n`).join('');
   assert.ok(content.length >= 169000);
   const source = await db.fichaConhecimento.create({ data: { slug: 'civil-contratos', titulo: 'Isolated test', area: 'civil', status: 'PUBLICADA', fontes: ['Fonte'], conteudo: content } });
+  const legacy = await db.fichaConhecimento.create({ data: { slug: 'legacy-review', titulo: 'Legacy isolated test', area: 'civil-contratual', status: 'EM_REVISAO', fontes: [], conteudo: '## Legado\nConteúdo em revisão.' } });
   assert.equal((await db.fichaConhecimento.findUnique({ where: { id: source.id } })).conteudo, content);
   assert.equal((await run()).status, 'completed');
+  assert.deepEqual(await db.fichaConhecimento.findUnique({ where: { id: legacy.id } }), legacy);
+  assert.equal(await db.knowledgeDocument.count({ where: { sourceId: legacy.id } }), 0);
+  console.log('PASS invalid legacy review does not block valid published source or change source data');
   let candidates = await loadCandidates('civil', provider.model);
   assert.equal(candidates.length, 117);
   assert.equal((await db.knowledgeChunk.findMany({ orderBy: { ordinal: 'asc' } })).map(c => c.content).join(''), content);
