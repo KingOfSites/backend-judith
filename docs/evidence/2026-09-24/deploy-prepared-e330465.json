@@ -1,0 +1,15 @@
+{
+  "state": "PREPARED_NOT_ACTIVATED_WAITING_ADMIN_CONFIRMATION",
+  "revision": "e330465bd29a4a7bc88cdc5f067fa0747b89d70d",
+  "candidateImage": "sha256:f6745983c868a181d921d84022c56fa0d74a6c38d82ce3bb4c82d4939d8a4227",
+  "productionImage": "sha256:30db70b57a13bb23fd083b74f99be5d42a907418a9b8ce52ad16b6c017c88abf",
+  "backup": {
+    "tables": 27,
+    "bytes": 77304,
+    "sha256": "f9cef2684f25684aa9811b5db11b8473b4ee7fbd0cf867333175147ad96ab9f2"
+  },
+  "unitTests": 33,
+  "flowScenarios": 39,
+  "realAcceptance": true,
+  "cleanupVerified": true
+}

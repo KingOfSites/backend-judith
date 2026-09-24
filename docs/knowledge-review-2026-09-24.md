@@ -1,5 +1,7 @@
 # Retomada da base — 24/09/2026
 
+> Publicação preparada: código revisado commitado/enviado como `e330465`; testes repetidos na imagem final e backup verificado. [Estado operacional e troca pendente](knowledge-release-e330465.md). Nenhuma ativação antes da confirmação do Admin pelo usuário.
+
 ## Revisão integrada — normalização da janela de histórico
 
 Correção local posterior à aceitação real abaixo, sem deploy e sem acesso a dados reais. O provedor de resposta continua sendo Anthropic Messages via `@anthropic-ai/sdk`. Conferidos os comentários do SDK instalado (`resources/messages/messages.d.ts`, seção `messages`, linha 1960) e o [contrato oficial de criação de mensagens](https://platform.claude.com/docs/en/api/messages/create): mensagens consecutivas do mesmo papel são combinadas pelo provedor. Portanto, perguntas sem resposta podem permanecer consecutivas; não devem ser apagadas nem receber respostas artificiais para forçar alternância. Não foi feito ensaio HTTP real de rejeição da janela nesta rodada.
