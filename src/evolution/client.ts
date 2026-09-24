@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { env } from "../config/env.js";
+import { createHash } from "node:crypto";
 
 const http: AxiosInstance = axios.create({
   baseURL: env.EVOLUTION_API_URL,
@@ -8,11 +9,34 @@ const http: AxiosInstance = axios.create({
 });
 
 // Doc: POST /message/sendText/{instance}
-export async function sendText(toNumber: string, text: string): Promise<void> {
-  await http.post(`/message/sendText/${env.EVOLUTION_INSTANCE}`, {
-    number: toNumber,
-    text,
-  });
+export async function sendText(toNumber: string, text: string, inboundMessageId?: string): Promise<void> {
+  const fingerprint = (value: string) => createHash("sha256").update(value).digest("hex");
+  const metadata = {
+    instance: env.EVOLUTION_INSTANCE, inboundMessageId,
+    recipientHash: fingerprint(toNumber), recipientLast4: toNumber.slice(-4),
+    textHash: fingerprint(text), linkPreview: false,
+  };
+  try {
+    const response = await http.post(`/message/sendText/${env.EVOLUTION_INSTANCE}`, {
+      number: toNumber, text, linkPreview: false,
+    });
+    const data = response.data;
+    console.info(JSON.stringify({
+      event: "evolution.send.receipt", time: new Date().toISOString(), ...metadata,
+      httpStatus: response.status,
+      messageId: typeof data?.key?.id === "string" ? data.key.id : null,
+      instanceId: typeof data?.instanceId === "string" ? data.instanceId : null,
+      providerStatus: typeof data?.status === "string" || typeof data?.status === "number" ? data.status : null,
+      fromMe: data?.key?.fromMe === true,
+      recipientMatches: data?.key?.remoteJid === `${toNumber}@s.whatsapp.net`,
+      providerRecipientHash: typeof data?.key?.remoteJid === "string" ? fingerprint(data.key.remoteJid) : null,
+    }));
+  } catch (error) {
+    // Never propagate Axios config/headers or response bodies into webhook logs.
+    const httpStatus = axios.isAxiosError(error) ? error.response?.status ?? null : null;
+    console.error(JSON.stringify({event: "evolution.send.failure", time: new Date().toISOString(), ...metadata, httpStatus}));
+    throw new Error(`Evolution sendText failed (HTTP ${httpStatus ?? "unavailable"})`);
+  }
 }
 
 // "Digitando..." enquanto a JUDITH pensa — UX bem mais natural no WhatsApp.

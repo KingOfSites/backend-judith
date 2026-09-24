@@ -97,7 +97,7 @@ app.post("/webhook/evolution", async (req, reply) => {
       );
       for (let i = 0; i < result.replies.length; i++) {
         if (i > 0) await sendTyping(parsed.whatsappNumber, 800);
-        await sendText(parsed.whatsappNumber, result.replies[i]!);
+        await sendText(parsed.whatsappNumber, result.replies[i]!, parsed.messageId);
       }
     } else {
       // Bot multi-tenant: roteia pela instância → busca Bot → responde com persona do cliente
