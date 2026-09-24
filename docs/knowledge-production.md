@@ -1,5 +1,7 @@
 # Publicação da base de conhecimento — 23/09/2026
 
+> **24/09, 23:45 UTC — backend `ca64e6f` ativo**, auditoria e verificação de suporte implantadas com backup/rollback. Saúde 200, embeddings 1024, validação 422/200 conferida; cadernos e prompts preservados, sem reindexação. Admin documental `f564cc7` Ready. [Commits, recibos, recuperação e pendências](knowledge-release-ca64e6f.md). A pendência editorial de dados financeiros permanece aberta.
+
 > **24/09, 17:39 UTC — 18 cadernos PUBLICADA e indexados**, 503 blocos, 503 vetores, 542 vínculos de área; 17 antigos continuam EM_REVISAO. Propaganda excluído. Houve falha no primeiro job e recuperação operacional concluída; buscas reais validadas com ressalva de roteamento ambiental. [Resultado, evidências, recuperação seletiva e teste WhatsApp](knowledge-publication-result-2026-09-24.md). Estados de índice vazio abaixo são históricos.
 
 > **24/09 — release e330465 ATIVADA**, após confirmação do Admin `ed89a7c` pelo usuário. Saúde 200; embeddings locais 1024 dimensões; validação pública/local 422 para zero blocos e 200 para conteúdo válido. Reindexação `cmufo6pfa0000jq80xf40lxkl` completed com zero publicados. [Resultados, backup, rollback e pendências](knowledge-release-e330465.md). As seções de 23/09 abaixo são históricas.

@@ -1,0 +1,276 @@
+
+> judith@0.1.0 test
+> npm run build && node --test test/conteudo.test.cjs test/knowledge.test.cjs test/indexer.test.cjs test/knowledge-api.test.cjs test/knowledge-failures.test.cjs test/knowledge-support.test.cjs test/evolution-delivery.test.cjs && node test/fluxo.test.cjs
+
+
+> judith@0.1.0 build
+> tsc -p tsconfig.json
+
+TAP version 13
+# Subtest: prompt: rejeita ausente, curto e placeholder, relê edição após 60s
+ok 1 - prompt: rejeita ausente, curto e placeholder, relê edição após 60s
+  ---
+  duration_ms: 6.547783
+  ...
+# Subtest: respostas consultam base somente em duvida e preservam prompts/perfil
+ok 2 - respostas consultam base somente em duvida e preservam prompts/perfil
+  ---
+  duration_ms: 70.466147
+  ...
+# Subtest: automatic text preserves content/recipient, disables preview and records safe HTTP receipt
+ok 3 - automatic text preserves content/recipient, disables preview and records safe HTTP receipt
+  ---
+  duration_ms: 8.478257
+  ...
+# Subtest: HTTP failure is sanitized and never retried by sendText
+ok 4 - HTTP failure is sanitized and never retried by sendText
+  ---
+  duration_ms: 1.181879
+  ...
+# Subtest: indexador: criação, repetição idempotente, metadados, área, conteúdo, status e exclusão
+ok 5 - indexador: criação, repetição idempotente, metadados, área, conteúdo, status e exclusão
+  ---
+  duration_ms: 19.059536
+  ...
+# Subtest: indexador: falha de embedding e falha de escrita preservam índice completo anterior
+ok 6 - indexador: falha de embedding e falha de escrita preservam índice completo anterior
+  ---
+  duration_ms: 5.181765
+  ...
+# Subtest: indexador: fonte alterada durante preparação aborta swap
+ok 7 - indexador: fonte alterada durante preparação aborta swap
+  ---
+  duration_ms: 1.264709
+  ...
+# Subtest: indexador: worker expirado, fencing e validação antes de indexar
+ok 8 - indexador: worker expirado, fencing e validação antes de indexar
+  ---
+  duration_ms: 5.395767
+  ...
+# Subtest: indexador: legados inválidos em revisão/rascunho não bloqueiam publicado válido
+ok 9 - indexador: legados inválidos em revisão/rascunho não bloqueiam publicado válido
+  ---
+  duration_ms: 1.834701
+  ...
+# Subtest: indexador: publicação ou despublicação durante preparação aborta swap
+ok 10 - indexador: publicação ou despublicação durante preparação aborta swap
+  ---
+  duration_ms: 3.340562
+  ...
+# Subtest: indexador: dois workers não processam o mesmo job
+ok 11 - indexador: dois workers não processam o mesmo job
+  ---
+  duration_ms: 0.962596
+  ...
+# Subtest: indexador incremental: preserva IDs e grava só os chunks afetados
+ok 12 - indexador incremental: preserva IDs e grava só os chunks afetados
+  ---
+  duration_ms: 25.450788
+  ...
+# Subtest: Admin HTTP: autenticação, payload, validação, idempotência, progresso, resultado e erro
+ok 13 - Admin HTTP: autenticação, payload, validação, idempotência, progresso, resultado e erro
+  ---
+  duration_ms: 282.941644
+  ...
+# Subtest: repositório: SQL parametrizado filtra área/publicação; fonte editada ou excluída não entra
+ok 14 - repositório: SQL parametrizado filtra área/publicação; fonte editada ou excluída não entra
+  ---
+  duration_ms: 5.285254
+  ...
+# Subtest: provedor: classificação estrita e embeddings locais completos, sem fallback pago
+ok 15 - provedor: classificação estrita e embeddings locais completos, sem fallback pago
+  ---
+  duration_ms: 8.913349
+  ...
+# Subtest: busca: classificação inválida, nenhuma área e embeddings offline impedem geração jurídica
+ok 16 - busca: classificação inválida, nenhuma área e embeddings offline impedem geração jurídica
+  ---
+  duration_ms: 19.500089
+  ...
+# Subtest: continuação: consulta curta é literal; pergunta completa preservada; termos inventados ou só do histórico falham
+ok 17 - continuação: consulta curta é literal; pergunta completa preservada; termos inventados ou só do histórico falham
+  ---
+  duration_ms: 6.297981
+  ...
+# Subtest: classificador: recebe histórico com papéis e pergunta atual, com precedência explícita para assunto novo
+ok 18 - classificador: recebe histórico com papéis e pergunta atual, com precedência explícita para assunto novo
+  ---
+  duration_ms: 2.069493
+  ...
+# Subtest: consulta extrativa: mudança de assunto usa só pergunta atual; fatos inventados são rejeitados
+ok 19 - consulta extrativa: mudança de assunto usa só pergunta atual; fatos inventados são rejeitados
+  ---
+  duration_ms: 0.365593
+  ...
+# Subtest: known scope substitutions rejected even if reviewer incorrectly approves
+ok 20 - known scope substitutions rejected even if reviewer incorrectly approves
+  ---
+  duration_ms: 7.736951
+  ...
+# Subtest: verificação usa somente escopos aplicáveis e registra exclusão; citação de bloco excluído não vira evidência
+ok 21 - verificação usa somente escopos aplicáveis e registra exclusão; citação de bloco excluído não vira evidência
+  ---
+  duration_ms: 4.712772
+  ...
+# Subtest: two-question and continuation pipeline, trace privacy, fail closed
+ok 22 - two-question and continuation pipeline, trace privacy, fail closed
+  ---
+  duration_ms: 14.95637
+  ...
+# Subtest: parser: ignora capa até o primeiro \#\# real, preservando validação e área inicial
+ok 23 - parser: ignora capa até o primeiro \#\# real, preservando validação e área inicial
+  ---
+  duration_ms: 3.788515
+  ...
+# Subtest: busca: continuação envia histórico ao classificador e ao embedding, mantendo filtro
+ok 24 - busca: continuação envia histórico ao classificador e ao embedding, mantendo filtro
+  ---
+  duration_ms: 2.246975
+  ...
+# Subtest: consulta curta só no embedding; classificação mantém referência e seleção continua limitada a cinco na área
+ok 25 - consulta curta só no embedding; classificação mantém referência e seleção continua limitada a cinco na área
+  ---
+  duration_ms: 0.776586
+  ...
+# Subtest: escopo: acidente não fundamenta vício; não exclui capítulos pertinentes nem perguntas sobre acidente ou comparação
+ok 26 - escopo: acidente não fundamenta vício; não exclui capítulos pertinentes nem perguntas sobre acidente ou comparação
+  ---
+  duration_ms: 0.536483
+  ...
+# Subtest: áreas: lista exata, vírgulas, desconhecidos, vazios e slug separado
+ok 27 - áreas: lista exata, vírgulas, desconhecidos, vazios e slug separado
+  ---
+  duration_ms: 0.831627
+  ...
+# Subtest: MariaDB: vetores JSON em LONGTEXT e valores inválidos
+ok 28 - MariaDB: vetores JSON em LONGTEXT e valores inválidos
+  ---
+  duration_ms: 0.308542
+  ...
+# Subtest: parser: capítulos/subcapítulos sem duplicação, herança e sobrescrita com escopo
+ok 29 - parser: capítulos/subcapítulos sem duplicação, herança e sobrescrita com escopo
+  ---
+  duration_ms: 0.690684
+  ...
+# Subtest: parser: marcação de módulo vale para capítulos seguintes até outra marcação (caso Módulo 4 de base-guias)
+ok 30 - parser: marcação de módulo vale para capítulos seguintes até outra marcação (caso Módulo 4 de base-guias)
+  ---
+  duration_ms: 0.866145
+  ...
+# Subtest: parser: blocos só com títulos, separadores ou marcações não viram chunks
+ok 31 - parser: blocos só com títulos, separadores ou marcações não viram chunks
+  ---
+  duration_ms: 2.765778
+  ...
+# Subtest: parser: todos os erros de área com linha e capítulo
+ok 32 - parser: todos os erros de área com linha e capítulo
+  ---
+  duration_ms: 0.675764
+  ...
+# Subtest: parser: marcação após prosa só afeta os blocos seguintes
+ok 33 - parser: marcação após prosa só afeta os blocos seguintes
+  ---
+  duration_ms: 0.297762
+  ...
+# Subtest: parser: metadados/frontmatter, vírgulas e erros localizados
+ok 34 - parser: metadados/frontmatter, vírgulas e erros localizados
+  ---
+  duration_ms: 0.591474
+  ...
+# Subtest: parser: cercas de backticks, tildes, código indentado e CRLF opacos
+ok 35 - parser: cercas de backticks, tildes, código indentado e CRLF opacos
+  ---
+  duration_ms: 0.252992
+  ...
+# Subtest: fixture base-propaganda: módulo autoral sobrescreve consumidor
+ok 36 - fixture base-propaganda: módulo autoral sobrescreve consumidor
+  ---
+  duration_ms: 1.40275
+  ...
+# Subtest: fixture base-guias: seis módulos não acumulam administrativo
+ok 37 - fixture base-guias: seis módulos não acumulam administrativo
+  ---
+  duration_ms: 0.589334
+  ...
+# Subtest: arquivos históricos reais: sintaxe observada válida e área antiga rejeitada
+ok 38 - arquivos históricos reais: sintaxe observada válida e área antiga rejeitada
+  ---
+  duration_ms: 1.164357
+  ...
+# Subtest: busca: área antes de embedding, publicados, cinco, menos, íntegros e sem fallback
+ok 39 - busca: área antes de embedding, publicados, cinco, menos, íntegros e sem fallback
+  ---
+  duration_ms: 1.050947
+  ...
+# Subtest: conteúdo grande: >169.000 caracteres, 117 chunks, acentos íntegros
+ok 40 - conteúdo grande: >169.000 caracteres, 117 chunks, acentos íntegros
+  ---
+  duration_ms: 29.163513
+  ...
+# Subtest: embeddings: reutilização em área/metadados/publicação; conteúdo/modelo invalidam
+ok 41 - embeddings: reutilização em área/metadados/publicação; conteúdo/modelo invalidam
+  ---
+  duration_ms: 3.659815
+  ...
+1..41
+# tests 41
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 478.726569
+{
+  "passed": [
+    "HTTP health loads deployed prompt version",
+    "Support/audit failure preserves courtesy and incoming history: supportFail",
+    "Support/audit failure preserves courtesy and incoming history: supportRejected",
+    "Support/audit failure preserves courtesy and incoming history: traceFail",
+    "Support/audit failure preserves courtesy and incoming history: traceLateFail",
+    "Webhook -> prompt/model -> simulated AI -> history/usage -> captured reply: DUVIDA",
+    "Webhook -> prompt/model -> simulated AI -> history/usage -> captured reply: REDACAO",
+    "Webhook -> prompt/model -> simulated AI -> history/usage -> captured reply: ANALISE",
+    "Inactive subscription blocks AI without recording usage",
+    "Exhausted quota returns simulated purchase link, without calling AI",
+    "Approved one-off credit allows reply and records simulated consumption",
+    "Onboarding replies without AI",
+    "Other events, self-messages and groups are ignored",
+    "AI failure returns fallback without successful usage/history",
+    "Knowledge failure is explicit and preserves credit: CLASSIFICATION_INVALID",
+    "Knowledge failure is explicit and preserves credit: KNOWLEDGE_UNAVAILABLE",
+    "Knowledge failure is explicit and preserves credit: KNOWLEDGE_NO_CONTEXT",
+    "Knowledge failure is explicit and preserves credit: KNOWLEDGE_OUT_OF_SCOPE",
+    "Checkout failure keeps exhausted quota blocked",
+    "Plan quota is used before one-off credit",
+    "AI failure preserves one-off credit",
+    "No consumption/history on aiEmpty",
+    "No consumption/history on historyFail",
+    "No consumption/history on race",
+    "Approved one-off credit works without active subscription",
+    "Concurrent replies cannot spend the same one-off credit twice",
+    "Concurrent replies cannot confirm beyond remaining plan quota",
+    "Courtesy works without subscription and without payment",
+    "Plan quota is used before courtesy",
+    "Courtesy is used before paid one-off credits",
+    "Courtesy is specific to the granted service",
+    "Courtesy preserved on aiFail",
+    "Courtesy preserved on aiEmpty",
+    "Courtesy preserved on historyFail",
+    "Courtesy preserved on race",
+    "Concurrent responses cannot spend the same courtesy twice",
+    "Smalltalk without search or credit: Oi",
+    "Smalltalk without search or credit: obrigado",
+    "Smalltalk without search or credit: qual seu nome?",
+    "Failed inbound preserved once; redelivery deduplicated; new message can retry",
+    "16-message window drops orphan answer after one answered, one failed and seven answered questions",
+    "Empty history sends current question once",
+    "Consecutive unanswered questions preserved without fabricated assistant turns",
+    "One bounded repair, one charge only on success: repair-success",
+    "One bounded repair, one charge only on success: generationSecondFail",
+    "One bounded repair, one charge only on success: supportSecondFail",
+    "One bounded repair, one charge only on success: supportRejected"
+  ],
+  "findings": [],
+  "isolation": "All database access, AI, checkout and WhatsApp mocked; network blocked"
+}

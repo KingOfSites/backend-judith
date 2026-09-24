@@ -1,0 +1,1 @@
+{"migration": "202609240002_knowledge_interaction", "created": true, "columns": ["id:varchar", "payload:longtext", "createdAt:datetime", "updatedAt:datetime"], "rowsAfterMigration": 0}

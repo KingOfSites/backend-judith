@@ -1,0 +1,131 @@
+{
+  "at": "2026-09-24T23:45:31.983Z",
+  "validation": [
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "empty",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um cap\u00edtulo iniciado por ## seguido de conte\u00fado. Capa, t\u00edtulos vazios e marca\u00e7\u00f5es de \u00e1rea n\u00e3o formam blocos index\u00e1veis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "cover",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um cap\u00edtulo iniciado por ## seguido de conte\u00fado. Capa, t\u00edtulos vazios e marca\u00e7\u00f5es de \u00e1rea n\u00e3o formam blocos index\u00e1veis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "valid",
+      "http": 200,
+      "body": {
+        "valid": true,
+        "chunks": 1,
+        "areas": [
+          "civil"
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "empty",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um cap\u00edtulo iniciado por ## seguido de conte\u00fado. Capa, t\u00edtulos vazios e marca\u00e7\u00f5es de \u00e1rea n\u00e3o formam blocos index\u00e1veis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "cover",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um cap\u00edtulo iniciado por ## seguido de conte\u00fado. Capa, t\u00edtulos vazios e marca\u00e7\u00f5es de \u00e1rea n\u00e3o formam blocos index\u00e1veis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "valid",
+      "http": 200,
+      "body": {
+        "valid": true,
+        "chunks": 1,
+        "areas": [
+          "civil"
+        ]
+      }
+    }
+  ],
+  "health": [
+    {
+      "base": "http://127.0.0.1:3000",
+      "http": 200,
+      "body": {
+        "status": "ok",
+        "versao": "v22072026"
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "http": 200,
+      "body": {
+        "status": "ok",
+        "versao": "v22072026"
+      }
+    }
+  ],
+  "sourceHash": "2ea864401c149ea35b4624234bb3ba397c00e5e79d5edcf05b20689a6711fa73",
+  "promptHash": "1e57c34b004ab4fe8c827931ec15df93af7d39f39086b6c8fca4dfdaf115328f",
+  "sources": 35,
+  "statuses": {
+    "EM_REVISAO": 17,
+    "PUBLICADA": 18
+  },
+  "documents": 18,
+  "chunks": 503,
+  "jobs": 10,
+  "auditTable": true,
+  "auditRows": 0,
+  "supportPolicy": "support-v11",
+  "generationPolicy": "grounded-generation-v6",
+  "embeddings": {
+    "model": "local:multilingual-e5-large:3d7cfbdacd47fdda877c5cd8a79fbcc4f2a574f3:onnx-qint8-avx512-vnni:1024:tokens480:mean-v1",
+    "dimensions": 1024
+  },
+  "ok": true,
+  "protectedStateUnchanged": true
+}
