@@ -24,7 +24,7 @@ export async function loadCandidates(area: Area, model: string): Promise<Candida
     const current = new Map(sources.map(s => [s.id, { source: s, fingerprint: fingerprint(s) }]));
     return rows.filter(row => {
       return current.get(row.sourceId)?.fingerprint === row.fingerprint;
-    }).map(row => ({ id: row.id, content: row.content, chapter: row.chapter, subchapter: row.subchapter,
+    }).map(row => ({ id: row.id, sourceId: row.sourceId, version: row.fingerprint, content: row.content, chapter: row.chapter, subchapter: row.subchapter,
       titulo: current.get(row.sourceId)!.source.titulo, fontes: current.get(row.sourceId)!.source.fontes,
       areas: [area], published: true, vector: vector(row.vector) }));
   }, { isolationLevel: "RepeatableRead" });

@@ -1,5 +1,7 @@
 # Publicação da base de conhecimento — 23/09/2026
 
+> **24/09, 17:39 UTC — 18 cadernos PUBLICADA e indexados**, 503 blocos, 503 vetores, 542 vínculos de área; 17 antigos continuam EM_REVISAO. Propaganda excluído. Houve falha no primeiro job e recuperação operacional concluída; buscas reais validadas com ressalva de roteamento ambiental. [Resultado, evidências, recuperação seletiva e teste WhatsApp](knowledge-publication-result-2026-09-24.md). Estados de índice vazio abaixo são históricos.
+
 > **24/09 — release e330465 ATIVADA**, após confirmação do Admin `ed89a7c` pelo usuário. Saúde 200; embeddings locais 1024 dimensões; validação pública/local 422 para zero blocos e 200 para conteúdo válido. Reindexação `cmufo6pfa0000jq80xf40lxkl` completed com zero publicados. [Resultados, backup, rollback e pendências](knowledge-release-e330465.md). As seções de 23/09 abaixo são históricas.
 
 > Retomada conferida em 24/09: [evidências, aceitação real e pendências do Admin](knowledge-review-2026-09-24.md). Produção permanece em 5d0f2cc; edição/reindexação/busca nova e reutilização de cinco vetores comprovadas em banco isolado. Todos os 19 cadernos da entrega foram localizados nos Downloads; dois trabalhistas posteriores seguem não localizados. Referências abaixo à falta dos arquivos e a saldo OpenAI são históricas.

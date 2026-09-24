@@ -488,6 +488,14 @@ model FichaConhecimento {
 }
 
 // Índice derivado: sem FK para a fonte compartilhada, não altera seus escritores.
+// Restricted operational audit: query may contain personal data; never expose via public APIs/logs.
+model KnowledgeInteraction {
+  id        String @id @db.VarChar(191)
+  payload   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model KnowledgeDocument {
   sourceId    String @id
   fingerprint String @db.Char(64)

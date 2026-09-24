@@ -1,0 +1,2074 @@
+{
+  "startedAt": "2026-09-24T20:30:24.102Z",
+  "productionWrites": false,
+  "whatsappCalls": 0,
+  "migration": [
+    "missing table fails closed",
+    "migration preserves existing users/sources/prompts/credits/payments",
+    "JSON unicode roundtrip and duplicate does not overwrite",
+    "missing update and transaction rollback",
+    "concurrent create has exactly one winner",
+    "read-only SQL permission fails safely"
+  ],
+  "cases": [
+    {
+      "name": "invalid-mixed-consequences",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNu3fEDERbkJ9u97cDpC",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu3fEDERbkJ9u97cDpC",
+        "latencyMs": 5080,
+        "usage": {
+          "input_tokens": 2018,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 590,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 5086,
+      "pass": true
+    },
+    {
+      "name": "invalid-mixed-bases",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNu41rSBmJ6ECViNLCEa",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu41rSBmJ6ECViNLCEa",
+        "latencyMs": 4621,
+        "usage": {
+          "input_tokens": 1984,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 425,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 4622,
+      "pass": true
+    },
+    {
+      "name": "valid-deletion",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu4MW8suN34LRxXXFF5",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-0"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu4MW8suN34LRxXXFF5",
+        "latencyMs": 5041,
+        "usage": {
+          "input_tokens": 1970,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 330,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 5042,
+      "pass": true
+    },
+    {
+      "name": "invalid-15-day-deletion",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNu4j88ywwCvwZBagfuK",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu4j88ywwCvwZBagfuK",
+        "latencyMs": 4189,
+        "usage": {
+          "input_tokens": 1955,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 522,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 4189,
+      "pass": true
+    },
+    {
+      "name": "valid-access-deadline",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu534tg6D9VAE3g1BSR",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-1"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu534tg6D9VAE3g1BSR",
+        "latencyMs": 3537,
+        "usage": {
+          "input_tokens": 1968,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 295,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3539,
+      "pass": true
+    },
+    {
+      "name": "valid-refusal-continuation",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu5J72SRmXMmYDt5rAL",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-0",
+            "fixture-4"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu5J72SRmXMmYDt5rAL",
+        "latencyMs": 3521,
+        "usage": {
+          "input_tokens": 1988,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 437,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3521,
+      "pass": true
+    },
+    {
+      "name": "invalid-refusal-presumed",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNu5ZBdPbk9wq6pvHMpJ",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu5ZBdPbk9wq6pvHMpJ",
+        "latencyMs": 3261,
+        "usage": {
+          "input_tokens": 1973,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 357,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3261,
+      "pass": true
+    },
+    {
+      "name": "invalid-majority",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNu5o5HoR6pUYkPyFbJR",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu5o5HoR6pUYkPyFbJR",
+        "latencyMs": 3294,
+        "usage": {
+          "input_tokens": 1970,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 248,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3294,
+      "pass": true
+    },
+    {
+      "name": "invalid-financial",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNu63C783yghrccTF8Hf",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu63C783yghrccTF8Hf",
+        "latencyMs": 3791,
+        "usage": {
+          "input_tokens": 1981,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 445,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3792,
+      "pass": true
+    },
+    {
+      "name": "valid-financial",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu6KUPw82fvMsiNrCba",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-3"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu6KUPw82fvMsiNrCba",
+        "latencyMs": 3074,
+        "usage": {
+          "input_tokens": 1990,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 295,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3074,
+      "pass": true
+    },
+    {
+      "name": "valid-vazamento",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu6YaSdHy8sKFWLpSLW",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-2"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu6YaSdHy8sKFWLpSLW",
+        "latencyMs": 3268,
+        "usage": {
+          "input_tokens": 1981,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 279,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3268,
+      "pass": true
+    },
+    {
+      "name": "invalid-topic-transfer",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNu6nY5EQQbb8sxwp1nJ",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu6nY5EQQbb8sxwp1nJ",
+        "latencyMs": 4708,
+        "usage": {
+          "input_tokens": 1998,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 416,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 4708,
+      "pass": true
+    },
+    {
+      "name": "valid-limit",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu78jXC54LD5uGWXw4T",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-4",
+            "fixture-0"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu78jXC54LD5uGWXw4T",
+        "latencyMs": 4815,
+        "usage": {
+          "input_tokens": 1982,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 433,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 4815,
+      "pass": true
+    },
+    {
+      "name": "valid-conversational",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu7VKFv8q7fMiN4j2eQ",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": []
+        },
+        {
+          "index": 1,
+          "chunkIds": [
+            "fixture-0"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu7VKFv8q7fMiN4j2eQ",
+        "latencyMs": 3880,
+        "usage": {
+          "input_tokens": 1977,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 366,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 3882,
+      "pass": true
+    },
+    {
+      "name": "valid-friendly-conversational",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu7n93U5hXTtSjitRi3",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": []
+        },
+        {
+          "index": 1,
+          "chunkIds": [
+            "fixture-0"
+          ]
+        },
+        {
+          "index": 2,
+          "chunkIds": []
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu7n93U5hXTtSjitRi3",
+        "latencyMs": 4808,
+        "usage": {
+          "input_tokens": 2005,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 422,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 4808,
+      "pass": true
+    },
+    {
+      "name": "valid-no-transfer",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNu88b7niFdiJKrw9diN",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v3",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-1",
+            "fixture-2"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNu88b7niFdiJKrw9diN",
+        "latencyMs": 2946,
+        "usage": {
+          "input_tokens": 1995,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 435,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 2946,
+      "pass": true
+    }
+  ],
+  "flows": [
+    {
+      "question": "Pela LGPD, um cliente pode pedir a eliminação de dados?",
+      "reply": "Não encontrei suporte suficiente para responder com segurança a esse ponto específico. Prefiro não afirmar prazos ou consequências sem essa referência. Consulte um advogado para avaliar o caso. Nenhum crédito foi consumido.",
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 17276,
+      "creditDelta": 0,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_rejected",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v3",
+        "area": "lgpd",
+        "searchQuery": "Pela LGPD, um cliente pode pedir a eliminação de dados?",
+        "chunks": [
+          {
+            "id": "fixture-0",
+            "sourceId": "synthetic-lgpd",
+            "version": "4a3f3d454447528bde0b8629a4f2d4597f4fd39fd063b3fdc36d2c7417580935",
+            "contentHash": "32e550b835745404819eb2ee788692363a8e96b0b3a265c3ca6401cd4ac79662",
+            "score": 0.9,
+            "content": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros.",
+            "chapter": "Fixture 0",
+            "fontes": []
+          },
+          {
+            "id": "fixture-1",
+            "sourceId": "synthetic-lgpd",
+            "version": "a830cafa45ec83010e006632005d06d3fd97b5568d92abfa5475b681960ae57b",
+            "contentHash": "80a607151bd222ff4891e1213bdfafb02729de935a41b535d306951dcb2c8269",
+            "score": 0.8,
+            "content": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados.",
+            "chapter": "Fixture 1",
+            "fontes": []
+          },
+          {
+            "id": "fixture-2",
+            "sourceId": "synthetic-lgpd",
+            "version": "027fa966fde2060a2a30a365925782ff10b744febf5e122828673a53a0f10cc7",
+            "contentHash": "1e40ea57226feff2a9791fd72fc16de6d6ba4cd21808a6b00a0e67f364eaf90d",
+            "score": 0.7,
+            "content": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão.",
+            "chapter": "Fixture 2",
+            "fontes": []
+          },
+          {
+            "id": "fixture-3",
+            "sourceId": "synthetic-lgpd",
+            "version": "52515fcac673837a060cf15e1865d21dd87756a7855d09d4f83456dbeb65c5f5",
+            "contentHash": "403d48e4f11431bce310bf50dffbaff195189866587f889da8a01f32453d4a66",
+            "score": 0.6000000000000001,
+            "content": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível. Não há estatística nesta fonte sobre probabilidade de vitória judicial.",
+            "chapter": "Fixture 3",
+            "fontes": []
+          },
+          {
+            "id": "fixture-4",
+            "sourceId": "synthetic-lgpd",
+            "version": "04219487b0d085d1d4bdb5a95612f2cf23a6d8311fa7ee7121a913d9a22092de",
+            "contentHash": "95f3c407320a2f75754666a52d1e40fa77fa6eb691fa42550f4d576e53e9627e",
+            "score": 0.5,
+            "content": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação. Se não houver suporte suficiente, declare esse limite. O atendimento é gratuito; responda justificando a impossibilidade de atendimento imediato.",
+            "chapter": "Fixture 4",
+            "fontes": []
+          }
+        ],
+        "generationId": "msg_011CfNu8MjPAbNoXW7WuvyKF",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "900d92093b62bff3be50815c094a3c3267ac5e7d99d07fc8e2b29cb9db768ebe",
+        "verification": {
+          "supported": false,
+          "requestId": "msg_011CfNu8nbrCr3jrTNKb6vgi",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v3",
+          "evidence": [],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfNu8nbrCr3jrTNKb6vgi",
+            "latencyMs": 11361,
+            "usage": {
+              "input_tokens": 2362,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 1665,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    },
+    {
+      "question": "E se a empresa se recusar a apagar?",
+      "reply": "Não encontrei suporte suficiente para responder com segurança a esse ponto específico. Prefiro não afirmar prazos ou consequências sem essa referência. Consulte um advogado para avaliar o caso. Nenhum crédito foi consumido.",
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 16764,
+      "creditDelta": 0,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_rejected",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v3",
+        "area": "lgpd",
+        "searchQuery": "E se a empresa se recusar a apagar?",
+        "chunks": [
+          {
+            "id": "fixture-0",
+            "sourceId": "synthetic-lgpd",
+            "version": "4a3f3d454447528bde0b8629a4f2d4597f4fd39fd063b3fdc36d2c7417580935",
+            "contentHash": "32e550b835745404819eb2ee788692363a8e96b0b3a265c3ca6401cd4ac79662",
+            "score": 0.9,
+            "content": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros.",
+            "chapter": "Fixture 0",
+            "fontes": []
+          },
+          {
+            "id": "fixture-1",
+            "sourceId": "synthetic-lgpd",
+            "version": "a830cafa45ec83010e006632005d06d3fd97b5568d92abfa5475b681960ae57b",
+            "contentHash": "80a607151bd222ff4891e1213bdfafb02729de935a41b535d306951dcb2c8269",
+            "score": 0.8,
+            "content": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados.",
+            "chapter": "Fixture 1",
+            "fontes": []
+          },
+          {
+            "id": "fixture-2",
+            "sourceId": "synthetic-lgpd",
+            "version": "027fa966fde2060a2a30a365925782ff10b744febf5e122828673a53a0f10cc7",
+            "contentHash": "1e40ea57226feff2a9791fd72fc16de6d6ba4cd21808a6b00a0e67f364eaf90d",
+            "score": 0.7,
+            "content": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão.",
+            "chapter": "Fixture 2",
+            "fontes": []
+          },
+          {
+            "id": "fixture-3",
+            "sourceId": "synthetic-lgpd",
+            "version": "52515fcac673837a060cf15e1865d21dd87756a7855d09d4f83456dbeb65c5f5",
+            "contentHash": "403d48e4f11431bce310bf50dffbaff195189866587f889da8a01f32453d4a66",
+            "score": 0.6000000000000001,
+            "content": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível. Não há estatística nesta fonte sobre probabilidade de vitória judicial.",
+            "chapter": "Fixture 3",
+            "fontes": []
+          },
+          {
+            "id": "fixture-4",
+            "sourceId": "synthetic-lgpd",
+            "version": "04219487b0d085d1d4bdb5a95612f2cf23a6d8311fa7ee7121a913d9a22092de",
+            "contentHash": "95f3c407320a2f75754666a52d1e40fa77fa6eb691fa42550f4d576e53e9627e",
+            "score": 0.5,
+            "content": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação. Se não houver suporte suficiente, declare esse limite. O atendimento é gratuito; responda justificando a impossibilidade de atendimento imediato.",
+            "chapter": "Fixture 4",
+            "fontes": []
+          }
+        ],
+        "generationId": "msg_011CfNu9ded5XSiRY3Miodxm",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "4d4f0a152f28037fd72c4cd9a27d245aeee2bc529b9ac62114492577f3069455",
+        "verification": {
+          "supported": false,
+          "requestId": "msg_011CfNuA8gdNbodeKCUgp17k",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v3",
+          "evidence": [],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfNuA8gdNbodeKCUgp17k",
+            "latencyMs": 9984,
+            "usage": {
+              "input_tokens": 2422,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 1664,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    },
+    {
+      "question": "Responda em uma frase: dados financeiros são automaticamente dados sensíveis?",
+      "reply": "Não encontrei suporte suficiente para responder com segurança a esse ponto específico. Prefiro não afirmar prazos ou consequências sem essa referência. Consulte um advogado para avaliar o caso. Nenhum crédito foi consumido.",
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 13434,
+      "creditDelta": 0,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_rejected",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v3",
+        "area": "lgpd",
+        "searchQuery": "Responda em uma frase: dados financeiros são automaticamente dados sensíveis?",
+        "chunks": [
+          {
+            "id": "fixture-0",
+            "sourceId": "synthetic-lgpd",
+            "version": "4a3f3d454447528bde0b8629a4f2d4597f4fd39fd063b3fdc36d2c7417580935",
+            "contentHash": "32e550b835745404819eb2ee788692363a8e96b0b3a265c3ca6401cd4ac79662",
+            "score": 0.9,
+            "content": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros.",
+            "chapter": "Fixture 0",
+            "fontes": []
+          },
+          {
+            "id": "fixture-1",
+            "sourceId": "synthetic-lgpd",
+            "version": "a830cafa45ec83010e006632005d06d3fd97b5568d92abfa5475b681960ae57b",
+            "contentHash": "80a607151bd222ff4891e1213bdfafb02729de935a41b535d306951dcb2c8269",
+            "score": 0.8,
+            "content": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados.",
+            "chapter": "Fixture 1",
+            "fontes": []
+          },
+          {
+            "id": "fixture-2",
+            "sourceId": "synthetic-lgpd",
+            "version": "027fa966fde2060a2a30a365925782ff10b744febf5e122828673a53a0f10cc7",
+            "contentHash": "1e40ea57226feff2a9791fd72fc16de6d6ba4cd21808a6b00a0e67f364eaf90d",
+            "score": 0.7,
+            "content": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão.",
+            "chapter": "Fixture 2",
+            "fontes": []
+          },
+          {
+            "id": "fixture-3",
+            "sourceId": "synthetic-lgpd",
+            "version": "52515fcac673837a060cf15e1865d21dd87756a7855d09d4f83456dbeb65c5f5",
+            "contentHash": "403d48e4f11431bce310bf50dffbaff195189866587f889da8a01f32453d4a66",
+            "score": 0.6000000000000001,
+            "content": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível. Não há estatística nesta fonte sobre probabilidade de vitória judicial.",
+            "chapter": "Fixture 3",
+            "fontes": []
+          },
+          {
+            "id": "fixture-4",
+            "sourceId": "synthetic-lgpd",
+            "version": "04219487b0d085d1d4bdb5a95612f2cf23a6d8311fa7ee7121a913d9a22092de",
+            "contentHash": "95f3c407320a2f75754666a52d1e40fa77fa6eb691fa42550f4d576e53e9627e",
+            "score": 0.5,
+            "content": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação. Se não houver suporte suficiente, declare esse limite. O atendimento é gratuito; responda justificando a impossibilidade de atendimento imediato.",
+            "chapter": "Fixture 4",
+            "fontes": []
+          }
+        ],
+        "generationId": "msg_011CfNuAu75KSJBnqsGAvqh6",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "723f9cc739ff35d102c049525418b4439652d0210d4e473c9c512c73e563e26a",
+        "verification": {
+          "supported": false,
+          "requestId": "msg_011CfNuBGUDLjGMEs7bCafLE",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v3",
+          "evidence": [],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfNuBGUDLjGMEs7bCafLE",
+            "latencyMs": 7921,
+            "usage": {
+              "input_tokens": 2305,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 1141,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "providerOutputs": [
+    {
+      "id": "msg_011CfNu3fEDERbkJ9u97cDpC",
+      "kind": "verification",
+      "latencyMs": 5079,
+      "usage": {
+        "input_tokens": 2018,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 590,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01FVjfpAfZTwQVmMK3x2kzwW",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade contém três afirmações verificáveis: (1) 'Se a recusa não tiver fundamento legal, o cliente pode reclamar à ANPD ou mover ação judicial'; (2) 'A empresa que nega exclusão sem motivo responde por dano moral'. Análise: A afirmação (1) sobre reclamação à ANPD não encontra suporte explícito nas fontes. Fixture-4 menciona 'avaliar a base legal' e 'hipóteses de conservação', mas não autoriza a conclusão de que recusa infundada permite reclamação à ANPD ou ação judicial. Fixture-2 adverte contra transportar automaticamente conclusões de um precedente (vazamento com dano moral presumido) para 'recusa de exclusão'. A afirmação (2) sobre dano moral por negação sem motivo não tem suporte textual. Fixture-2 reconhece dano moral presumido em vazamento de dados sensíveis de seguro de vida, mas explicitamente afirma que 'não se pode transportar essa conclusão automaticamente para recusa de exclusão'. A unidade mistura afirmações sem suporte com a premissa correta (avaliar base legal e conservação, conforme fixture-0 e fixture-4), mas as consequências jurídicas (ANPD, ação judicial, dano moral) não estão sustentadas pelas fontes fornecidas.",
+                "conversational": false,
+                "supported": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros."
+                  },
+                  {
+                    "chunkId": "fixture-4",
+                    "quote": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação. Se não houver suporte suficiente, declare esse limite."
+                  },
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu41rSBmJ6ECViNLCEa",
+      "kind": "verification",
+      "latencyMs": 4621,
+      "usage": {
+        "input_tokens": 1984,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 425,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01VeLhcyhMm8tJakjFMLZwsm",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) o titular pode pedir eliminação de dados tratados com consentimento; (2) há exceções; (3) as exceções incluem obrigação legal, cumprimento de contrato e interesse legítimo que prevalece. Verificação: fixture-0 sustenta (1) e (2) explicitamente ('O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação'). Sustenta obrigação legal como exceção ('A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros'). Contudo, fixture-0 NÃO menciona 'cumprimento de contrato' nem 'interesse legítimo que prevalece' como exceções. A unidade acrescenta duas exceções não presentes na fonte. Fixture-4 menciona 'base legal' e 'hipóteses de conservação' mas não enumera as exceções específicas. A afirmação sobre 'interesse legítimo que prevalece' não encontra suporte textual nas fontes fornecidas. A afirmação sobre 'cumprimento de contrato' também não está explícita. Apenas a obrigação legal está sustentada.",
+                "conversational": false,
+                "supported": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu4MW8suN34LRxXXFF5",
+      "kind": "verification",
+      "latencyMs": 5041,
+      "usage": {
+        "input_tokens": 1970,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 330,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_019YEYmn5DSEBbXuHiqaQcbx",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma duas proposições verificáveis: (1) o titular pode pedir a eliminação de dados tratados com consentimento; (2) há hipóteses legais de conservação que ressalvam essa eliminação. A fonte fixture-0 sustenta ambas as afirmações de forma literal e integral: 'O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação.' A fonte fixture-4 complementa ao mencionar que na recusa de exclusão é preciso avaliar base legal, finalidade e hipóteses de conservação, reforçando a existência dessas ressalvas. Não há conflito com as demais fontes. A unidade não faz afirmações sobre prazos específicos, danos morais, categorias de dados ou procedimentos adicionais que não estejam nas fontes. A paráfrase é fiel ao conteúdo de fixture-0.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu4j88ywwCvwZBagfuK",
+      "kind": "verification",
+      "latencyMs": 4189,
+      "usage": {
+        "input_tokens": 1955,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 522,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01W52tuxssQ8WYbzqgD8UK8b",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que 'A empresa deve apagar os dados em 15 dias'. Verificação das afirmações: (1) A empresa tem obrigação de apagar dados - fixture-0 confirma que o titular pode pedir eliminação de dados pessoais tratados com consentimento, ressalvadas hipóteses legais de conservação. Isso sustenta o direito ao pedido, mas não obriga apagamento automático em todos os casos. (2) O prazo é de 15 dias - fixture-1 explicitamente nega que haja 'prazo universal de 15 dias para eliminar dados'. O art. 19, II refere-se a prazo de 15 dias para 'declaração completa para confirmação e acesso', não para eliminação. A unidade confunde prazos distintos. Fixture-4 menciona 'atendimento gratuito' e 'responda justificando a impossibilidade de atendimento imediato', sugerindo que recusas são possíveis e exigem análise de base legal e hipóteses de conservação. A afirmação de prazo fixo de 15 dias para apagamento não tem suporte nas fontes e contradiz fixture-1.",
+                "conversational": false,
+                "supported": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros."
+                  },
+                  {
+                    "chunkId": "fixture-1",
+                    "quote": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados."
+                  },
+                  {
+                    "chunkId": "fixture-4",
+                    "quote": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu534tg6D9VAE3g1BSR",
+      "kind": "verification",
+      "latencyMs": 3537,
+      "usage": {
+        "input_tokens": 1968,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 295,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01A9FAKKYx7zWKcdL4cxkJme",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que 'a declaração completa de acesso deve ser fornecida em até 15 dias, conforme o art. 19, II'. Verificação: (1) Existe prazo de 15 dias para declaração completa de acesso? (2) Esse prazo está no art. 19, II? A fonte fixture-1 confirma explicitamente: 'O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso.' Isso sustenta integralmente a afirmação da unidade quanto ao prazo (15 dias), ao tipo de declaração (completa para acesso) e à referência legal (art. 19, II). A afirmação é verificável, específica e encontra suporte textual direto na fonte.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-1",
+                    "quote": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu5J72SRmXMmYDt5rAL",
+      "kind": "verification",
+      "latencyMs": 3521,
+      "usage": {
+        "input_tokens": 1988,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 437,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01E7zNUuZVtV356BceuiRGYp",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que 'é preciso avaliar a base legal e as hipóteses de conservação' e que 'uma obrigação legal pode justificar manter determinados registros'. Verificação: (1) A necessidade de avaliar base legal e hipóteses de conservação é sustentada por fixture-0 ('O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação') e fixture-4 ('Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação'). (2) A afirmação de que obrigação legal pode justificar manter registros é sustentada por fixture-0 ('A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros'). A unidade não faz afirmações sobre prazos, danos morais, estatísticas ou consequências jurídicas específicas; limita-se a descrever o procedimento de análise necessário. Todas as afirmações verificáveis encontram suporte textual direto nas fontes.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros."
+                  },
+                  {
+                    "chunkId": "fixture-4",
+                    "quote": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu5ZBdPbk9wq6pvHMpJ",
+      "kind": "verification",
+      "latencyMs": 3261,
+      "usage": {
+        "input_tokens": 1973,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 357,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01TraPRWZEUMGnc4PnZdUTYm",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que 'basta a recusa de exclusão para gerar indenização presumida'. Verificação: (1) A recusa de exclusão gera automaticamente indenização? (2) Essa indenização é presumida? Análise das fontes: fixture-2 reconhece dano moral presumido especificamente em vazamento de dados sensíveis de seguro de vida (REsp 2.121.904/SP), mas explicitamente adverte que 'não se pode transportar essa conclusão automaticamente para recusa de exclusão'. Fixture-4 orienta avaliar base legal, finalidade e hipóteses de conservação na recusa, sem mencionar indenização presumida. Nenhuma fonte sustenta que a mera recusa de exclusão, por si só, gera indenização presumida. O precedente citado é específico para vazamento, não para recusa de exclusão. A afirmação generaliza indevidamente uma conclusão de caso particular.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu5o5HoR6pUYkPyFbJR",
+      "kind": "verification",
+      "latencyMs": 3294,
+      "usage": {
+        "input_tokens": 1970,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 248,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01MBtJQP5MyfHAqowVcHiFNS",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: 'A maioria dos pequenos empresários perde essas ações.' Trata-se de uma afirmação estatística sobre taxa de sucesso/insucesso em ações judiciais de recusa de exclusão de dados. Nenhuma das fontes fornecidas contém estatística sobre resultado de ações judiciais, taxa de vitória ou derrota de empresários em litígios sobre exclusão de dados. A fonte fixture-3 explicitamente nega conter 'estatística nesta fonte sobre probabilidade de vitória judicial'. As demais fontes tratam de direitos, prazos, dano moral em contexto específico e procedimento de avaliação, mas nenhuma fornece dados empíricos sobre resultado de ações. A afirmação não tem suporte textual nas fontes.",
+                "supported": false,
+                "conversational": false,
+                "evidence": []
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu63C783yghrccTF8Hf",
+      "kind": "verification",
+      "latencyMs": 3791,
+      "usage": {
+        "input_tokens": 1981,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 445,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01BToUKQYCiaLoXQa2d751TY",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma duas proposições verificáveis: (1) 'Todo dado financeiro é dado sensível' e (2) 'gera indenização automática'. Análise: (1) Fixture-3 afirma explicitamente que 'Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II' e que 'O conteúdo pode revelar informação sensível' — ou seja, nem todo dado financeiro é sensível; depende do conteúdo. A unidade nega essa nuance ao usar 'todo'. (2) Fixture-2 trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido naquele contexto específico, mas afirma explicitamente 'Não se pode transportar essa conclusão automaticamente para recusa de exclusão'. A unidade generaliza para 'indenização automática' sem suporte. Fixture-3 também nega estatística sobre probabilidade de vitória. Nenhuma fonte sustenta que dados financeiros geram indenização automática por recusa de exclusão.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-3",
+                    "quote": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível."
+                  },
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "Não se pode transportar essa conclusão automaticamente para recusa de exclusão."
+                  },
+                  {
+                    "chunkId": "fixture-3",
+                    "quote": "Não há estatística nesta fonte sobre probabilidade de vitória judicial."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu6KUPw82fvMsiNrCba",
+      "kind": "verification",
+      "latencyMs": 3074,
+      "usage": {
+        "input_tokens": 1990,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 295,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01EC3Ma9Goym2C3i1eTFK2hi",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma duas proposições verificáveis: (1) 'Dados financeiros não são automaticamente dados sensíveis' e (2) 'o conteúdo pode revelar informação sensível'. A fonte fixture-3 sustenta ambas as afirmações de forma explícita: 'Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível.' A unidade é uma paráfrase fiel e delimitada ao mesmo contexto descrito na fonte, sem acréscimo de condições adicionais ou extensão a outros casos. Não há inferência indevida nem aplicação a hipóteses não cobertas pela fonte.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-3",
+                    "quote": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu6YaSdHy8sKFWLpSLW",
+      "kind": "verification",
+      "latencyMs": 3268,
+      "usage": {
+        "input_tokens": 1981,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 279,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01XCMZz9fSWtvmKjXkWnpGLj",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que: (1) no REsp 2.121.904/SP houve vazamento de dados sensíveis em seguro de vida; (2) foi reconhecido dano moral presumido nesse contexto. A fonte fixture-2 confirma explicitamente que 'O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto'. A unidade é uma paráfrase fiel e expressamente delimitada ao mesmo precedente e contexto descritos na fonte, sem extrapolação para outros casos ou regras universais. Não há afirmações adicionais não sustentadas.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu6nY5EQQbb8sxwp1nJ",
+      "kind": "verification",
+      "latencyMs": 4708,
+      "usage": {
+        "input_tokens": 1998,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 416,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01C3LFUF5mzJqaMmzbm2CNcS",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que 'atraso na entrega gera o mesmo dano moral presumido do vazamento em seguro de vida'. Verificação: (1) A fonte fixture-2 reconhece dano moral presumido especificamente no contexto de vazamento de dados sensíveis em seguro de vida (REsp 2.121.904/SP). (2) A mesma fonte fixture-2 afirma explicitamente: 'Não se pode transportar essa conclusão automaticamente para recusa de exclusão'. (3) A unidade tenta transportar essa conclusão para um contexto completamente diverso: atraso na entrega de produto, que não envolve vazamento de dados nem dados sensíveis de seguro de vida. (4) Nenhuma fonte aborda atraso na entrega de produto ou sua relação com dano moral. (5) A unidade mistura dois contextos distintos (LGPD/dados pessoais vs. direito do consumidor/atraso de entrega) sem qualquer suporte nas fontes. A fonte fixture-2 proíbe explicitamente a transposição automática de conclusões de um precedente específico para outros contextos. A afirmação não tem suporte textual.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu78jXC54LD5uGWXw4T",
+      "kind": "verification",
+      "latencyMs": 4815,
+      "usage": {
+        "input_tokens": 1982,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 433,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_014L4HQpZ9qv4k4uEtG5Apeb",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que 'A recusa precisa ser avaliada considerando a base legal, a finalidade e as hipóteses de conservação.' Verificação: (1) A recusa deve ser avaliada - fixture-4 afirma explicitamente 'Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação'; (2) Os critérios mencionados (base legal, finalidade, hipóteses de conservação) estão presentes em fixture-4 e também em fixture-0, que menciona 'ressalvadas as hipóteses legais de conservação' e 'A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros'. A afirmação é uma paráfrase fiel e expressamente delimitada ao procedimento de análise de recusa, sem adicionar consequências jurídicas não sustentadas, sem invocar prazos específicos não mencionados, e sem transportar precedentes de outros contextos. A unidade não é puramente conversacional, pois enuncia um procedimento normativo de avaliação.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-4",
+                    "quote": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação."
+                  },
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu7VKFv8q7fMiN4j2eQ",
+      "kind": "verification",
+      "latencyMs": 3880,
+      "usage": {
+        "input_tokens": 1977,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 366,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_0129PKRccdz973KtU6YQyJb3",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Unidade puramente conversacional, sem afirmações verificáveis sobre direitos ou consequências jurídicas.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 1,
+                "analysis": "Afirmações verificáveis: (1) O titular pode pedir eliminação de dados tratados com consentimento; (2) Existem hipóteses legais de conservação que ressalvam essa eliminação. Verificação: fixture-0 afirma textualmente 'O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação.' Ambas as afirmações estão expressamente sustentadas. A unidade não faz afirmações sobre prazos específicos, responsabilidade por dano moral, reclamação à ANPD ou ação judicial, mantendo-se fiel ao escopo da fonte.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu7n93U5hXTtSjitRi3",
+      "kind": "verification",
+      "latencyMs": 4808,
+      "usage": {
+        "input_tokens": 2005,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 422,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01URy5yCDUmaUBe4gL251jM5",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Unidade puramente conversacional, sem afirmações verificáveis sobre direitos ou consequências jurídicas.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 1,
+                "analysis": "Afirmações verificáveis: (1) O titular pode pedir eliminação de dados tratados com consentimento; (2) Existem hipóteses legais de conservação que ressalvam essa eliminação. A fonte fixture-0 afirma exatamente: 'O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação.' A mesma fonte exemplifica conservação por obrigação legal. Ambas as afirmações estão integralmente sustentadas.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros."
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "analysis": "Unidade puramente conversacional, sem afirmações verificáveis sobre direitos ou consequências jurídicas.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu88b7niFdiJKrw9diN",
+      "kind": "verification",
+      "latencyMs": 2946,
+      "usage": {
+        "input_tokens": 1995,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 435,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01NcWiLaXRp2mnMvyEnnTF7g",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade contém duas afirmações verificáveis: (1) 'Não há prazo universal de 15 dias para apagar dados' e (2) 'Não se pode presumir indenização pela recusa de exclusão a partir do precedente sobre vazamento'. Verificação: A afirmação (1) é sustentada explicitamente por fixture-1, que afirma 'O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados.' A afirmação (2) é sustentada por fixture-2, que declara 'O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão.' Ambas as afirmações encontram suporte textual direto nas fontes fornecidas.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-1",
+                    "quote": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados."
+                  },
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão."
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu8MjPAbNoXW7WuvyKF",
+      "kind": "generation",
+      "latencyMs": 5789,
+      "usage": {
+        "input_tokens": 39,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 14498,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 416,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Olá! Ótima pergunta — sim, pode sim! \n\nPela LGPD, você tem o direito de solicitar a **eliminação dos seus dados pessoais** que foram coletados com consentimento. É o que a lei chama de \"direito ao esquecimento\". \n\nMas tem algumas ressalvas importantes:\n\n**Quando a gente NÃO precisa apagar:**\n- Quando há **obrigação legal** de guardar (ex.: notas fiscais por 5 anos, registros fiscais, obrigações tributárias)\n- Para **cumprir um contrato** que você ainda tem vigente\n- Se os dados forem necessários para uma **ação judicial** em andamento ou possível\n- Dados **anonimizados** (que não identificam mais você) — esses podem ficar\n\n**Como funciona na prática:**\nO titular (você, no caso) faz um pedido formal à empresa. Ela tem até **15 dias** pra responder se vai atender ou não. Se recusar, precisa justificar a razão legal — não pode ser \"não, porque queremos\".\n\nSe a empresa recusar sem motivo válido, você tem direito de reclamar à **Autoridade Nacional de Proteção de Dados (ANPD)** e, se necessário, processar.\n\n**No caso da JUDITH:**\nSeus dados estão protegidos sob a LGPD. Você tem direito de solicitar acesso, correção ou eliminação dos seus dados, respeitadas as obrigações legais de conservação (como registros de transações) — me avisa se precisar!\n\nFicou claro? Tem mais alguma dúvida sobre isso?"
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu8nbrCr3jrTNKb6vgi",
+      "kind": "verification",
+      "latencyMs": 11361,
+      "usage": {
+        "input_tokens": 2362,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1665,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_016NT89PYQpg8YpUxNPZy9H2",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Unidade puramente conversacional de abertura, sem afirmações verificáveis sobre direitos ou consequências jurídicas.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 1,
+                "analysis": "Afirmações verificáveis: (1) LGPD confere direito de solicitar eliminação de dados pessoais coletados com consentimento; (2) a lei chama isso de 'direito ao esquecimento'. Fonte fixture-0 sustenta a primeira afirmação explicitamente: 'O titular pode pedir a eliminação dos dados pessoais tratados com consentimento'. A segunda afirmação (nomenclatura 'direito ao esquecimento') é terminologia comum mas não está explicitamente na fonte fornecida. Porém, a fonte sustenta o direito em si. A unidade não afirma condições adicionais além do consentimento neste ponto.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento"
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "analysis": "Unidade puramente conversacional de transição, sem afirmações verificáveis sobre direitos ou consequências jurídicas.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 3,
+                "analysis": "Afirmações verificáveis: (1) não precisa apagar quando há obrigação legal de guardar (exemplos: notas fiscais 5 anos, registros fiscais, obrigações tributárias); (2) não precisa apagar para cumprir contrato vigente; (3) não precisa apagar se dados necessários para ação judicial em andamento ou possível; (4) dados anonimizados podem ficar. Fonte fixture-0 sustenta genericamente 'ressalvadas as hipóteses legais de conservação' e menciona 'cumprimento de obrigação legal'. Porém, não especifica os prazos (5 anos para notas fiscais) nem enumera as exceções específicas listadas (contrato vigente, ação judicial, anonimização). A fonte é insuficiente para sustentar cada exceção específica e seus exemplos concretos. A unidade mistura afirmações com suporte parcial (obrigação legal) com afirmações sem suporte explícito (contrato vigente, ação judicial, anonimização).",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros"
+                  }
+                ]
+              },
+              {
+                "index": 4,
+                "analysis": "Afirmações verificáveis: (1) titular faz pedido formal à empresa; (2) empresa tem até 15 dias para responder se vai atender ou não; (3) se recusar, precisa justificar a razão legal. Fonte fixture-1 afirma explicitamente: 'O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados.' Isso contradiz a afirmação de que a empresa tem 15 dias para responder sobre eliminação. A fonte nega que o prazo de 15 dias se aplique à eliminação. A terceira afirmação (justificativa obrigatória em caso de recusa) não está explicitamente sustentada pelas fontes fornecidas.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-1",
+                    "quote": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados"
+                  }
+                ]
+              },
+              {
+                "index": 5,
+                "analysis": "Afirmações verificáveis: (1) se empresa recusar sem motivo válido, titular tem direito de reclamar à ANPD; (2) se necessário, pode processar (ação judicial). Nenhuma das fontes fornecidas sustenta explicitamente essas consequências. Fixture-4 menciona 'responda justificando a impossibilidade de atendimento imediato' mas não afirma direito de reclamação à ANPD ou ação judicial. Fixture-2 trata de vazamento e dano moral, não de recusa de exclusão. As afirmações carecem de suporte textual nas fontes.",
+                "supported": false,
+                "conversational": false,
+                "evidence": []
+              },
+              {
+                "index": 6,
+                "analysis": "Afirmações verificáveis: (1) dados estão protegidos sob LGPD; (2) titular tem direito de solicitar acesso, correção ou eliminação; (3) respeitadas obrigações legais de conservação (exemplo: registros de transações). A primeira e segunda afirmações têm suporte geral em fixture-0 (direito de eliminação com ressalvas). A terceira afirmação (exemplo de registros de transações) não está explicitamente mencionada nas fontes. Fixture-0 menciona 'cumprimento de obrigação legal' genericamente, mas não especifica 'registros de transações' como exemplo. A unidade também é dirigida a 'JUDITH' (pessoa específica), o que não está nas fontes.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação"
+                  }
+                ]
+              },
+              {
+                "index": 7,
+                "analysis": "Unidade puramente conversacional de fechamento, sem afirmações verificáveis sobre direitos ou consequências jurídicas.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNu9ded5XSiRY3Miodxm",
+      "kind": "generation",
+      "latencyMs": 6656,
+      "usage": {
+        "input_tokens": 52,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 14498,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 466,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Oi! Ótima pergunta — vou te explicar como funciona isso.\n\n**Sim, pela LGPD você pode pedir apagamento.** É o chamado \"direito ao esquecimento\" — está no art. 18, inciso II da lei. O titular (a pessoa) pode solicitar à empresa que elimine os dados pessoais dela.\n\n**Mas tem um \"porém\" importante:**\n\nA empresa pode se recusar — e legalmente — se houver uma **base legal para manter os dados**, como:\n\n- 📋 **Cumprimento de obrigação legal** — ex.: dados fiscais, trabalhistas ou contábeis que a lei exige guardar por certo tempo\n- ⚖️ **Processo judicial em andamento** — dados são prova\n- 💳 **Cobrança de dívida** — se o cliente deve, o dado fica até liquidar\n- 🔍 **Investigação de fraude**\n\n**E se se recusar sem motivo legal válido?**\n\nAí sim vira problema. O titular pode:\n\n1. **Reclamar na Autoridade Nacional de Proteção de Dados (ANPD)** — é órgão federal que fiscaliza a LGPD\n2. **Processar a empresa** — tanto por dano moral quanto para forçar o cumprimento\n\nA empresa que não apaga dados sem justificativa legal válida corre risco de multa (até 2% do faturamento anual, limitado a R$ 50 milhões) e condenação por dano moral.\n\n**Na prática:** a empresa precisa documentar POR QUE está retendo os dados. Se disser \"sim, vou apagar\" e não fizer, ou não tiver explicação plausível, está em risco.\n\nFicou claro? Tem alguma situação específica que tu tá enfrentando com isso?"
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNuA8gdNbodeKCUgp17k",
+      "kind": "verification",
+      "latencyMs": 9984,
+      "usage": {
+        "input_tokens": 2422,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1664,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_0124x4Ur9pp7x9oqUEUEvjUq",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Unidade puramente conversacional de abertura.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 1,
+                "analysis": "Afirmação 1: 'Sim, pela LGPD você pode pedir apagamento' — suportado por fixture-0 que reconhece o direito de pedir eliminação. Afirmação 2: 'É o chamado direito ao esquecimento — está no art. 18, inciso II da lei' — fixture-0 não menciona art. 18, II nem usa a expressão 'direito ao esquecimento'. Afirmação 3: 'O titular (a pessoa) pode solicitar à empresa que elimine os dados pessoais dela' — suportado por fixture-0. A unidade afirma localização legal específica (art. 18, II) não presente nas fontes.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento"
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "analysis": "Unidade puramente conversacional de transição.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 3,
+                "analysis": "Afirmação: 'A empresa pode se recusar — e legalmente — se houver uma base legal para manter os dados'. Fixture-0 afirma 'ressalvadas as hipóteses legais de conservação', o que sustenta que há exceções legais. A unidade parafraseia fielmente esse conceito.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "ressalvadas as hipóteses legais de conservação"
+                  }
+                ]
+              },
+              {
+                "index": 4,
+                "analysis": "Afirmação 1: 'Cumprimento de obrigação legal — ex.: dados fiscais, trabalhistas ou contábeis que a lei exige guardar por certo tempo' — fixture-0 menciona 'conservação para cumprimento de obrigação legal' mas não especifica exemplos (fiscais, trabalhistas, contábeis) nem prazos. Afirmação 2: 'Processo judicial em andamento — dados são prova' — não consta nas fontes. Afirmação 3: 'Cobrança de dívida — se o cliente deve, o dado fica até liquidar' — não consta nas fontes. Afirmação 4: 'Investigação de fraude' — não consta nas fontes. Apenas a primeira afirmação tem suporte parcial (base legal genérica), mas os exemplos específicos e as demais hipóteses não estão nas fontes.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros"
+                  }
+                ]
+              },
+              {
+                "index": 5,
+                "analysis": "Unidade puramente conversacional de transição.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 6,
+                "analysis": "Afirmação 1: 'O titular pode reclamar na Autoridade Nacional de Proteção de Dados (ANPD)' — não consta nas fontes. Afirmação 2: 'É órgão federal que fiscaliza a LGPD' — não consta nas fontes. Afirmação 3: 'Processar a empresa — tanto por dano moral quanto para forçar o cumprimento' — não consta nas fontes. Fixture-2 menciona dano moral em contexto específico de vazamento, não de recusa de exclusão.",
+                "supported": false,
+                "conversational": false,
+                "evidence": []
+              },
+              {
+                "index": 7,
+                "analysis": "Afirmação 1: 'A empresa que não apaga dados sem justificativa legal válida corre risco de multa (até 2% do faturamento anual, limitado a R$ 50 milhões)' — não consta nas fontes. Afirmação 2: 'e condenação por dano moral' — fixture-2 reconhece dano moral presumido em vazamento de dados sensíveis de seguro de vida, mas fixture-2 explicitamente adverte que 'Não se pode transportar essa conclusão automaticamente para recusa de exclusão'. Afirmação 3: 'A empresa que não apaga dados sem justificativa legal válida' — não há suporte para consequências específicas de recusa sem justificativa.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "Não se pode transportar essa conclusão automaticamente para recusa de exclusão"
+                  }
+                ]
+              },
+              {
+                "index": 8,
+                "analysis": "Afirmação: 'Na prática: a empresa precisa documentar POR QUE está retendo os dados. Se disser \"sim, vou apagar\" e não fizer, ou não tiver explicação plausível, está em risco.' — fixture-4 afirma 'Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação', o que sustenta a necessidade de justificativa. Porém, a unidade não especifica quais são os riscos concretos, apenas afirma 'está em risco' de forma genérica.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-4",
+                    "quote": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação"
+                  }
+                ]
+              },
+              {
+                "index": 9,
+                "analysis": "Unidade puramente conversacional de encerramento.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNuAu75KSJBnqsGAvqh6",
+      "kind": "generation",
+      "latencyMs": 5015,
+      "usage": {
+        "input_tokens": 72,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 14498,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 330,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Oi! Vou te ajudar com essas três perguntas sobre LGPD.\n\n**Direito de eliminação:**\nSim, todo cliente pode pedir a eliminação dos dados pessoais que você tem dele — é o direito de apagamento, previsto na LGPD. Mas existem exceções: você pode conservar os dados se houver obrigação legal (nota fiscal, contrato, comprovante fiscal), se precisar deles para cumprir uma obrigação legal, ou se houver razão legítima para manter — como cumprimento de contrato ou defesa em caso de disputa.\n\n**Se recusar sem base legal:**\nSe você se recusar sem ter uma dessas justificativas, o cliente pode denunciar à Autoridade Nacional de Proteção de Dados (ANPD) ou até buscar reparação na Justiça — potencial de indenização por dano moral. O risco aumenta se os dados forem **sensíveis** (saúde, origem racial, convicção religiosa) ou se forem **vazados**.\n\n---\n\n**Em uma frase:** Dados financeiros em si não são automaticamente sensíveis — dependem do conteúdo (se revelam informação sensível ou não, caso a caso).\n\n---\n\nFicou claro? Posso te ajudar em mais alguma coisa?"
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNuBGUDLjGMEs7bCafLE",
+      "kind": "verification",
+      "latencyMs": 7921,
+      "usage": {
+        "input_tokens": 2305,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1141,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01Ska7JFCBpRPLEDcswtoACt",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Unidade puramente conversacional de abertura.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 1,
+                "analysis": "Afirmações verificáveis: (1) cliente pode pedir eliminação de dados pessoais — sustentado por fixture-0 'O titular pode pedir a eliminação dos dados pessoais'; (2) é direito de apagamento previsto na LGPD — não há citação explícita de 'direito de apagamento' ou 'LGPD' nas fontes fornecidas, apenas referência genérica ao direito; (3) existem exceções: obrigação legal, contrato, comprovante fiscal — fixture-0 menciona 'hipóteses legais de conservação' e 'cumprimento de obrigação legal', mas não enumera especificamente 'contrato' ou 'comprovante fiscal' como exceções; (4) razão legítima para manter — não está explicitamente nas fontes fornecidas; (5) cumprimento de contrato ou defesa em caso de disputa — não está nas fontes. A unidade mistura afirmações com suporte parcial e sem suporte.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-0",
+                    "quote": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros."
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "analysis": "Afirmações verificáveis: (1) recusa sem justificativa permite denúncia à ANPD — não está nas fontes; (2) possibilidade de buscar reparação na Justiça — não está nas fontes; (3) potencial de indenização por dano moral — fixture-2 menciona dano moral presumido em vazamento de dados sensíveis em seguro de vida, mas fixture-2 explicitamente adverte 'Não se pode transportar essa conclusão automaticamente para recusa de exclusão'; (4) risco aumenta se dados forem sensíveis — não há suporte para essa generalização; (5) risco aumenta se forem vazados — fixture-2 trata vazamento, não recusa de exclusão. A unidade aplica precedente específico (vazamento) a contexto diferente (recusa) contra advertência explícita da fonte.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-2",
+                    "quote": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão."
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "analysis": "Unidade de transição conversacional.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              },
+              {
+                "index": 4,
+                "analysis": "Afirmação verificável: 'Dados financeiros em si não são automaticamente sensíveis — dependem do conteúdo (se revelam informação sensível ou não, caso a caso)'. Fixture-3 afirma: 'Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível.' A afirmação é paráfrase fiel e expressamente delimitada ao mesmo contexto descrito na fonte.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "fixture-3",
+                    "quote": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível."
+                  }
+                ]
+              },
+              {
+                "index": 5,
+                "analysis": "Unidade puramente conversacional de encerramento.",
+                "supported": true,
+                "conversational": true,
+                "evidence": []
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNuBsT9RpDC1vi2hersT",
+      "kind": "generation",
+      "latencyMs": 5506,
+      "usage": {
+        "input_tokens": 98,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 14498,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 431,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Oi! Vou te explicar isso com clareza.\n\n**Sim, pode pedir eliminação.** Pela LGPD, o titular tem direito de solicitar a exclusão de dados pessoais que foram coletados com consentimento — mas existem exceções legais. Se a empresa está obrigada por lei a manter aqueles dados (ex.: registros fiscais, obrigações contábeis, determinação judicial), ela pode se recusar legitimamente.\n\n**Se a empresa se recusar sem motivo legal válido**, o titular pode reclamar na Autoridade Nacional de Proteção de Dados (ANPD) ou até entrar com ação judicial por violação de direitos. A empresa que descumpre sofre sanções: multa de até 2% do faturamento anual (limitado a R$ 50 milhões por infração) e pode ser condenada a indenizar o dano moral.\n\n---\n\n**Quanto a dados financeiros serem automaticamente sensíveis:** Não. Dados financeiros, como categoria genérica, não estão no rol de dados sensíveis da LGPD (art. 5º, II) — mas o **conteúdo pode revelar uma informação sensível** (ex.: dados que exponham origem racial, convicção política, saúde). A sensibilidade depende do caso concreto.\n\n**Se a empresa se recusar a apagar (novamente):** O caminho é o mesmo — reclamação na ANPD ou ação judicial. O juiz avaliará se havia base legal para manter ou se foi abuso. Se condenar, a empresa reembolsa os danos morais + custas e pode levar multa administrativa também.\n\nFicou claro? Posso ajudar em mais alguma coisa?"
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNuCHdCGRj7Bzu3banuw",
+      "kind": "generation",
+      "latencyMs": 5947,
+      "usage": {
+        "input_tokens": 111,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 14498,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 427,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Oi! Vou te responder sobre LGPD e direito de exclusão.\n\n**Sobre o direito de apagar:**\nSim, o cliente pode pedir a eliminação dos dados pessoais que você trata — é o direito ao \"esquecimento\". Mas existem exceções: se você tem obrigação legal de guardar aqueles dados (recibos fiscais, documentos contábeis, comprovantes de transação), você pode se recusar e manter os dados armazenados justificando a base legal.\n\n**Se a empresa se recusar sem justificativa legal:**\nSe a recusa não tiver base legal válida, o cliente pode reclamar na Autoridade Nacional de Proteção de Dados (ANPD) ou, em alguns casos, ajuizar ação por dano moral — especialmente se os dados forem sensíveis (dados de saúde, financeiro que revele situação delicada, etc.).\n\n**Dados financeiros são automaticamente sensíveis?**\nNão. A LGPD tem uma categoria específica de dados sensíveis (saúde, origem racial, religião, etc.), e dados financeiros não estão automaticamente ali — mas PODEM revelar informação sensível dependendo do caso (ex.: compra de medicamento que indica doença).\n\n---\n\nA recusa legítima é aquela que se apoia em lei: obrigação fiscal, contábil, judiciária. Qualquer outra recusa pode virar problema. O caminho mais seguro é: se o cliente pede para apagar, você avalia se tem obrigação legal de manter — se tiver, explica qual lei exige isso; se não tiver, você apaga.\n\nFicou claro? Posso te ajudar em mais alguma coisa?"
+        }
+      ]
+    },
+    {
+      "id": "msg_011CfNuCk1C84RSoGGYy1VR1",
+      "kind": "generation",
+      "latencyMs": 4409,
+      "usage": {
+        "input_tokens": 124,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 14498,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 346,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Olá! Vou te ajudar com essas dúvidas sobre LGPD.\n\n**Eliminação de dados pela LGPD:**\nSim, o titular pode pedir a exclusão de seus dados pessoais. Mas existem exceções — a empresa pode se recusar se precisar guardar aqueles dados por obrigação legal (ex.: comprovante de pagamento por 5 anos para a Receita Federal). A lei permite recusa justificada; não é \"quer ou não quer\".\n\n**Se a empresa se recusar sem justificativa:**\nAí o titular tem direito de reclamar na Autoridade Nacional de Proteção de Dados (ANPD) — é o órgão que fiscaliza o cumprimento da LGPD. A ANPD pode investigar e aplicar multa à empresa se confirmar que a recusa foi indevida. Dependendo do caso, também pode caber ação judicial pedindo indenização por dano moral.\n\n**Dados financeiros são automaticamente dados sensíveis?**\nNão — a categoria \"dados financeiros\" em si não é automaticamente sensível. Mas se o conteúdo específico revelar origem racial, convicção religiosa, saúde ou informação íntima, aí entra na categoria sensível e a proteção é ainda mais rigorosa.\n\nFicou claro? Posso aprofundar em algum ponto!"
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "kind": "audit-missing",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "TRACE_UNAVAILABLE",
+      "latencyMs": 92
+    },
+    {
+      "kind": "verification-unavailable",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "SUPPORT_UNAVAILABLE",
+      "latencyMs": 5611
+    },
+    {
+      "kind": "verification-rejected",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 6145
+    },
+    {
+      "kind": "audit-final-write",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "TRACE_UNAVAILABLE",
+      "latencyMs": 4576
+    }
+  ],
+  "finishedAt": "2026-09-24T20:32:32.237Z",
+  "preservationFinal": "flow-fixtures intentionally added after migration check"
+}

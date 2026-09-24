@@ -1,0 +1,16 @@
+{
+  "id": "cmufs52yd0004jq80mp1zcz2q",
+  "requestKey": "publish-18-receipt-eaugTQlC-20260924",
+  "activeKey": null,
+  "status": "failed",
+  "total": 18,
+  "processed": 18,
+  "result": null,
+  "errors": {
+    "code": "WORKER_INTERRUPTED",
+    "mensagem": "Lease expirou; solicite uma nova execução."
+  },
+  "leaseUntil": "2026-09-24T17:28:51.754Z",
+  "createdAt": "2026-09-24T17:02:19.190Z",
+  "updatedAt": "2026-09-24T17:28:53.505Z"
+}

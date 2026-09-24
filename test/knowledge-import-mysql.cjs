@@ -1,0 +1,54 @@
+// Disposable MariaDB only. Never load production .env or call any messaging/provider API.
+const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path');
+const url = new URL(process.env.DATABASE_URL);
+assert.equal(url.hostname, 'judith-import-test-db'); assert.equal(url.pathname, '/judith_import_test');
+assert.equal(process.env.KNOWLEDGE_ISOLATED_TEST, 'true');
+const { PrismaClient } = require('@prisma/client');
+const { execute, recover, canonical } = require('../scripts/knowledge-import-execute.cjs');
+const { hash } = require('../scripts/knowledge-import.cjs');
+const db = new PrismaClient(), db2 = new PrismaClient();
+const batchDir = '/app/review/knowledge-2026-09-24', manifestHash = hash(fs.readFileSync(batchDir + '/manifest.json'));
+const report = { at: new Date().toISOString(), database: 'isolated MariaDB 10.11', productionAccess: false, tests: [] };
+let number = 0;
+const opts = snapshot => ({ batchDir, manifestHash, snapshot, receiptPath: '/receipts/run-' + (++number) + '.json' });
+const snapshot = async () => ({ at: new Date().toISOString(), records: await db.fichaConhecimento.findMany({orderBy:{id:'asc'}}), promptHash: hash(JSON.stringify(await db.promptConfig.findMany({orderBy:{id:'asc'}}))) });
+const receipt = result => JSON.parse(fs.readFileSync(result.receipt));
+async function main() {
+ await db.$executeRawUnsafe("CREATE TABLE FichaConhecimento (id VARCHAR(191) PRIMARY KEY, slug VARCHAR(191) UNIQUE NOT NULL, titulo VARCHAR(191) NOT NULL, area VARCHAR(191) NOT NULL, status ENUM('RASCUNHO','EM_REVISAO','PUBLICADA') NOT NULL DEFAULT 'RASCUNHO', fontes JSON NOT NULL, conteudo LONGTEXT NOT NULL, ordem INTEGER NOT NULL DEFAULT 0, createdAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3), updatedAt DATETIME(3) NOT NULL) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+ await db.$executeRawUnsafe("CREATE TABLE PromptConfig (id VARCHAR(191) PRIMARY KEY, chave VARCHAR(191) UNIQUE NOT NULL, versao VARCHAR(191) NOT NULL, secaoA TEXT NOT NULL, secaoB TEXT NOT NULL, secaoC TEXT NOT NULL, atualizadoPor VARCHAR(191), createdAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3), updatedAt DATETIME(3) NOT NULL) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+ for (const statement of fs.readFileSync('/app/prisma/migrations/202609230001_knowledge_index/migration.sql','utf8').split(';').filter(s=>s.trim())) await db.$executeRawUnsafe(statement);
+ for(let i=0;i<17;i++) await db.fichaConhecimento.create({data:{slug:'legacy-'+i,titulo:'Synthetic preserved '+i,area:'legacy-invalid',status:'EM_REVISAO',fontes:[],conteudo:'Synthetic legacy '+i}});
+ await db.promptConfig.create({data:{chave:'PRINCIPAL',versao:'synthetic',secaoA:'A',secaoB:'B',secaoC:'C'}});
+ const baseline = await snapshot();
+ const first = await execute(db, opts(baseline)); assert.equal(first.created,18);assert.equal(await db.fichaConhecimento.count(),35);
+ assert.equal(await db.fichaConhecimento.count({where:{status:'PUBLICADA'}}),0);
+ assert.equal(await db.fichaConhecimento.count({where:{slug:'base-propaganda'}}),0);
+ report.tests.push({name:'import 18 real candidates, no publication, excluded Propaganda',...first});
+ const repeat = await execute(db,opts(baseline));assert.equal(repeat.created,0);assert.equal(repeat.skipped,18);report.tests.push({name:'repeat idempotent',...repeat});
+ assert.equal((await recover(db,receipt(repeat))).removed,0);
+ assert.equal((await recover(db,receipt(first))).removed,18);assert.equal((await recover(db,receipt(first))).removed,0);
+ report.tests.push({name:'selective recovery and recovery repeat',ok:true});
+ const example=JSON.parse(fs.readFileSync(batchDir+'/manifest.json')).candidates[0].metadata;
+ const conflict=await db.fichaConhecimento.create({data:{...example,conteudo:'Different existing text'}});
+ const conflictSnapshot=await snapshot();
+ await assert.rejects(execute(db,opts(conflictSnapshot)),/CONFLICT/);assert.equal(await db.fichaConhecimento.count(),18);
+ await db.fichaConhecimento.delete({where:{id:conflict.id}});report.tests.push({name:'existing slug conflict aborts whole batch',ok:true});
+ await assert.rejects(execute(db,opts(baseline),{afterCreate:async n=>{if(n===5)throw Error('INJECTED_PARTIAL_FAILURE');}}),/INJECTED_PARTIAL_FAILURE/);
+ assert.equal(await db.fichaConhecimento.count(),17);report.tests.push({name:'failure after fifth insert rolls back all five',ok:true});
+ const concurrent = await Promise.all([execute(db,opts(baseline),{afterCreate:async n=>{if(n===1)await new Promise(r=>setTimeout(r,200));}}),execute(db2,opts(baseline))]);
+ assert.deepEqual(concurrent.map(r=>r.created).sort((a,b)=>a-b),[0,18]);assert.equal(await db.fichaConhecimento.count(),35);
+ report.tests.push({name:'concurrent executors, one import and one skip',results:concurrent});
+ const winner=concurrent.find(r=>r.created===18), saved=receipt(winner), changed=saved.created.at(-1);
+ await db.fichaConhecimento.update({where:{id:changed.id},data:{titulo:'External edit'}});
+ await assert.rejects(recover(db,saved),/RECOVERY_RECORD_CHANGED/);assert.equal(await db.fichaConhecimento.count(),35);
+ // Test-only restore of the deliberate isolated edit, including exact timestamp.
+ await db.fichaConhecimento.update({where:{id:changed.id},data:{titulo:changed.titulo,updatedAt:new Date(changed.updatedAt)}});
+ assert.equal((await recover(db,saved)).removed,18);
+ report.tests.push({name:'edited record blocks selective recovery; prior deletions roll back',ok:true});
+ const extra=await db.fichaConhecimento.create({data:{slug:'external-new',titulo:'External',area:'civil',conteudo:'## X\nY'}});
+ await assert.rejects(execute(db,opts(baseline)),/UNEXPECTED_RECORDS/);await db.fichaConhecimento.delete({where:{id:extra.id}});
+ report.tests.push({name:'stale snapshot rejected',ok:true});
+ const final=await snapshot();assert.equal(canonical(final.records),canonical(baseline.records));assert.equal(final.promptHash,baseline.promptHash);
+ report.tests.push({name:'17 baseline records and prompt unchanged after all tests',ok:true});report.ok=true;
+}
+main().catch(e=>{report.ok=false;report.error=e.code||e.message;process.exitCode=1;}).finally(async()=>{console.log(JSON.stringify(report,null,2));await db.$disconnect();await db2.$disconnect();});

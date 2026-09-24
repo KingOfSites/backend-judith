@@ -45,6 +45,12 @@ export async function getPromptVersao(): Promise<string> {
 export async function getPromptPrincipal(): Promise<string> {
   return (await carregarSecoes()).A;
 }
+
+// Text and version must come from the same cached snapshot.
+export async function getPrincipalSnapshot() {
+  const sections = await carregarSecoes();
+  return { text: sections.A, version: sections.versao };
+}
 /** Seção B — Redação de documentos. Só quando o usuário pede pra redigir. */
 export async function getPromptRedacao(): Promise<string> {
   return (await carregarSecoes()).B;

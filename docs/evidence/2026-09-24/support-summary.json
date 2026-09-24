@@ -1,0 +1,190 @@
+{
+  "startedAt": "2026-09-24T20:30:24.102Z",
+  "finishedAt": "2026-09-24T20:32:32.237Z",
+  "fatal": null,
+  "migration": [
+    "missing table fails closed",
+    "migration preserves existing users/sources/prompts/credits/payments",
+    "JSON unicode roundtrip and duplicate does not overwrite",
+    "missing update and transaction rollback",
+    "concurrent create has exactly one winner",
+    "read-only SQL permission fails safely"
+  ],
+  "cases": [
+    {
+      "name": "invalid-mixed-consequences",
+      "expected": false,
+      "supported": false,
+      "pass": true
+    },
+    {
+      "name": "invalid-mixed-bases",
+      "expected": false,
+      "supported": false,
+      "pass": true
+    },
+    {
+      "name": "valid-deletion",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "invalid-15-day-deletion",
+      "expected": false,
+      "supported": false,
+      "pass": true
+    },
+    {
+      "name": "valid-access-deadline",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "valid-refusal-continuation",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "invalid-refusal-presumed",
+      "expected": false,
+      "supported": false,
+      "pass": true
+    },
+    {
+      "name": "invalid-majority",
+      "expected": false,
+      "supported": false,
+      "pass": true
+    },
+    {
+      "name": "invalid-financial",
+      "expected": false,
+      "supported": false,
+      "pass": true
+    },
+    {
+      "name": "valid-financial",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "valid-vazamento",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "invalid-topic-transfer",
+      "expected": false,
+      "supported": false,
+      "pass": true
+    },
+    {
+      "name": "valid-limit",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "valid-conversational",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "valid-friendly-conversational",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    },
+    {
+      "name": "valid-no-transfer",
+      "expected": true,
+      "supported": true,
+      "pass": true
+    }
+  ],
+  "flows": [
+    {
+      "question": "Pela LGPD, um cliente pode pedir a eliminação de dados?",
+      "latencyMs": 17276,
+      "creditDelta": 0,
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT"
+    },
+    {
+      "question": "E se a empresa se recusar a apagar?",
+      "latencyMs": 16764,
+      "creditDelta": 0,
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT"
+    },
+    {
+      "question": "Responda em uma frase: dados financeiros são automaticamente dados sensíveis?",
+      "latencyMs": 13434,
+      "creditDelta": 0,
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT"
+    }
+  ],
+  "failures": [
+    {
+      "kind": "audit-missing",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "TRACE_UNAVAILABLE",
+      "latencyMs": 92
+    },
+    {
+      "kind": "verification-unavailable",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "SUPPORT_UNAVAILABLE",
+      "latencyMs": 5611
+    },
+    {
+      "kind": "verification-rejected",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 6145
+    },
+    {
+      "kind": "audit-final-write",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "TRACE_UNAVAILABLE",
+      "latencyMs": 4576
+    }
+  ],
+  "verification": {
+    "calls": 19,
+    "latencyMinMs": 2946,
+    "latencyMedianMs": 4189,
+    "latencyMaxMs": 11361,
+    "tokens": {
+      "input_tokens": 38824,
+      "output_tokens": 10765,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0
+    }
+  },
+  "generation": {
+    "calls": 6,
+    "latencyMinMs": 4409,
+    "latencyMedianMs": 5647.5,
+    "latencyMaxMs": 6656,
+    "tokens": {
+      "input_tokens": 496,
+      "output_tokens": 2416,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 86988
+    }
+  },
+  "sha256": "e09cd15c489940425c19a6c055124ac62e12c74f595b08519b2c4fe731c656c3"
+}

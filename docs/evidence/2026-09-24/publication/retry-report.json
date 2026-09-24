@@ -1,0 +1,35 @@
+{
+  "at": "2026-09-24T17:29:05.449Z",
+  "oneOffSwapTimeoutMs": 240000,
+  "embeddingCalls": 0,
+  "transactionErrors": [],
+  "jobId": "cmuft3jns000048hx5evejp7k",
+  "job": {
+    "id": "cmuft3jns000048hx5evejp7k",
+    "requestKey": "publish-18-receipt-eaugTQlC-retry-240s",
+    "activeKey": null,
+    "status": "completed",
+    "total": 18,
+    "processed": 18,
+    "result": {
+      "changed": 18,
+      "unchanged": 0,
+      "removed": 0,
+      "embeddingsCreated": 0,
+      "embeddingsReused": 503,
+      "chunks": 503,
+      "chunksCreated": 503,
+      "chunksUpdated": 0,
+      "chunksRepositioned": 0,
+      "chunksUnchanged": 0,
+      "chunksRemoved": 0,
+      "areaLinksAdded": 542,
+      "areaLinksRemoved": 0
+    },
+    "errors": null,
+    "leaseUntil": null,
+    "createdAt": "2026-09-24T17:29:07.144Z",
+    "updatedAt": "2026-09-24T17:36:36.279Z"
+  },
+  "ok": true
+}

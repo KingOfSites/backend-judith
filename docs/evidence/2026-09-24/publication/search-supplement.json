@@ -1,0 +1,113 @@
+{
+  "at": "2026-09-24T17:38:05.322Z",
+  "realProviders": true,
+  "cases": [
+    {
+      "question": "Quais são as regras de licenciamento ambiental e responsabilidade por poluição sonora na legislação ambiental?",
+      "expected": "ambiental",
+      "area": "ambiental",
+      "ok": true,
+      "results": [
+        {
+          "id": "cmuft9ymf004j48hx6kuu46gg",
+          "title": "JUDITH – Direito Ambiental: Resumo Prático",
+          "chapter": "CHUNK 2 — Licenciamento Ambiental",
+          "score": 0.8719217574074942,
+          "areas": [
+            "ambiental"
+          ]
+        },
+        {
+          "id": "cmufta89r006l48hx408ctz5g",
+          "title": "JUDITH – Direito Ambiental: Resumo Prático",
+          "chapter": "CHUNK A — Poluição Sonora: Bar, Casa Noturna e Restaurante",
+          "score": 0.8581207342490251,
+          "areas": [
+            "ambiental"
+          ]
+        },
+        {
+          "id": "cmuftabwp007d48hxkagi3b36",
+          "title": "JUDITH – Direito Ambiental: Resumo Prático",
+          "chapter": "CHUNK D — Licenciamento para Abrir Bar, Restaurante ou Casa Noturna: Alvará Sanitário e Licença Ambiental",
+          "score": 0.8575535642220197,
+          "areas": [
+            "ambiental"
+          ]
+        },
+        {
+          "id": "cmuft9y3u004f48hx2o23xpsa",
+          "title": "JUDITH – Direito Ambiental: Resumo Prático",
+          "chapter": "CHUNK 2 — Licenciamento Ambiental",
+          "score": 0.8555845850637627,
+          "areas": [
+            "ambiental"
+          ]
+        },
+        {
+          "id": "cmuft9z54004n48hxm5p10lci",
+          "title": "JUDITH – Direito Ambiental: Resumo Prático",
+          "chapter": "CHUNK 2 — Licenciamento Ambiental",
+          "score": 0.8478852035901769,
+          "areas": [
+            "ambiental"
+          ]
+        }
+      ]
+    },
+    {
+      "question": "Recebi uma multa da prefeitura. Como apresentar defesa no processo administrativo?",
+      "expected": "administrativo",
+      "area": "administrativo",
+      "ok": true,
+      "results": [
+        {
+          "id": "cmuftckhf00nh48hxwp5y7k70",
+          "title": "RAG FEITO — JUDITH: Direito Administrativo",
+          "chapter": "CHUNK 4 — Processo Administrativo (Lei 9.784/99)",
+          "score": 0.8712033570045672,
+          "areas": [
+            "administrativo"
+          ]
+        },
+        {
+          "id": "cmuftciwv00n548hxra9135d0",
+          "title": "RAG FEITO — JUDITH: Direito Administrativo",
+          "chapter": "CHUNK 1 — Atos Administrativos: Como Revisar uma Notificação, Multa ou Cassação de Alvará",
+          "score": 0.8672838360240464,
+          "areas": [
+            "administrativo"
+          ]
+        },
+        {
+          "id": "cmuftck7x00nf48hxiuf8x7z3",
+          "title": "RAG FEITO — JUDITH: Direito Administrativo",
+          "chapter": "CHUNK 4 — Processo Administrativo (Lei 9.784/99)",
+          "score": 0.8645703438486183,
+          "areas": [
+            "administrativo"
+          ]
+        },
+        {
+          "id": "cmuftcjp700nb48hxcb2juuj4",
+          "title": "RAG FEITO — JUDITH: Direito Administrativo",
+          "chapter": "CHUNK 3 — Responsabilidade Civil do Estado",
+          "score": 0.862235375551426,
+          "areas": [
+            "administrativo"
+          ]
+        },
+        {
+          "id": "cmuftcj6a00n748hxsasrd9k4",
+          "title": "RAG FEITO — JUDITH: Direito Administrativo",
+          "chapter": "CHUNK 1 — Atos Administrativos: Como Revisar uma Notificação, Multa ou Cassação de Alvará",
+          "score": 0.8518924196467633,
+          "areas": [
+            "administrativo"
+          ]
+        }
+      ]
+    }
+  ],
+  "ok": true
+}

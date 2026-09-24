@@ -1,0 +1,669 @@
+{
+  "startedAt": "2026-09-24T20:20:48.409Z",
+  "productionWrites": false,
+  "whatsappCalls": 0,
+  "migration": [
+    "missing table fails closed",
+    "migration preserves existing users/sources/prompts/credits/payments",
+    "JSON unicode roundtrip and duplicate does not overwrite",
+    "missing update and transaction rollback",
+    "concurrent create has exactly one winner",
+    "read-only SQL permission fails safely"
+  ],
+  "cases": [
+    {
+      "name": "valid-deletion",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNtKEyX6aRztPNRUv4Xd",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-0"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtKEyX6aRztPNRUv4Xd",
+        "latencyMs": 1831,
+        "usage": {
+          "input_tokens": 1507,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 105,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1837,
+      "pass": true
+    },
+    {
+      "name": "invalid-15-day-deletion",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNtKMSxzyhWfmAsab9hd",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtKMSxzyhWfmAsab9hd",
+        "latencyMs": 1380,
+        "usage": {
+          "input_tokens": 1492,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 123,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1380,
+      "pass": true
+    },
+    {
+      "name": "valid-access-deadline",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNtKT81uwox4GUtmMohB",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-1"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtKT81uwox4GUtmMohB",
+        "latencyMs": 1037,
+        "usage": {
+          "input_tokens": 1505,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 103,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1037,
+      "pass": true
+    },
+    {
+      "name": "valid-refusal-continuation",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNtKXqJFuTiXR8g2677p",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-0",
+            "fixture-4"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtKXqJFuTiXR8g2677p",
+        "latencyMs": 1916,
+        "usage": {
+          "input_tokens": 1525,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 172,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1917,
+      "pass": true
+    },
+    {
+      "name": "invalid-refusal-presumed",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNtKfoWzt7ZkJSR3bWC6",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtKfoWzt7ZkJSR3bWC6",
+        "latencyMs": 1444,
+        "usage": {
+          "input_tokens": 1510,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 186,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1444,
+      "pass": true
+    },
+    {
+      "name": "invalid-majority",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNtKmvs7bxwQrgwNH9DX",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtKmvs7bxwQrgwNH9DX",
+        "latencyMs": 1281,
+        "usage": {
+          "input_tokens": 1507,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 87,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1281,
+      "pass": true
+    },
+    {
+      "name": "invalid-financial",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNtKsTVRsELkyArNGS3m",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtKsTVRsELkyArNGS3m",
+        "latencyMs": 1897,
+        "usage": {
+          "input_tokens": 1518,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 177,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1897,
+      "pass": true
+    },
+    {
+      "name": "valid-financial",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNtL1f79ViRqY1ztrsNQ",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-3"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtL1f79ViRqY1ztrsNQ",
+        "latencyMs": 1265,
+        "usage": {
+          "input_tokens": 1527,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 117,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1265,
+      "pass": true
+    },
+    {
+      "name": "valid-vazamento",
+      "expected": true,
+      "supported": false,
+      "requestId": "msg_011CfNtL6reZFVdmzH2ATuW3",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtL6reZFVdmzH2ATuW3",
+        "latencyMs": 2385,
+        "usage": {
+          "input_tokens": 1518,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 235,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 2387,
+      "pass": false
+    },
+    {
+      "name": "invalid-topic-transfer",
+      "expected": false,
+      "supported": false,
+      "requestId": "msg_011CfNtLHC1TNKtdppSRGRKA",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtLHC1TNKtdppSRGRKA",
+        "latencyMs": 1564,
+        "usage": {
+          "input_tokens": 1535,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 221,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1566,
+      "pass": true
+    },
+    {
+      "name": "valid-limit",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNtLPyYVRkDKctGSo6Sz",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-0",
+            "fixture-4"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtLPyYVRkDKctGSo6Sz",
+        "latencyMs": 1359,
+        "usage": {
+          "input_tokens": 1519,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 172,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1359,
+      "pass": true
+    },
+    {
+      "name": "valid-conversational",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNtLW3vD7zcYgscbDGJh",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": []
+        },
+        {
+          "index": 1,
+          "chunkIds": [
+            "fixture-0"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtLW3vD7zcYgscbDGJh",
+        "latencyMs": 1405,
+        "usage": {
+          "input_tokens": 1514,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 166,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 1405,
+      "pass": true
+    },
+    {
+      "name": "valid-no-transfer",
+      "expected": true,
+      "supported": true,
+      "requestId": "msg_011CfNtLbjxtJn3pMWdfKkW3",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v1",
+      "evidence": [
+        {
+          "index": 0,
+          "chunkIds": [
+            "fixture-1",
+            "fixture-2"
+          ]
+        }
+      ],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfNtLbjxtJn3pMWdfKkW3",
+        "latencyMs": 2041,
+        "usage": {
+          "input_tokens": 1532,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 196,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "elapsedMs": 2042,
+      "pass": true
+    }
+  ],
+  "flows": [
+    {
+      "question": "Pela LGPD, um cliente pode pedir a eliminação de dados?",
+      "reply": "Não encontrei suporte suficiente para responder com segurança a esse ponto específico. Prefiro não afirmar prazos ou consequências sem essa referência. Consulte um advogado para avaliar o caso. Nenhum crédito foi consumido.",
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 13119,
+      "creditDelta": 0,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_rejected",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v1",
+        "area": "lgpd",
+        "searchQuery": "Pela LGPD, um cliente pode pedir a eliminação de dados?",
+        "chunks": [
+          {
+            "id": "fixture-0",
+            "sourceId": "synthetic-lgpd",
+            "version": "4a3f3d454447528bde0b8629a4f2d4597f4fd39fd063b3fdc36d2c7417580935",
+            "contentHash": "32e550b835745404819eb2ee788692363a8e96b0b3a265c3ca6401cd4ac79662",
+            "score": 0.9,
+            "content": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros.",
+            "chapter": "Fixture 0",
+            "fontes": []
+          },
+          {
+            "id": "fixture-1",
+            "sourceId": "synthetic-lgpd",
+            "version": "a830cafa45ec83010e006632005d06d3fd97b5568d92abfa5475b681960ae57b",
+            "contentHash": "80a607151bd222ff4891e1213bdfafb02729de935a41b535d306951dcb2c8269",
+            "score": 0.8,
+            "content": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados.",
+            "chapter": "Fixture 1",
+            "fontes": []
+          },
+          {
+            "id": "fixture-2",
+            "sourceId": "synthetic-lgpd",
+            "version": "027fa966fde2060a2a30a365925782ff10b744febf5e122828673a53a0f10cc7",
+            "contentHash": "1e40ea57226feff2a9791fd72fc16de6d6ba4cd21808a6b00a0e67f364eaf90d",
+            "score": 0.7,
+            "content": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão.",
+            "chapter": "Fixture 2",
+            "fontes": []
+          },
+          {
+            "id": "fixture-3",
+            "sourceId": "synthetic-lgpd",
+            "version": "52515fcac673837a060cf15e1865d21dd87756a7855d09d4f83456dbeb65c5f5",
+            "contentHash": "403d48e4f11431bce310bf50dffbaff195189866587f889da8a01f32453d4a66",
+            "score": 0.6000000000000001,
+            "content": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível. Não há estatística nesta fonte sobre probabilidade de vitória judicial.",
+            "chapter": "Fixture 3",
+            "fontes": []
+          },
+          {
+            "id": "fixture-4",
+            "sourceId": "synthetic-lgpd",
+            "version": "04219487b0d085d1d4bdb5a95612f2cf23a6d8311fa7ee7121a913d9a22092de",
+            "contentHash": "95f3c407320a2f75754666a52d1e40fa77fa6eb691fa42550f4d576e53e9627e",
+            "score": 0.5,
+            "content": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação. Se não houver suporte suficiente, declare esse limite. O atendimento é gratuito; responda justificando a impossibilidade de atendimento imediato.",
+            "chapter": "Fixture 4",
+            "fontes": []
+          }
+        ],
+        "generationId": "msg_011CfNtLmaKGyVyW5QFzSNVd",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "91a43451cc821383da28b0c5d7b6dfaa6182a7947597a6f6ed1563782db05fac",
+        "verification": {
+          "supported": false,
+          "requestId": "msg_011CfNtMGJTWNbp5HNQpCLDR",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v1",
+          "evidence": [],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfNtMGJTWNbp5HNQpCLDR",
+            "latencyMs": 6293,
+            "usage": {
+              "input_tokens": 1974,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 803,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    },
+    {
+      "question": "E se a empresa se recusar a apagar?",
+      "reply": "Não encontrei suporte suficiente para responder com segurança a esse ponto específico. Prefiro não afirmar prazos ou consequências sem essa referência. Consulte um advogado para avaliar o caso. Nenhum crédito foi consumido.",
+      "knowledgeFailure": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 13720,
+      "creditDelta": 0,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_rejected",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v1",
+        "area": "lgpd",
+        "searchQuery": "E se a empresa se recusar a apagar?",
+        "chunks": [
+          {
+            "id": "fixture-0",
+            "sourceId": "synthetic-lgpd",
+            "version": "4a3f3d454447528bde0b8629a4f2d4597f4fd39fd063b3fdc36d2c7417580935",
+            "contentHash": "32e550b835745404819eb2ee788692363a8e96b0b3a265c3ca6401cd4ac79662",
+            "score": 0.9,
+            "content": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação. A conservação para cumprimento de obrigação legal pode justificar não eliminar determinados registros.",
+            "chapter": "Fixture 0",
+            "fontes": []
+          },
+          {
+            "id": "fixture-1",
+            "sourceId": "synthetic-lgpd",
+            "version": "a830cafa45ec83010e006632005d06d3fd97b5568d92abfa5475b681960ae57b",
+            "contentHash": "80a607151bd222ff4891e1213bdfafb02729de935a41b535d306951dcb2c8269",
+            "score": 0.8,
+            "content": "O prazo de até 15 dias do art. 19, II refere-se à declaração completa para confirmação e acesso. Não há nesse dispositivo prazo universal de 15 dias para eliminar dados.",
+            "chapter": "Fixture 1",
+            "fontes": []
+          },
+          {
+            "id": "fixture-2",
+            "sourceId": "synthetic-lgpd",
+            "version": "027fa966fde2060a2a30a365925782ff10b744febf5e122828673a53a0f10cc7",
+            "contentHash": "1e40ea57226feff2a9791fd72fc16de6d6ba4cd21808a6b00a0e67f364eaf90d",
+            "score": 0.7,
+            "content": "O REsp 2.121.904/SP trata de vazamento de dados sensíveis em seguro de vida e reconhece dano moral presumido nesse contexto. Não se pode transportar essa conclusão automaticamente para recusa de exclusão.",
+            "chapter": "Fixture 2",
+            "fontes": []
+          },
+          {
+            "id": "fixture-3",
+            "sourceId": "synthetic-lgpd",
+            "version": "52515fcac673837a060cf15e1865d21dd87756a7855d09d4f83456dbeb65c5f5",
+            "contentHash": "403d48e4f11431bce310bf50dffbaff195189866587f889da8a01f32453d4a66",
+            "score": 0.6000000000000001,
+            "content": "Dados financeiros, como categoria genérica, não são automaticamente dados pessoais sensíveis do rol do art. 5º, II. O conteúdo pode revelar informação sensível. Não há estatística nesta fonte sobre probabilidade de vitória judicial.",
+            "chapter": "Fixture 3",
+            "fontes": []
+          },
+          {
+            "id": "fixture-4",
+            "sourceId": "synthetic-lgpd",
+            "version": "04219487b0d085d1d4bdb5a95612f2cf23a6d8311fa7ee7121a913d9a22092de",
+            "contentHash": "95f3c407320a2f75754666a52d1e40fa77fa6eb691fa42550f4d576e53e9627e",
+            "score": 0.5,
+            "content": "Na recusa de exclusão, é preciso avaliar a base legal, a finalidade e as hipóteses de conservação. Se não houver suporte suficiente, declare esse limite. O atendimento é gratuito; responda justificando a impossibilidade de atendimento imediato.",
+            "chapter": "Fixture 4",
+            "fontes": []
+          }
+        ],
+        "generationId": "msg_011CfNtMjekNLnnuzmVYwM4J",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "ac8c36e791411e9fc95826755d42b8edbbcdc321b59cbab0f8447afd9647a5aa",
+        "verification": {
+          "supported": false,
+          "requestId": "msg_011CfNtNNBhUueVjiiFfhbfP",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v1",
+          "evidence": [],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfNtNNBhUueVjiiFfhbfP",
+            "latencyMs": 5145,
+            "usage": {
+              "input_tokens": 2155,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 1218,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "failures": [
+    {
+      "kind": "audit-missing",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "TRACE_UNAVAILABLE",
+      "latencyMs": 22
+    },
+    {
+      "kind": "verification-unavailable",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "SUPPORT_UNAVAILABLE",
+      "latencyMs": 7856
+    },
+    {
+      "kind": "verification-rejected",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "SUPPORT_INSUFFICIENT",
+      "latencyMs": 6264
+    },
+    {
+      "kind": "audit-final-write",
+      "creditDelta": 0,
+      "usageDelta": 0,
+      "legalGuidanceReturned": false,
+      "code": "TRACE_UNAVAILABLE",
+      "latencyMs": 8899
+    }
+  ],
+  "finishedAt": "2026-09-24T20:21:59.718Z",
+  "preservationFinal": "flow-fixtures intentionally added after migration check"
+}

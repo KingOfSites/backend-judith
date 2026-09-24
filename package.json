@@ -5,7 +5,7 @@
   "description": "JUDITH - Assistente jurídica via WhatsApp",
   "main": "dist/server.js",
   "scripts": {
-    "test": "npm run build && node --test test/conteudo.test.cjs test/knowledge.test.cjs test/indexer.test.cjs test/knowledge-api.test.cjs test/knowledge-failures.test.cjs && node test/fluxo.test.cjs",
+    "test": "npm run build && node --test test/conteudo.test.cjs test/knowledge.test.cjs test/indexer.test.cjs test/knowledge-api.test.cjs test/knowledge-failures.test.cjs test/knowledge-support.test.cjs test/evolution-delivery.test.cjs && node test/fluxo.test.cjs",
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",

@@ -103,8 +103,10 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   // Persist incoming text before any fallible search/generation. Stable transport ID prevents
   // duplicate history and charging on webhook redelivery; a new user message has a new ID.
   const incomingId = input.messageId ? createHash("sha256").update(JSON.stringify([user.id, input.messageId])).digest("hex") : undefined;
+  let persistedIncomingId = incomingId;
   try {
-    await prisma.message.create({ data: { ...(incomingId ? { id: incomingId } : {}), sessionId: session.id, role: MessageRole.USER, content: resultado.mensagemParaIA } });
+    const saved = await prisma.message.create({ data: { ...(incomingId ? { id: incomingId } : {}), sessionId: session.id, role: MessageRole.USER, content: resultado.mensagemParaIA } });
+    persistedIncomingId = saved.id;
   } catch (error) {
     if (incomingId && typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return { replies: [], userId: user.id, sessionId: session.id };
     throw error;
@@ -119,6 +121,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
       user,
       history,
       userMessage: resultado.mensagemParaIA,
+      interactionId: persistedIncomingId,
     });
   } catch (error) {
     if (!(error instanceof KnowledgeSearchError)) throw error;

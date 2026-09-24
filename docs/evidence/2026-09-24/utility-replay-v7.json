@@ -1,0 +1,57 @@
+{
+  "policy": "support-v7",
+  "networkCalls": 0,
+  "source": "utility-main-v6.json",
+  "rows": [
+    {
+      "id": "lgpd-deletion",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "topic-change",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "holdout-consumer",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "new-holdout-nondurable",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "new-holdout-small-dpo",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "final-holdout-store",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "final-holdout-suppliers",
+      "supported": false,
+      "expected": false
+    },
+    {
+      "id": "extra-online",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "extra-followup",
+      "supported": true,
+      "expected": true
+    },
+    {
+      "id": "extra-change",
+      "supported": true,
+      "expected": true
+    }
+  ]
+}

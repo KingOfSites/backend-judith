@@ -1,0 +1,96 @@
+{
+  "startedAt": "2026-09-24T21:16:18.385Z",
+  "finishedAt": "2026-09-24T21:17:50.348Z",
+  "snapshot": {
+    "sha256": "4355951f0a8edee4e579df268e6a1c07399a0346685eced715986d7ce1a894ae",
+    "documents": 18,
+    "chunks": 503,
+    "embeddings": 503,
+    "promptVersion": "v22072026",
+    "promptHash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+  },
+  "acceptance": {
+    "accepted": 3,
+    "blocked": 2,
+    "unsupportedBlocked": true
+  },
+  "fatal": null,
+  "sha256": "fe29ee1b5f1574919776a676ecb220a5aae1587c9d68b493da64732fe8fee0b3",
+  "metrics": {
+    "classification": {
+      "calls": 5,
+      "minMs": 648,
+      "medianMs": 675,
+      "maxMs": 1128,
+      "tokens": {
+        "input_tokens": 1102,
+        "output_tokens": 27,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      }
+    },
+    "grounded_answer": {
+      "calls": 6,
+      "minMs": 1143,
+      "medianMs": 2191.5,
+      "maxMs": 2859,
+      "tokens": {
+        "input_tokens": 6393,
+        "output_tokens": 902,
+        "cache_read_input_tokens": 111183,
+        "cache_creation_input_tokens": 0
+      }
+    },
+    "select_context": {
+      "calls": 2,
+      "minMs": 836,
+      "medianMs": 909.5,
+      "maxMs": 983,
+      "tokens": {
+        "input_tokens": 1841,
+        "output_tokens": 88,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      }
+    },
+    "support_verdict": {
+      "calls": 11,
+      "minMs": 3348,
+      "medianMs": 6040,
+      "maxMs": 8497,
+      "tokens": {
+        "input_tokens": 57910,
+        "output_tokens": 5047,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      }
+    }
+  },
+  "scopeControls": [
+    {
+      "id": "final-holdout-suppliers",
+      "type": "bad",
+      "expected": false,
+      "supported": false
+    },
+    {
+      "id": "final-holdout-suppliers",
+      "type": "good",
+      "expected": true,
+      "supported": true
+    },
+    {
+      "id": "topic-change",
+      "type": "bad",
+      "expected": false,
+      "supported": false
+    },
+    {
+      "id": "topic-change",
+      "type": "good",
+      "expected": true,
+      "supported": true
+    }
+  ],
+  "esquecimentoBlocked": true
+}

@@ -1,0 +1,33 @@
+--- originals/JUDITH-base-guias-v1.md
++++ candidates/JUDITH-base-guias-v1.md
+@@ -2,7 +2,9 @@
+ 
+ **Base RAG — Uso interno | Versão 1.7 | 24/06/2026** *(changelog completo em `ASSUNTOS COM O DEV/JUDITH-changelog-guias-calendario-v1.md`)*
+ 
+-**Área:** administrativo, empresarial *(TAGUEADO POR MÓDULO em 06/07 — cada MÓDULO abaixo tem sua própria área; este guia não usa mais tag "geral" única. A tag válida por chunk é o cabeçalho Área do módulo.)*
++**Área:** administrativo, empresarial
++
++*(TAGUEADO POR MÓDULO em 06/07 — cada MÓDULO abaixo tem sua própria área; este guia não usa mais tag "geral" única. A tag válida por chunk é o cabeçalho Área do módulo.)*
+ 
+ ---
+ 
+@@ -102,7 +104,7 @@
+ 
+ ## MÓDULO 4 — FRENTE ADMINISTRATIVA
+ 
+-**Área:** empresarial, tributário, administrativo
++**Área:** empresarial, tributario, administrativo
+ 
+ > ⚠️ AVISO: regras sobre alvarás, licenças e registros variam por município e estado. Sempre orientar o usuário a confirmar na prefeitura local, Junta Comercial ou Sebrae da região.
+ 
+--- originals/JUDITH-resumo-direito-autoral-v1.md
++++ candidates/JUDITH-resumo-direito-autoral-v1.md
+@@ -4,7 +4,7 @@
+ **Formato:** Q&A para conceitos objetivos + Chunks para temas complexos
+ **Perfil-alvo:** Autônomo criativo (fotógrafo, designer, músico, programador, redator, arquiteto, videomaker) e pequeno empresário que contrata ou usa obras criativas
+ **⚠️ Sinalização:** 💸 = impacto de custo | 🔴 = risco patrimonial
+-**Área:** direito-autoral
++**Área:** autoral
+ 
+ ---
+ 

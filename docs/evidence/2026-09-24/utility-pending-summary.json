@@ -1,0 +1,188 @@
+{
+  "startedAt": "2026-09-24T21:51:56.375Z",
+  "finishedAt": "2026-09-24T21:54:06.749Z",
+  "receiptSha256": "04aa66739819d020c89d34a1a0686118653202f5433225473de80398d1c38dd7",
+  "snapshot": {
+    "sha256": "4355951f0a8edee4e579df268e6a1c07399a0346685eced715986d7ce1a894ae",
+    "sources": [
+      {
+        "id": "kbimp_0426279e1c9dff2763d2b948b1b2a87d",
+        "slug": "resumo-processo-civil",
+        "titulo": "JUDITH — Resumo RAG: Processo Civil"
+      },
+      {
+        "id": "kbimp_11995abb60de8c8b3d5920a8758f66ea",
+        "slug": "resumo-direito-autoral",
+        "titulo": "JUDITH — Resumo RAG: Direito Autoral"
+      },
+      {
+        "id": "kbimp_12a204514e974a63720f5ac1e4a8d4a5",
+        "slug": "resumo-previdenciario-mei",
+        "titulo": "JUDITH — Resumo RAG: Previdência Social — MEI, Autônomo e Pequeno Empregador"
+      },
+      {
+        "id": "kbimp_1a4375c7be2aec9636a2bee90b76bbbe",
+        "slug": "resumo-ambiental",
+        "titulo": "JUDITH – Direito Ambiental: Resumo Prático"
+      },
+      {
+        "id": "kbimp_213e0e6bfdb5989ca91e5218ce3d505d",
+        "slug": "resumo-civil-parte-geral",
+        "titulo": "JUDITH — Resumo RAG: Direito Civil — Parte Geral (LINDB + Parte Geral)"
+      },
+      {
+        "id": "kbimp_3f1203d529f44253278e51e0d5928245",
+        "slug": "resumo-civil-contratos",
+        "titulo": "JUDITH — Resumo RAG: Direito Civil III"
+      },
+      {
+        "id": "kbimp_45f30cb9e8c87d192a5eef9a03ea3d21",
+        "slug": "resumo-eca",
+        "titulo": "JUDITH – Base de Conhecimento: ECA (Lei 8.069/1990)"
+      },
+      {
+        "id": "kbimp_54c53ff4989007552f9b41042a4c31f7",
+        "slug": "base-guias",
+        "titulo": "JUDITH — Base de Conhecimento: Guias de Orientação Administrativa"
+      },
+      {
+        "id": "kbimp_793a176c5d92dc688419de04f48064f1",
+        "slug": "resumo-lgpd-marco-civil",
+        "titulo": "JUDITH — Resumo RAG: LGPD + Marco Civil da Internet"
+      },
+      {
+        "id": "kbimp_869079a2dc1e64376c06e8d8d72bea75",
+        "slug": "resumo-simples-nacional",
+        "titulo": "JUDITH — Base de Conhecimento: Simples Nacional e MEI"
+      },
+      {
+        "id": "kbimp_907be514ae694c671c9af0d995d121ea",
+        "slug": "resumo-civil-obrigacoes",
+        "titulo": "JUDITH — Resumo RAG: Direito Civil II"
+      },
+      {
+        "id": "kbimp_94918ad074260d858096ffdbf1a9fa72",
+        "slug": "resumo-tributario",
+        "titulo": "JUDITH — Base de Conhecimento: Direito Tributário"
+      },
+      {
+        "id": "kbimp_95fe541b711e92909cb6527ed63b0fa5",
+        "slug": "resumo-locacao-comercial",
+        "titulo": "JUDITH — Resumo RAG: Locação Comercial"
+      },
+      {
+        "id": "kbimp_998232b790208335d715e916bb692440",
+        "slug": "resumo-empresarial",
+        "titulo": "JUDITH — Base de Conhecimento: Direito Empresarial"
+      },
+      {
+        "id": "kbimp_a46ad4936a8b055b40221a59844a2627",
+        "slug": "resumo-penal-tributario",
+        "titulo": "JUDITH — Resumo RAG: Crimes Contra a Ordem Tributária e Relações de Consumo"
+      },
+      {
+        "id": "kbimp_dec202215e3d5559ca0f79f80f0267c2",
+        "slug": "resumo-familia-sucessoes",
+        "titulo": "JUDITH — Resumo: Família e Sucessões"
+      },
+      {
+        "id": "kbimp_e3fc3f1c6a167dab88f2291e67c66f1c",
+        "slug": "resumo-administrativo",
+        "titulo": "RAG FEITO — JUDITH: Direito Administrativo"
+      },
+      {
+        "id": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "slug": "resumo-consumidor",
+        "titulo": "JUDITH — Base de Conhecimento: Direito do Consumidor"
+      }
+    ],
+    "documents": 18,
+    "chunks": 503,
+    "embeddings": 503,
+    "promptVersion": "v22072026",
+    "promptHash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+  },
+  "metrics": {
+    "select_context": {
+      "calls": 4,
+      "input": 4390,
+      "output": 290,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "medianMs": 1255.0
+    },
+    "classification": {
+      "calls": 6,
+      "input": 1782,
+      "output": 32,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "medianMs": 646.5
+    },
+    "grounded_answer": {
+      "calls": 9,
+      "input": 11927,
+      "output": 2716,
+      "cacheRead": 168434,
+      "cacheWrite": 0,
+      "medianMs": 4086
+    },
+    "support_verdict": {
+      "calls": 15,
+      "input": 77880,
+      "output": 6250,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "medianMs": 4911
+    }
+  },
+  "files": {
+    "src/knowledge/provider.ts": "76e473bb3744b749848cb0669d12540f3da8ef8ca94cb8c6cf6e151d1b5d9417",
+    "src/knowledge/core.ts": "ad3f6ec7b85cd0cab3d195ca23f49daa0cb8977eba5b4e3a9d32bfba50519fc8",
+    "src/knowledge/scope.ts": "dbebd8624cdfbce6267c2863f1a2a993633f372ca5fd96ce6695d0cad3a28995",
+    "src/knowledge/generation.ts": "54b53ee5bff79118ba34749d424064dfd08abd459db672476d247862adcd7637",
+    "src/knowledge/support.ts": "43039f1cd009fa923e8a18a5a2ab9dec9c9aef258752ba3ce9cc34713f96fc5e",
+    "src/judith/conhecimento.ts": "eb56fbe30b86a75d78015e076e02121bb3b12b5c1698870d731f4cfd62ae6b26",
+    "src/judith/claude.ts": "eff238847ea0d4ac851bdcb1bd9fd77f202bd157c5f3a0b915d40be5279779c2",
+    "test/utility-pending-real-isolated.cjs": "b09cc5a895b975cda2704723ae88721d760092c2b46cdd9d730ff4a08b4329a1",
+    "test/fixtures/utility-pending-scope-regression.json": "b8f6481f2608447d640c92558804a2d71eff8c7f68aca2570f5c86a22648e354"
+  },
+  "cases": [
+    {
+      "id": "lgpd-financial",
+      "failure": "SUPPORT_INSUFFICIENT",
+      "creditDelta": 0,
+      "latencyMs": 13791
+    },
+    {
+      "id": "consumer-followup",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 16962
+    },
+    {
+      "id": "final-holdout-suppliers",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 11625
+    },
+    {
+      "id": "extra-online",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 20903
+    },
+    {
+      "id": "extra-followup",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 13744
+    },
+    {
+      "id": "extra-change",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 11877
+    }
+  ]
+}

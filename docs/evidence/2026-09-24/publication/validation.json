@@ -1,0 +1,596 @@
+{
+  "at": "2026-09-24T17:36:50.955Z",
+  "realProviders": true,
+  "whatsappSent": false,
+  "searches": [
+    {
+      "name": "lgpd",
+      "question": "Pela LGPD, um cliente pode pedir a eliminação dos dados pessoais que minha empresa guarda?",
+      "expectedArea": "lgpd",
+      "expectedSlug": "resumo-lgpd-marco-civil",
+      "area": "lgpd",
+      "queries": [
+        "Pela LGPD, um cliente pode pedir a eliminação dos dados pessoais que minha empresa guarda?"
+      ],
+      "results": [
+        {
+          "id": "cmuftb3zk00cx48hx8r257nex",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "Q&A — LGPD na prática do pequeno empresário",
+          "subchapter": null,
+          "score": 0.9047728435391356,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "6588a6ee67ee00ddab3a15304f4a7193b445ece0d1858c09f96dbf14617c2301"
+        },
+        {
+          "id": "cmuftb5au00d748hxka0km3fb",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 8 — LGPD nas relações de trabalho: dados de funcionários e prestadores",
+          "subchapter": null,
+          "score": 0.8777594267003316,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "73c66cd3c99981089c44b581ea6189b8d4868bf740604c89d89c16205efeeb10"
+        },
+        {
+          "id": "cmuftb37g00cr48hx74onvyop",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 3 — Direitos dos titulares: o que o cliente pode exigir",
+          "subchapter": null,
+          "score": 0.8754747706823793,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "1eef4d469f367009982088dfbf903bdd950ae5dec0291a40193920c64625dd6e"
+        },
+        {
+          "id": "cmuftb2oi00cn48hxweh8pptq",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 1 — O que é a LGPD e por que o MEI precisa saber",
+          "subchapter": null,
+          "score": 0.8725861619868942,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "c128d51aa7df856ea50ffd4877f2a6dbe1331dcf53a10c4743bd2e19049f29ab"
+        },
+        {
+          "id": "cmuftb2xw00cp48hxxv97r5g4",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 2 — Bases legais: quando posso usar dados de clientes?",
+          "subchapter": null,
+          "score": 0.8705417475437144,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "cb041bcc3083907d3c889fe3a964dfbc1755d5e7f2056479045343d75e11895d"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "autoral",
+      "question": "Posso usar uma fotografia de outra pessoa na publicidade da minha empresa sem autorização do autor?",
+      "expectedArea": "autoral",
+      "expectedSlug": "resumo-direito-autoral",
+      "area": "autoral",
+      "queries": [
+        "Posso usar uma fotografia de outra pessoa na publicidade da minha empresa sem autorização do autor?"
+      ],
+      "results": [
+        {
+          "id": "cmuft9pa7002p48hxxscfhpfy",
+          "source": "resumo-direito-autoral",
+          "chapter": "Q&A — Dúvidas frequentes do autônomo criativo",
+          "subchapter": null,
+          "score": 0.874622845272154,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "e47ec79c154b8d8c17d1bf0073313c33270d4e87ef13e205f3261f41fca45a42"
+        },
+        {
+          "id": "cmuft9quh003148hxu9voyn8m",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 8 — Reprodução de conteúdo de terceiros: o que ME/EPP precisa saber",
+          "subchapter": null,
+          "score": 0.865161603628665,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "bedc59dce5b950086c0a02c587e09a9933448d62eabd558375866be80e45998e"
+        },
+        {
+          "id": "cmuft9ql1002z48hxr1t3r7xp",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 7 — Plataformas digitais e marketplaces: como tirar obra não autorizada",
+          "subchapter": null,
+          "score": 0.8506977195748585,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "7d065f2138fb57adeda30c93694ee1da870f251d79db9f0f3b4fbdb360b52e1f"
+        },
+        {
+          "id": "cmuft9r3y003348hxg0soy09q",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 9 — Inteligência artificial e direito autoral: o estado atual",
+          "subchapter": null,
+          "score": 0.8432829398021084,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "ba273b4c91aa34df2664d6107420d0139a16a80864557c6c351149ad97fb4976"
+        },
+        {
+          "id": "cmuft9nq8002d48hxtknsdos7",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 1 — O que protege o Direito Autoral e quem é autor",
+          "subchapter": null,
+          "score": 0.8211715479060626,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "4785f03d49189088b558c9c23c24ac40989389a7275909c68c90b02f9ec92a1d"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "ambiental",
+      "question": "Meu bar pode ser multado por ruído excessivo e poluição sonora?",
+      "expectedArea": "ambiental",
+      "expectedSlug": "resumo-ambiental",
+      "area": "administrativo",
+      "queries": [
+        "Meu bar pode ser multado por ruído excessivo e poluição sonora?"
+      ],
+      "results": [
+        {
+          "id": "cmuftcmu000nz48hx14t54phn",
+          "source": "resumo-administrativo",
+          "chapter": "CHUNK 11 — Notificação da Vigilância Sanitária (VISA): Auto de Infração e Interdição",
+          "subchapter": null,
+          "score": 0.8464140166749423,
+          "areas": [
+            "administrativo"
+          ],
+          "contentHash": "c2b66838a0fedcd868ed317218f0d74f19864e73a67a41e27699bcffe0c01eed"
+        },
+        {
+          "id": "cmuftcj6a00n748hxsasrd9k4",
+          "source": "resumo-administrativo",
+          "chapter": "CHUNK 1 — Atos Administrativos: Como Revisar uma Notificação, Multa ou Cassação de Alvará",
+          "subchapter": "Limite do poder de fiscalização: o fiscal pode entrar no estabelecimento sem autorização?",
+          "score": 0.8456968926202562,
+          "areas": [
+            "administrativo"
+          ],
+          "contentHash": "ea310b691e1699396fff6a356b0fb6b08b88545446f607ab9aa4f618fbf7821c"
+        },
+        {
+          "id": "cmuftcnvs00o748hxmf7nk9pm",
+          "source": "resumo-administrativo",
+          "chapter": "CHUNK 14 — Vistoria do Corpo de Bombeiros Reprovada (AVCB)",
+          "subchapter": "Q&A 14 — Corpo de Bombeiros",
+          "score": 0.8411358913501519,
+          "areas": [
+            "administrativo"
+          ],
+          "contentHash": "43c730e98ffd0d555cc4aada80406bf136161fc2a5413ff4108bf74f868952fb"
+        },
+        {
+          "id": "cmuftcnmc00o548hxy6duv1pw",
+          "source": "resumo-administrativo",
+          "chapter": "CHUNK 14 — Vistoria do Corpo de Bombeiros Reprovada (AVCB)",
+          "subchapter": null,
+          "score": 0.8385780820955497,
+          "areas": [
+            "administrativo"
+          ],
+          "contentHash": "fd587e3efcfe3073879ac6d34df319aba95a9ffdf8bee25b459e957653bdb1a8"
+        },
+        {
+          "id": "cmuftazzn00c548hxqg9p2atb",
+          "source": "base-guias",
+          "chapter": "Alvarás e licenças por ramo",
+          "subchapter": null,
+          "score": 0.8362968672855009,
+          "areas": [
+            "administrativo"
+          ],
+          "contentHash": "79a66c99868aba6cc95f1c9772fdba51f55930523f862b734a42c024f3034d95"
+        }
+      ],
+      "ok": false,
+      "error": "ERR_ASSERTION"
+    },
+    {
+      "name": "tributario",
+      "question": "Quais são as condições tributárias para uma empresa optar pelo Simples Nacional?",
+      "expectedArea": "tributario",
+      "expectedSlug": "resumo-simples-nacional",
+      "area": "tributario",
+      "queries": [
+        "Quais são as condições tributárias para uma empresa optar pelo Simples Nacional?"
+      ],
+      "results": [
+        {
+          "id": "cmuftb5xq00d948hxwjiw0750",
+          "source": "resumo-simples-nacional",
+          "chapter": "CHUNK 1 — O que é o Simples Nacional",
+          "subchapter": null,
+          "score": 0.8638403056542239,
+          "areas": [
+            "tributario"
+          ],
+          "contentHash": "37207fed62de52b53e2abd3bb22f177516345e51b0113681d6a7b995f9ffbb53"
+        },
+        {
+          "id": "cmuftb67e00db48hxeynvyqrc",
+          "source": "resumo-simples-nacional",
+          "chapter": "Q&A 1 — Conceito e Abrangência",
+          "subchapter": null,
+          "score": 0.861174848521056,
+          "areas": [
+            "tributario"
+          ],
+          "contentHash": "0ecd249f3fe614ae1765a3dcbe68871f004ef9f9cffd9656504a69c6a7003be2"
+        },
+        {
+          "id": "cmuftbv7s00ih48hxiib97fq7",
+          "source": "resumo-tributario",
+          "chapter": "COMPLEMENTO 3 — Ciclo de Vida do MEI e Exclusão do Simples Nacional",
+          "subchapter": "CHUNK E.3 — Exclusão do Simples Nacional",
+          "score": 0.8593743323966417,
+          "areas": [
+            "tributario"
+          ],
+          "contentHash": "d3dcabe8f3f793ac392f564291296a752f4e6c55ccb93db605e0a89715eeceb5"
+        },
+        {
+          "id": "cmuftbpql00hb48hxlhyrelrt",
+          "source": "resumo-tributario",
+          "chapter": "RODADA 4 — TRIBUTOS MUNICIPAIS, ISS, IPTU, ITBI E REFORMA TRIBUTÁRIA (IBS/CBS)",
+          "subchapter": "Q&A 4.4 — Reforma Tributária",
+          "score": 0.857912949131609,
+          "areas": [
+            "tributario"
+          ],
+          "contentHash": "20cc6ba30621458a34a3864e48528a6e1d7e5c32957f2f4f6135f1de88fc6732"
+        },
+        {
+          "id": "cmuftbrk300hp48hx8p9hm6l9",
+          "source": "resumo-tributario",
+          "chapter": "COMPLEMENTO — MEI, Autônomo e ME/EPP: Operação Tributária do Dia a Dia",
+          "subchapter": "Q&A — Operação Tributária do Dia a Dia",
+          "score": 0.8573315248238501,
+          "areas": [
+            "tributario"
+          ],
+          "contentHash": "d872cb9567118df2841c75b141ef2d862b5e89f88a3b13899950edfdc130e4b7"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "previdenciario",
+      "question": "Sou MEI: quais benefícios previdenciários tenho ao pagar o INSS?",
+      "expectedArea": "previdenciario",
+      "expectedSlug": "resumo-previdenciario-mei",
+      "area": "previdenciario",
+      "queries": [
+        "Sou MEI: quais benefícios previdenciários tenho ao pagar o INSS?"
+      ],
+      "results": [
+        {
+          "id": "cmuft9vdx003x48hxfly0gjgr",
+          "source": "resumo-previdenciario-mei",
+          "chapter": "Q&A — Dúvidas frequentes: MEI e autônomo — doença, acidente, DAS atrasado, aposentadoria e gravidez",
+          "subchapter": null,
+          "score": 0.8842261308810916,
+          "areas": [
+            "previdenciario"
+          ],
+          "contentHash": "e97ace13b5bb842a91c1913b7ab9df3e815628c61bfa6668a59b2823b60dacbe"
+        },
+        {
+          "id": "cmuft9rps003548hxswoynhgq",
+          "source": "resumo-previdenciario-mei",
+          "chapter": "CHUNK 1 — O MEI e o INSS: quanto paga e o que tem direito",
+          "subchapter": "Quanto o MEI contribui",
+          "score": 0.8815625576326217,
+          "areas": [
+            "previdenciario"
+          ],
+          "contentHash": "e76bf87ec4e59e2f0ebe4bd04054ad7fd08fc504dea3518023cfb6e6c6b3fce1"
+        },
+        {
+          "id": "cmuft9rz5003748hxfru1t0hd",
+          "source": "resumo-previdenciario-mei",
+          "chapter": "CHUNK 1 — O MEI e o INSS: quanto paga e o que tem direito",
+          "subchapter": "O que o MEI tem direito com a contribuição de 5%",
+          "score": 0.881364673237323,
+          "areas": [
+            "previdenciario"
+          ],
+          "contentHash": "2e45f00c72e49b9866e50d7cb8d6fea7578b1928f1fc9a41119a23eacd90b981"
+        },
+        {
+          "id": "cmuft9vnh003z48hxz6xskg8v",
+          "source": "resumo-previdenciario-mei",
+          "chapter": "Q&A — Dúvidas frequentes: MEI e autônomo — doença, acidente, DAS atrasado, aposentadoria e gravidez",
+          "subchapter": "Q&A — MEI/ME empregador: INSS patronal, funcionário doente, atestado e eSocial",
+          "score": 0.8803003762622538,
+          "areas": [
+            "previdenciario"
+          ],
+          "contentHash": "37e9ebadb2474a3260d4f6be67d1f39d2f08bd7f75c451944d5c82ead5bbdcf1"
+        },
+        {
+          "id": "cmuft9s8m003948hxlp2z0x1f",
+          "source": "resumo-previdenciario-mei",
+          "chapter": "CHUNK 1 — O MEI e o INSS: quanto paga e o que tem direito",
+          "subchapter": "O que o MEI **NÃO** tem direito",
+          "score": 0.8790228367933195,
+          "areas": [
+            "previdenciario"
+          ],
+          "contentHash": "6bdf9e70e2aa25b670eb41a75066c7cabf596723a2db3a58a2d7b4d27aa78ad0"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "consumidor",
+      "question": "Comprei um produto com defeito. Pelo CDC, qual prazo o fornecedor tem para consertar?",
+      "expectedArea": "consumidor",
+      "expectedSlug": "resumo-consumidor",
+      "area": "consumidor",
+      "queries": [
+        "Comprei um produto com defeito. Pelo CDC, qual prazo o fornecedor tem para consertar?"
+      ],
+      "results": [
+        {
+          "id": "cmuftcq2800ol48hxb9a4dzzr",
+          "source": "resumo-consumidor",
+          "chapter": "Q&A — VÍCIO DO PRODUTO",
+          "subchapter": null,
+          "score": 0.8932070660371862,
+          "areas": [
+            "consumidor"
+          ],
+          "contentHash": "7788c24eda0c6295a26e8df69fc24b5ec9d8ab14eb1f2d7508baabc18a3efb65"
+        },
+        {
+          "id": "cmuftd4nm00rp48hxdiu2tetk",
+          "source": "resumo-consumidor",
+          "chapter": "COMPLEMENTO STJ — Consumidor: Jurisprudência Prática",
+          "subchapter": "CHUNK STJ-C3 — Obrigação do Comerciante de Intermediar Reparação de Produto Defeituoso",
+          "score": 0.8868662369142016,
+          "areas": [
+            "consumidor"
+          ],
+          "contentHash": "eade0a15a61f1db65fac6232fbdb80af3a60290dbff02efd339260c261ce4e50"
+        },
+        {
+          "id": "cmuftd3mf00rh48hxdzh6qgqb",
+          "source": "resumo-consumidor",
+          "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+          "subchapter": "Q&A — CDC para Fornecedores ME/EPP",
+          "score": 0.8862030433520618,
+          "areas": [
+            "consumidor"
+          ],
+          "contentHash": "75d0e73703bcaf12ef15c984a0dc87064d691a391124221ee8fd410069e3b223"
+        },
+        {
+          "id": "cmuftcrdd00ov48hxlh2eizye",
+          "source": "resumo-consumidor",
+          "chapter": "Q&A — PRAZOS IMPORTANTES (RESUMO)",
+          "subchapter": null,
+          "score": 0.8837909827566732,
+          "areas": [
+            "consumidor"
+          ],
+          "contentHash": "293009e57068666eafeb20bb37c24cff850edaa08242a353f79db62750b9decf"
+        },
+        {
+          "id": "cmuftd3d200rf48hx3ec47l6h",
+          "source": "resumo-consumidor",
+          "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+          "subchapter": null,
+          "score": 0.8796444341151106,
+          "areas": [
+            "consumidor"
+          ],
+          "contentHash": "4b893192f3c888613733b6c10f87e594756231331237fcbaf4af167b5c89699a"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "continuacao",
+      "question": "E se a empresa se recusar a apagar?",
+      "expectedArea": "lgpd",
+      "expectedSlug": "resumo-lgpd-marco-civil",
+      "area": "lgpd",
+      "queries": [
+        "E se a empresa se recusar a apagar?\nContexto informado pelo usuário: Pela LGPD, um cliente pode pedir a eliminação dos dados pessoais que minha empresa guarda?"
+      ],
+      "results": [
+        {
+          "id": "cmuftb3zk00cx48hx8r257nex",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "Q&A — LGPD na prática do pequeno empresário",
+          "subchapter": null,
+          "score": 0.906101149703272,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "6588a6ee67ee00ddab3a15304f4a7193b445ece0d1858c09f96dbf14617c2301"
+        },
+        {
+          "id": "cmuftb37g00cr48hx74onvyop",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 3 — Direitos dos titulares: o que o cliente pode exigir",
+          "subchapter": null,
+          "score": 0.8779965860479771,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "1eef4d469f367009982088dfbf903bdd950ae5dec0291a40193920c64625dd6e"
+        },
+        {
+          "id": "cmuftb5au00d748hxka0km3fb",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 8 — LGPD nas relações de trabalho: dados de funcionários e prestadores",
+          "subchapter": null,
+          "score": 0.8772140785280087,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "73c66cd3c99981089c44b581ea6189b8d4868bf740604c89d89c16205efeeb10"
+        },
+        {
+          "id": "cmuftb3q500cv48hxdhxbxmj7",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 5 — Sanções: o que acontece se descumprir a LGPD",
+          "subchapter": null,
+          "score": 0.8735175054398168,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "bb3336581aa87c4d582215b0a7d33a26237dc261e62a4e975821b0f73c46e2fe"
+        },
+        {
+          "id": "cmuftb3gs00ct48hxan59n1eq",
+          "source": "resumo-lgpd-marco-civil",
+          "chapter": "CHUNK 4 — Segurança de dados: o que o MEI deve fazer na prática",
+          "subchapter": null,
+          "score": 0.8709800403096845,
+          "areas": [
+            "lgpd"
+          ],
+          "contentHash": "9ebfff64d565914c264d340f276c9dbb8eccc671430609fa627e178a8291c7c6"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "name": "mudanca-assunto",
+      "question": "Posso usar uma fotografia de outra pessoa na publicidade da minha empresa sem autorização do autor?",
+      "expectedArea": "autoral",
+      "expectedSlug": "resumo-direito-autoral",
+      "area": "autoral",
+      "queries": [
+        "Posso usar uma fotografia de outra pessoa na publicidade da minha empresa sem autorização do autor?"
+      ],
+      "results": [
+        {
+          "id": "cmuft9pa7002p48hxxscfhpfy",
+          "source": "resumo-direito-autoral",
+          "chapter": "Q&A — Dúvidas frequentes do autônomo criativo",
+          "subchapter": null,
+          "score": 0.874622845272154,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "e47ec79c154b8d8c17d1bf0073313c33270d4e87ef13e205f3261f41fca45a42"
+        },
+        {
+          "id": "cmuft9quh003148hxu9voyn8m",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 8 — Reprodução de conteúdo de terceiros: o que ME/EPP precisa saber",
+          "subchapter": null,
+          "score": 0.865161603628665,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "bedc59dce5b950086c0a02c587e09a9933448d62eabd558375866be80e45998e"
+        },
+        {
+          "id": "cmuft9ql1002z48hxr1t3r7xp",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 7 — Plataformas digitais e marketplaces: como tirar obra não autorizada",
+          "subchapter": null,
+          "score": 0.8506977195748585,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "7d065f2138fb57adeda30c93694ee1da870f251d79db9f0f3b4fbdb360b52e1f"
+        },
+        {
+          "id": "cmuft9r3y003348hxg0soy09q",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 9 — Inteligência artificial e direito autoral: o estado atual",
+          "subchapter": null,
+          "score": 0.8432829398021084,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "ba273b4c91aa34df2664d6107420d0139a16a80864557c6c351149ad97fb4976"
+        },
+        {
+          "id": "cmuft9nq8002d48hxtknsdos7",
+          "source": "resumo-direito-autoral",
+          "chapter": "CHUNK 1 — O que protege o Direito Autoral e quem é autor",
+          "subchapter": null,
+          "score": 0.8211715479060626,
+          "areas": [
+            "autoral"
+          ],
+          "contentHash": "4785f03d49189088b558c9c23c24ac40989389a7275909c68c90b02f9ec92a1d"
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "job": {
+    "id": "cmuft3jns000048hx5evejp7k",
+    "requestKey": "publish-18-receipt-eaugTQlC-retry-240s",
+    "activeKey": null,
+    "status": "completed",
+    "total": 18,
+    "processed": 18,
+    "result": {
+      "changed": 18,
+      "unchanged": 0,
+      "removed": 0,
+      "embeddingsCreated": 0,
+      "embeddingsReused": 503,
+      "chunks": 503,
+      "chunksCreated": 503,
+      "chunksUpdated": 0,
+      "chunksRepositioned": 0,
+      "chunksUnchanged": 0,
+      "chunksRemoved": 0,
+      "areaLinksAdded": 542,
+      "areaLinksRemoved": 0
+    },
+    "errors": null,
+    "leaseUntil": null,
+    "createdAt": "2026-09-24T17:29:07.144Z",
+    "updatedAt": "2026-09-24T17:36:36.279Z"
+  },
+  "integrity": {
+    "total": 35,
+    "published": 18,
+    "legacyReview": 17,
+    "documents": 18,
+    "chunks": 503,
+    "areaLinks": 542,
+    "promptsUnchanged": true,
+    "sourceContentsAndMetadataUnchanged": true,
+    "onlyAuthorizedIds": true,
+    "model": "local:multilingual-e5-large:3d7cfbdacd47fdda877c5cd8a79fbcc4f2a574f3:onnx-qint8-avx512-vnni:1024:tokens480:mean-v1"
+  },
+  "topicChangeSameRankingAsDirect": true,
+  "unpublishedLaborContentExcluded": true,
+  "searchesAllPassed": false,
+  "sourceHashAfterSearch": "2ea864401c149ea35b4624234bb3ba397c00e5e79d5edcf05b20689a6711fa73",
+  "ok": false
+}

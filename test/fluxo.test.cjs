@@ -68,13 +68,19 @@ async function main() {
   replace(base + 'db/client.js', { prisma });
   replace(base + 'config/env.js', { env: { NODE_ENV: 'test', LOG_LEVEL: 'silent', PORT: 0, EVOLUTION_INSTANCE: 'judith', ANTHROPIC_API_KEY: 'fake', JUDITH_MODEL_HAIKU: 'mock-haiku', JUDITH_MODEL_SONNET: 'mock-sonnet', WEB_JUDITH_URL: 'https://checkout.invalid', INTERNAL_API_KEY: 'fake' } });
   replace('axios', { post: async (url, data) => { state.payments.push({ url, data }); if (state.paymentFail) throw new Error('mock checkout unavailable'); return { data: { url: 'https://checkout.invalid/synthetic' } }; } });
-  replace('@anthropic-ai/sdk', class { messages = { create: async (req) => { assert.equal(state.consumed, 0); state.calls.push(req); if (state.aiFail) throw new Error('mock AI unavailable'); return { content: [{ type: 'text', text: state.aiEmpty ? '  ' : 'SIMULATED RESPONSE' }], usage: { input_tokens: 1, output_tokens: 1 } }; } }; });
+  replace('@anthropic-ai/sdk', class { messages = { create: async (req) => { assert.equal(state.consumed, 0); state.calls.push(req); if (state.aiFail || state.generationSecondFail && state.calls.length === 2) throw new Error('mock AI unavailable'); return { content: req.tools ? [{type:'tool_use',name:'grounded_answer',input:{scopeAnalysis:'mock scope',unsupported:false,answer:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}}] : [{type:'text',text:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}], usage: { input_tokens: 1, output_tokens: 1 } }; } }; });
   replace(base + 'evolution/client.js', { sendTyping: async () => {}, sendText: async (number, text) => { state.sends.push({ number, text }); } });
   replace(base + 'evolution/media.js', { downloadMediaBase64: deny });
   replace(base + 'judith/whisper.js', { transcreverAudio: deny });
-  replace(base + 'judith/conhecimento.js', { getBaseConhecimento: async () => {
+  replace(base + 'knowledge/audit.js', {writeAudit:async(id,payload)=>{ if(state.traceFail || state.traceLateFail && payload.stage==='support_passed') throw new (require(base+'knowledge/errors.js').KnowledgeSearchError)('TRACE_UNAVAILABLE'); }});
+  replace(base + 'knowledge/support.js', {SUPPORT_POLICY_VERSION:'test',verifySupport:async()=>{
+    state.verifications = (state.verifications || 0) + 1;
+    if(state.supportFail || state.supportSecondFail && state.verifications === 2) throw new (require(base+'knowledge/errors.js').KnowledgeSearchError)('SUPPORT_UNAVAILABLE');
+    return {supported:!state.supportRejected && !(state.supportRejectedOnce && state.verifications === 1)};
+  }});
+  replace(base + 'judith/conhecimento.js', { getKnowledgeContext: async () => {
     if (state.knowledgeFailure) throw new (require(base + 'knowledge/errors.js').KnowledgeSearchError)(state.knowledgeFailure);
-    return 'PUBLISHED_KNOWLEDGE_TEST';
+    return {text:'PUBLISHED_KNOWLEDGE_TEST',area:'lgpd',searchText:'synthetic query',chunks:[]};
   } });
   replace(base + 'bot/handler.js', { processarMensagemBot: deny });
   const Fastify = require('fastify');
@@ -94,6 +100,17 @@ async function main() {
   assert.equal(health.statusCode, 200);
   assert.equal(health.json().versao, row.versao);
   passed.push('HTTP health loads deployed prompt version');
+  for(const failure of ['supportFail','supportRejected','traceFail','traceLateFail']) {
+    reset({[failure]:true,limit:0,courtesy:2});
+    await webhook('Pela LGPD, um cliente pode pedir a eliminação de dados?');
+    assert.equal(state.courtesy,2);assert.equal(state.usages.length,0);assert.equal(state.consumed,0);
+    assert.equal(state.messages.filter(m=>m.role==='USER').length,1);
+    assert.equal(state.messages.filter(m=>m.role==='ASSISTANT').length,0);
+    assert.equal(state.sends.length,1);assert.match(state.sends[0].text,/Nenhum crédito foi consumido/);
+    await webhook('E se a empresa se recusar a apagar?');
+    assert.equal(state.courtesy,2);assert.equal(state.usages.length,0);
+    passed.push('Support/audit failure preserves courtesy and incoming history: '+failure);
+  }
   for (const [text, kind, section, model] of [
     ['Qual o prazo?', 'DUVIDA', null, 'mock-haiku'],
     ['redigir um contrato', 'REDACAO', row.secaoB, 'mock-sonnet'],
@@ -218,8 +235,8 @@ async function main() {
   const lastEvent = { data: { key: { remoteJid: '0000000000000@s.whatsapp.net', fromMe: false, id: 'history-window-current' }, message: { conversation: 'Pergunta atual da janela' } } };
   await webhook('', lastEvent);
   const sent = state.calls.at(-1).messages;
-  assert.equal(sent[0].role, 'user'); assert.equal(sent[0].content, 'Dúvida preservada após falha');
-  assert.equal(sent.length, 16);
+  assert.equal(sent[0].role, 'user'); assert.equal(sent[0].content, 'Pergunta atual da janela');
+  assert.equal(sent.length, 1);
   assert.equal(sent.filter(m => m.content === 'Pergunta atual da janela').length, 1);
   assert.deepEqual(state.messages.slice(0, 17), saved);
   assert.equal(state.usages.length, 9);
@@ -235,10 +252,21 @@ async function main() {
   for (let i = 1; i <= 3; i++) await webhook('Pergunta sem resposta ' + i);
   assert.equal(state.usages.length, 0);
   state.knowledgeFailure = null; await webhook('Nova pergunta após falhas');
-  assert.deepEqual(state.calls[0].messages.map(m => m.role), ['user', 'user', 'user', 'user']);
-  assert.deepEqual(state.calls[0].messages.map(m => m.content), ['Pergunta sem resposta 1', 'Pergunta sem resposta 2', 'Pergunta sem resposta 3', 'Nova pergunta após falhas']);
+  assert.deepEqual(state.calls[0].messages.map(m => m.role), ['user']);
+  assert.deepEqual(state.calls[0].messages.map(m => m.content), ['Nova pergunta após falhas']);
   assert.equal(state.messages.length, 5); assert.equal(state.usages.length, 1);
   passed.push('Consecutive unanswered questions preserved without fabricated assistant turns');
+  for (const scenario of ['repair-success', 'generationSecondFail', 'supportSecondFail', 'supportRejected']) {
+    reset({ limit: 0, subscription: null, courtesy: 2, supportRejectedOnce: true, ...(scenario === 'repair-success' ? {} : { [scenario]: true }) });
+    await webhook('Pergunta jurídica para testar reformulação');
+    const accepted = scenario === 'repair-success';
+    assert.equal(state.calls.length, 2);
+    assert.equal(state.courtesy, accepted ? 1 : 2);
+    assert.equal(state.usages.length, accepted ? 1 : 0);
+    assert.equal(state.messages.length, accepted ? 2 : 1);
+    assert.equal(state.verifications, scenario === 'generationSecondFail' ? 1 : 2);
+    passed.push('One bounded repair, one charge only on success: ' + scenario);
+  }
   await app.close();
   console.log(JSON.stringify({ passed, findings, isolation: process.env.JUDITH_TEST_READ_DB === '1' ? 'Optional initial read-only prompt SELECT; all writes and APIs mocked' : 'All database access, AI, checkout and WhatsApp mocked; network blocked' }, null, 2));
 }

@@ -5,6 +5,7 @@ const path = require('node:path');
 const { AREAS, validateAreas } = require('../dist/knowledge/areas.js');
 const { parseNotebook } = require('../dist/knowledge/parser.js');
 const { prepareDocument, retrieve, fingerprint, cosine, vector } = require('../dist/knowledge/core.js');
+const { accidentSourceForDefect } = require('../dist/knowledge/scope.js');
 const fixture = name => fs.readFileSync(path.join(__dirname, 'fixtures', name + '.md'), 'utf8');
 const source = (overrides = {}) => ({ id: 'one', slug: 'civil-contratos', titulo: 'Contrato', area: 'civil', status: 'PUBLICADA', fontes: [], ordem: 0, conteudo: '## Contratos\nAção com acentuação.', ...overrides });
 
@@ -31,6 +32,25 @@ test('busca: continuação envia histórico ao classificador e ao embedding, man
     embed: async (q, kind) => { assert.ok(q.startsWith(question)); assert.ok(!q.includes(history[1].content)); assert.equal(kind, 'query'); events.push('embed'); return [1, 0]; },
   }, async area => { assert.equal(area, 'lgpd'); events.push('filter'); return [{ id: 'a', areas: ['lgpd'], published: true, vector: [1, 0], content: 'Bloco integral' }]; }, history);
   assert.deepEqual(events, ['classify', 'filter', 'embed']); assert.equal(result.chunks[0].content, 'Bloco integral');
+});
+
+test('consulta curta só no embedding; classificação mantém referência e seleção continua limitada a cinco na área', async () => {
+  const resolvedQuestion='E qual é o prazo?\nContexto informado pelo usuário: Comprei pela internet e quero desistir.';
+  const searchText='prazo desistir pela internet',events=[];
+  const result=await retrieve('E qual é o prazo?',{
+    model:'test',contextualize:async()=>({resolvedQuestion,searchText}),
+    classify:async q=>{assert.equal(q,resolvedQuestion);events.push('classify');return 'consumidor'},
+    embed:async q=>{assert.equal(q,searchText);events.push('embed');return [1,0]},
+  },async area=>{assert.equal(area,'consumidor');events.push('filter');return Array.from({length:7},(_,i)=>({id:String(i),areas:['consumidor'],published:true,vector:[1,i/10],content:'Inteiro '+i})).concat([{id:'other',areas:['civil'],published:true,vector:[1,0],content:'Proibido'}])},[{role:'user',content:'Comprei pela internet e quero desistir.'}]);
+  assert.deepEqual(events,['classify','filter','embed']);assert.equal(result.chunks.length,5);assert.equal(result.resolvedQuestion,resolvedQuestion);assert.ok(result.chunks.every(c=>c.content.startsWith('Inteiro')));
+});
+
+test('escopo: acidente não fundamenta vício; não exclui capítulos pertinentes nem perguntas sobre acidente ou comparação', () => {
+  assert.equal(accidentSourceForDefect('Quem responde pelo vício do produto?','CHUNK 4 — RESPONSABILIDADE POR ACIDENTE DE CONSUMO'),true);
+  assert.equal(accidentSourceForDefect('Quem responde pelo vício do produto?','Q&A — VÍCIO DO PRODUTO'),false);
+  assert.equal(accidentSourceForDefect('Quem responde pelo vício do produto?','COMPLEMENTO STJ — Consumidor'),false);
+  assert.equal(accidentSourceForDefect('Quem responde pelo acidente de consumo?','CHUNK 4 — RESPONSABILIDADE POR ACIDENTE DE CONSUMO'),false);
+  assert.equal(accidentSourceForDefect('Compare vício e acidente de consumo.','CHUNK 4 — RESPONSABILIDADE POR ACIDENTE DE CONSUMO'),false);
 });
 
 test('áreas: lista exata, vírgulas, desconhecidos, vazios e slug separado', () => {

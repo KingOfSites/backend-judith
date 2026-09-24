@@ -1,0 +1,152 @@
+{
+  "at": "2026-09-24T16:30:47.370Z",
+  "sourceHash": "9f59935593b94475c67d96f9f5903dc7a5b728a7d52ee0f6e58e9d566ae89546",
+  "promptHash": "1e57c34b004ab4fe8c827931ec15df93af7d39f39086b6c8fca4dfdaf115328f",
+  "existingCount": 17,
+  "published": 0,
+  "actions": [
+    {
+      "file": "JUDITH-base-guias-v1.md",
+      "slug": "base-guias",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 27
+    },
+    {
+      "file": "JUDITH-base-propaganda-v1.md",
+      "slug": "base-propaganda",
+      "action": "BLOCKED",
+      "issues": [
+        {
+          "origem": "markdown",
+          "campo": "area",
+          "linha": 89,
+          "capitulo": "MÓDULO 4 — SORTEIOS, RIFAS E PROMOÇÕES COM PREMIAÇÃO",
+          "valor": "penal",
+          "mensagem": "Área inválida: penal"
+        }
+      ],
+      "chunkCount": 0
+    },
+    {
+      "file": "JUDITH-resumo-administrativo-v2.md",
+      "slug": "resumo-administrativo",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 21
+    },
+    {
+      "file": "JUDITH-resumo-ambiental-v2.md",
+      "slug": "resumo-ambiental",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 62
+    },
+    {
+      "file": "JUDITH-resumo-civil-contratos-v2.md",
+      "slug": "resumo-civil-contratos",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 26
+    },
+    {
+      "file": "JUDITH-resumo-civil-obrigacoes-v1.md",
+      "slug": "resumo-civil-obrigacoes",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 18
+    },
+    {
+      "file": "JUDITH-resumo-civil-parte-geral-v1.md",
+      "slug": "resumo-civil-parte-geral",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 24
+    },
+    {
+      "file": "JUDITH-resumo-consumidor-v1.md",
+      "slug": "resumo-consumidor",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 67
+    },
+    {
+      "file": "JUDITH-resumo-direito-autoral-v1.md",
+      "slug": "resumo-direito-autoral",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 14
+    },
+    {
+      "file": "JUDITH-resumo-eca-v2.md",
+      "slug": "resumo-eca",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 15
+    },
+    {
+      "file": "JUDITH-resumo-empresarial-v1.md",
+      "slug": "resumo-empresarial",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 39
+    },
+    {
+      "file": "JUDITH-resumo-familia-sucessoes-v2.md",
+      "slug": "resumo-familia-sucessoes",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 20
+    },
+    {
+      "file": "JUDITH-resumo-lgpd-marco-civil-v3.md",
+      "slug": "resumo-lgpd-marco-civil",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 11
+    },
+    {
+      "file": "JUDITH-resumo-locacao-comercial-v1.md",
+      "slug": "resumo-locacao-comercial",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 9
+    },
+    {
+      "file": "JUDITH-resumo-penal-tributario-v2.md",
+      "slug": "resumo-penal-tributario",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 10
+    },
+    {
+      "file": "JUDITH-resumo-previdenciario-mei-v1.md",
+      "slug": "resumo-previdenciario-mei",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 17
+    },
+    {
+      "file": "JUDITH-resumo-processo-civil-v1.md",
+      "slug": "resumo-processo-civil",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 41
+    },
+    {
+      "file": "JUDITH-resumo-simples-nacional-v2.md",
+      "slug": "resumo-simples-nacional",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 25
+    },
+    {
+      "file": "JUDITH-resumo-tributario-v1.md",
+      "slug": "resumo-tributario",
+      "action": "WOULD_CREATE",
+      "issues": [],
+      "chunkCount": 57
+    }
+  ],
+  "databaseWrites": false
+}

@@ -1,0 +1,217 @@
+{
+  "at": "2026-09-24T16:46:01.406Z",
+  "ok": true,
+  "operation": "/opt/judith-backend/backups/import-review-20260924/apply-18-eaugTQlC",
+  "before": 17,
+  "created": 18,
+  "total": 35,
+  "published": 0,
+  "excludedPropaganda": true,
+  "oldRecordsUnchanged": true,
+  "promptsUnchanged": true,
+  "allContentAndMetadataMatch": true,
+  "guiasSourcesPending": true,
+  "sourceHash": "7ac261ae7f68105e1a784ff9f94b0d58601d1146c2d241d960ecf21e5264ce5a",
+  "promptHash": "1e57c34b004ab4fe8c827931ec15df93af7d39f39086b6c8fca4dfdaf115328f",
+  "indexBefore": {
+    "documents": 0,
+    "chunks": 0,
+    "jobs": 8
+  },
+  "indexAfter": {
+    "documents": 0,
+    "chunks": 0,
+    "jobs": 8
+  },
+  "backup": {
+    "tables": 27,
+    "sha256": "707e6cf0976893c0e229c64c5083527917d9f061efe5f0be0f3ec1a321fb4d07"
+  },
+  "temporaryCredentialsRemoved": true,
+  "createdRecords": [
+    {
+      "id": "kbimp_54c53ff4989007552f9b41042a4c31f7",
+      "slug": "base-guias",
+      "status": "EM_REVISAO",
+      "area": "administrativo, empresarial",
+      "ordem": 1,
+      "contentSha256": "bd85faa2406e7fe703024724c499caddc900f00bada3e9b8412608e28b5e2e4f",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_e3fc3f1c6a167dab88f2291e67c66f1c",
+      "slug": "resumo-administrativo",
+      "status": "EM_REVISAO",
+      "area": "administrativo",
+      "ordem": 3,
+      "contentSha256": "85a27cc965c0e85d4fc76b0787b0321168d6dbc949a7989d81d305969f3f0d80",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_1a4375c7be2aec9636a2bee90b76bbbe",
+      "slug": "resumo-ambiental",
+      "status": "EM_REVISAO",
+      "area": "ambiental",
+      "ordem": 4,
+      "contentSha256": "4d009c3d7f321a75b7fdbf1357390429e910cb5503ac5210532e7c08581a3dfa",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_3f1203d529f44253278e51e0d5928245",
+      "slug": "resumo-civil-contratos",
+      "status": "EM_REVISAO",
+      "area": "civil",
+      "ordem": 5,
+      "contentSha256": "41dd2b48064fcf74986e958f1b4c6535afa582e23474aa977832fb6cfd67a9c8",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_907be514ae694c671c9af0d995d121ea",
+      "slug": "resumo-civil-obrigacoes",
+      "status": "EM_REVISAO",
+      "area": "civil",
+      "ordem": 6,
+      "contentSha256": "995183df0e5d1d826e7c53e48262bd0228d221fe5c3cafec77d5b166986baa55",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_213e0e6bfdb5989ca91e5218ce3d505d",
+      "slug": "resumo-civil-parte-geral",
+      "status": "EM_REVISAO",
+      "area": "civil",
+      "ordem": 7,
+      "contentSha256": "47175ffce942c1fe121d81a105cc51176f7c8046b54517c4b35cd7c714200ac5",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+      "slug": "resumo-consumidor",
+      "status": "EM_REVISAO",
+      "area": "consumidor",
+      "ordem": 8,
+      "contentSha256": "8e28b721d54f08f8ef30486e6a88b35c6bffd1260e51b6e159d36989540fb2e5",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_11995abb60de8c8b3d5920a8758f66ea",
+      "slug": "resumo-direito-autoral",
+      "status": "EM_REVISAO",
+      "area": "autoral",
+      "ordem": 9,
+      "contentSha256": "c6f3c4a682f1acac56a573af908498c033ed3d87857dff65d96abaac552efd8f",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_45f30cb9e8c87d192a5eef9a03ea3d21",
+      "slug": "resumo-eca",
+      "status": "EM_REVISAO",
+      "area": "eca",
+      "ordem": 10,
+      "contentSha256": "f7a5b4ef10983ecd1653479e767c21c78f89a71119ff65e024166bfb61efaf00",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_998232b790208335d715e916bb692440",
+      "slug": "resumo-empresarial",
+      "status": "EM_REVISAO",
+      "area": "empresarial",
+      "ordem": 11,
+      "contentSha256": "f7fc088fef3321149634caf4d58884a78fc87abc29064176d09460b303cb19a1",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_dec202215e3d5559ca0f79f80f0267c2",
+      "slug": "resumo-familia-sucessoes",
+      "status": "EM_REVISAO",
+      "area": "civil",
+      "ordem": 12,
+      "contentSha256": "402a2824c4b5b89145a503f264bf06479150b9bc62340ab0a6dd788928c79931",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_793a176c5d92dc688419de04f48064f1",
+      "slug": "resumo-lgpd-marco-civil",
+      "status": "EM_REVISAO",
+      "area": "lgpd",
+      "ordem": 13,
+      "contentSha256": "0660c4677f0dab93ae99a976a249e89f37b118d53e4d3b9a9b0948bcb2484b38",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_95fe541b711e92909cb6527ed63b0fa5",
+      "slug": "resumo-locacao-comercial",
+      "status": "EM_REVISAO",
+      "area": "civil",
+      "ordem": 14,
+      "contentSha256": "204c2a35beb17ab623082bab1c11ac13699609ba5009f6d10e39cb854dd6ef50",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_a46ad4936a8b055b40221a59844a2627",
+      "slug": "resumo-penal-tributario",
+      "status": "EM_REVISAO",
+      "area": "tributario",
+      "ordem": 15,
+      "contentSha256": "e2d3a07045b093081eea7061cb02804d8844b60d00a9c4a6215de1fef1b3dd1a",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_12a204514e974a63720f5ac1e4a8d4a5",
+      "slug": "resumo-previdenciario-mei",
+      "status": "EM_REVISAO",
+      "area": "previdenciario",
+      "ordem": 16,
+      "contentSha256": "2a8559bfd0d7e99a92614a46c4da64de98daf10236c03f02064c85c82606fbb1",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_0426279e1c9dff2763d2b948b1b2a87d",
+      "slug": "resumo-processo-civil",
+      "status": "EM_REVISAO",
+      "area": "processual",
+      "ordem": 17,
+      "contentSha256": "5e42f8a857aca1990ac458954a3c392aafde2777cc704b67379cde89db054989",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_869079a2dc1e64376c06e8d8d72bea75",
+      "slug": "resumo-simples-nacional",
+      "status": "EM_REVISAO",
+      "area": "tributario",
+      "ordem": 18,
+      "contentSha256": "7954d454ebe769429996316a3f03e7e35ae772511bf28bda239d692933317183",
+      "allMetadataMatch": true
+    },
+    {
+      "id": "kbimp_94918ad074260d858096ffdbf1a9fa72",
+      "slug": "resumo-tributario",
+      "status": "EM_REVISAO",
+      "area": "tributario",
+      "ordem": 19,
+      "contentSha256": "ee67ea242dce40dd297cfe7e47e3c95a419b3a6b7cde27436d01a335e025ee95",
+      "allMetadataMatch": true
+    }
+  ],
+  "receipts": [
+    {
+      "file": "before.json",
+      "sha256": "723c613308acf2151ac20e89d24fc6ea219d45e773d6754c0c4a54435414c4df"
+    },
+    {
+      "file": "after.json",
+      "sha256": "2fe5849970bb1a00f1fe809d6d2949e67601e758b5116a7a27f14e6b48f8312e"
+    },
+    {
+      "file": "import-commit.json",
+      "sha256": "fb1521d02448b4d3c6fbc229fb7f4cc49a89da1b86b256f052d82be795678a83"
+    },
+    {
+      "file": "import-commit.json.attempt-1.json",
+      "sha256": "c057e5c17c14e6f576a6ce0066ed4f7355fade87d93c7ab058bc15de14282663"
+    },
+    {
+      "file": "result.json",
+      "sha256": "161347fb208e3cc5be9aca39c1c2313adc10b23604df347eda9c23b20f417d6d"
+    }
+  ]
+}

@@ -1,0 +1,2968 @@
+{
+  "startedAt": "2026-09-24T21:51:56.375Z",
+  "productionWrites": false,
+  "whatsappCalls": 0,
+  "calls": [
+    {
+      "case": "lgpd-financial",
+      "id": "msg_011CfP1GkXG9ZBbpWvmKPizs",
+      "kind": "select_context",
+      "latencyMs": 1238,
+      "usage": {
+        "input_tokens": 1099,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 52,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_0183c7Djd8s9sUGgwLPbKtDy",
+          "name": "select_context",
+          "input": {
+            "contexto": null,
+            "termos": []
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "lgpd-financial",
+      "id": "msg_011CfP1GpBXtqtXQ5rrCxtBf",
+      "kind": "classification",
+      "latencyMs": 622,
+      "usage": {
+        "input_tokens": 285,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 6,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "lgpd"
+        }
+      ]
+    },
+    {
+      "case": "lgpd-financial",
+      "id": "msg_011CfP1GscQ86A7GRsw3rv7K",
+      "kind": "grounded_answer",
+      "latencyMs": 4209,
+      "usage": {
+        "input_tokens": 1128,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18980,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 324,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01X1pVKJEdmibEHjcAkahRim",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: classificação de dados financeiros como sensíveis sob a LGPD. Capítulo pertinente: CHUNK 5 — Sanções (que diferencia dados comuns de dados sensíveis) e CHUNK 8 — LGPD nas relações de trabalho. Trecho literal de suporte: \"Dados sensíveis (saúde, biometria, religião, origem étnica, dados financeiros sigilosos — art. 5º, II e art. 11 LGPD)\" (CHUNK 5). A qualificação é \"dados financeiros sigilosos\", não todos os dados financeiros. A base legal está no art. 5º, II e art. 11 LGPD conforme citado.",
+            "unsupported": false,
+            "answer": "Não automaticamente — apenas dados financeiros sigilosos (como informações bancárias, histórico de crédito ou patrimônio pessoal) são classificados como dados sensíveis sob a LGPD; dados financeiros comuns (como valor de uma compra ou fatura) seguem o regime de dados pessoais comuns."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "lgpd-financial",
+      "id": "msg_011CfP1HBeMuCfaHRtvpypfR",
+      "kind": "support_verdict",
+      "latencyMs": 4384,
+      "usage": {
+        "input_tokens": 6674,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 372,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01SqUWH9RBiCQdJH5mYAXQdZ",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que: (1) dados financeiros não são automaticamente dados sensíveis; (2) apenas dados financeiros sigilosos (informações bancárias, histórico de crédito, patrimônio pessoal) são classificados como dados sensíveis sob a LGPD; (3) dados financeiros comuns (valor de compra, fatura) seguem o regime de dados pessoais comuns. A fonte CHUNK 5 (linhas 17-19) menciona \"dados financeiros sigilosos\" como exemplo de dados sensíveis (art. 5º, II e art. 11 LGPD), mas não estabelece a distinção entre dados financeiros sigilosos e dados financeiros comuns, nem afirma que dados financeiros comuns seguem regime de dados pessoais comuns. A fonte cita apenas que dados sensíveis geram dano moral presumido, enquanto dados comuns exigem prova de prejuízo, mas não aplica essa distinção especificamente a dados financeiros comuns. A afirmação sobre o regime de dados financeiros comuns não encontra suporte textual explícito nas fontes fornecidas.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftb3q500cv48hxdhxbxmj7",
+                    "lineStart": 19,
+                    "lineEnd": 19
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "lgpd-financial",
+      "id": "msg_011CfP1HWTTbLWyGTX1nDNVD",
+      "kind": "grounded_answer",
+      "latencyMs": 2978,
+      "usage": {
+        "input_tokens": 1665,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18980,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 237,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_012x744PyTrhmXwEiFWN5z2b",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: classificação de dados financeiros sob a LGPD. Capítulo pertinente: CHUNK 5 — Sanções (linhas 17-19). Trecho literal: \"Dados sensíveis (saúde, biometria, religião, origem étnica, dados financeiros sigilosos — art. 5º, II e art. 11 LGPD): o vazamento gera dano moral presumido e responsabilidade objetiva\". A fonte menciona \"dados financeiros sigilosos\" como exemplo de dados sensíveis, mas não estabelece se dados financeiros em geral são ou não automaticamente sensíveis, nem diferencia dados financeiros sigilosos de dados financeiros comuns.",
+            "unsupported": true,
+            "answer": ""
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "consumer-followup",
+      "id": "msg_011CfP1HjbyUMfk6WiX7K3qA",
+      "kind": "select_context",
+      "latencyMs": 1272,
+      "usage": {
+        "input_tokens": 1090,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 94,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_011s1oUyzhmYwD6Fb59W9krQ",
+          "name": "select_context",
+          "input": {
+            "contexto": "comprei um produto pela internet. Posso desistir da compra mesmo sem defeito?",
+            "termos": [
+              "prazo para exercer esse direito",
+              "desistir da compra",
+              "produto pela internet"
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "consumer-followup",
+      "id": "msg_011CfP1Hq6sZZwYDMGYXx9e1",
+      "kind": "classification",
+      "latencyMs": 662,
+      "usage": {
+        "input_tokens": 310,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 5,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "consumidor"
+        }
+      ]
+    },
+    {
+      "case": "consumer-followup",
+      "id": "msg_011CfP1HtZyvCnTgA3yrXLSz",
+      "kind": "grounded_answer",
+      "latencyMs": 3621,
+      "usage": {
+        "input_tokens": 1153,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18710,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 286,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_018siHngmQSNCaDkbTaW4oH4",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: direito de arrependimento em compra pela internet. Capítulo pertinente: \"Direito de arrependimento\" (CHUNK 7 — Contratos: Cláusulas Abusivas). Trecho literal de suporte: \"Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto.\"",
+            "unsupported": false,
+            "answer": "O prazo para exercer o direito de arrependimento é de **7 dias**, contados a partir da assinatura do contrato ou do recebimento do produto — o que ocorrer por último. Nesse período, você pode desistir sem justificar, e tudo que pagou deve ser devolvido integralmente, com correção monetária."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "consumer-followup",
+      "id": "msg_011CfP1JA39cQsTFkKW3Qvcq",
+      "kind": "support_verdict",
+      "latencyMs": 4470,
+      "usage": {
+        "input_tokens": 6030,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 332,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01TKtEEaHp8y7rQ17cyyBYNb",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) prazo de 7 dias para exercer direito de arrependimento; (2) contado a partir da assinatura do contrato ou recebimento do produto — o que ocorrer por último; (3) pode desistir sem justificar; (4) tudo que pagou deve ser devolvido integralmente com correção monetária. A fonte CHUNK 7, linha 1, afirma: 'tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.' Todas as afirmações da unidade encontram suporte literal e integral na fonte citada. A unidade é uma paráfrase fiel do texto-fonte, sem acréscimos ou deduções não autorizadas. Não há ambiguidade ou contradição entre a unidade e a fonte.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 1,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "consumer-followup",
+      "id": "msg_011CfP1JVE4XDXT62qwG9vs8",
+      "kind": "grounded_answer",
+      "latencyMs": 2496,
+      "usage": {
+        "input_tokens": 1655,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18710,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 216,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01JrVguaLbSMvBvFjYYUsWUX",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: prazo para exercer direito de arrependimento em compra pela internet. Capítulo pertinente: CHUNK 7 — Direito de arrependimento. Trecho literal: \"Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto.\"",
+            "unsupported": false,
+            "answer": "O prazo é de 7 dias, contados da assinatura do contrato ou do recebimento do produto."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "consumer-followup",
+      "id": "msg_011CfP1JfzhrFooXAe9UJ7no",
+      "kind": "support_verdict",
+      "latencyMs": 4182,
+      "usage": {
+        "input_tokens": 5974,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 290,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_011dmMfs3VwCksQgqpciLaTS",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) o prazo é de 7 dias; (2) contados da assinatura do contrato ou do recebimento do produto. A fonte CHUNK 7, linha 1, afirma literalmente: 'tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto.' A unidade é paráfrase fiel e expressamente delimitada ao direito de arrependimento em compra fora do estabelecimento comercial (pela internet, conforme contexto do usuário). Ambas as afirmações (prazo de 7 dias e contagem a partir de assinatura ou recebimento) estão explicitamente sustentadas pela fonte, sem acréscimos de precedência ou condições adicionais não mencionadas.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 1,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "final-holdout-suppliers",
+      "id": "msg_011CfP1Jz7dXnZ2upcQziLbh",
+      "kind": "classification",
+      "latencyMs": 645,
+      "usage": {
+        "input_tokens": 290,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 5,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "consumidor"
+        }
+      ]
+    },
+    {
+      "case": "final-holdout-suppliers",
+      "id": "msg_011CfP1K3byonDC5s15QujfK",
+      "kind": "grounded_answer",
+      "latencyMs": 4731,
+      "usage": {
+        "input_tokens": 1133,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 17846,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 395,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01Woj2y2TuMVLs845YfompKh",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: responsabilidade pelo vício do produto no CDC. Capítulo pertinente: \"CHUNK STJ-C3 — Obrigação do Comerciante de Intermediar Reparação de Produto Defeituoso\" e \"Q&A — VÍCIO DO PRODUTO\". Trecho literal: \"O STJ firmou que o comerciante não pode simplesmente mandar o consumidor falar direto com o fabricante. O comerciante tem obrigação de intermediar o processo de reparação\" e \"A loja, a assistência técnica e o fabricante respondem solidariamente — você pode levar para qualquer um dos três.\" Também: \"a responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante.\"",
+            "unsupported": false,
+            "answer": "No CDC, a responsabilidade pelo vício do produto é solidária: o fabricante, o comerciante e a assistência técnica respondem juntos. O comerciante não pode se recusar a receber o produto com defeito ou mandar o consumidor direto para o fabricante — tem obrigação de intermediar a reparação, recebendo o produto, encaminhando e acompanhando até a devolução corrigida. Se o vício não for sanado em 30 dias, o consumidor pode exigir troca, reembolso ou abatimento de qualquer um deles."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "final-holdout-suppliers",
+      "id": "msg_011CfP1KPzKSXkw5sMhTyGWr",
+      "kind": "support_verdict",
+      "latencyMs": 6000,
+      "usage": {
+        "input_tokens": 5273,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 481,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01VJ3DYwGTgbS76WhQT4RdSY",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) responsabilidade solidária do fabricante, comerciante e assistência técnica; (2) o comerciante não pode recusar receber o produto com defeito ou mandar direto para o fabricante; (3) o comerciante tem obrigação de intermediar a reparação; (4) se o vício não for sanado em 30 dias, o consumidor pode exigir troca, reembolso ou abatimento de qualquer um deles. Verificação: A fonte CHUNK STJ-C3 (linhas 3-5) afirma explicitamente que o comerciante não pode mandar o consumidor direto para o fabricante, tem obrigação de intermediar, e que essa obrigação decorre da responsabilidade solidária (CDC art. 18). As linhas 8-9 confirmam o prazo de 30 dias para sanar o vício e as três opções do consumidor (substituição, abatimento ou devolução do dinheiro). A fonte Q&A — VÍCIO DO PRODUTO (linhas 7, 10) reafirma que loja, assistência técnica e fabricante respondem solidariamente e que a loja não pode se recusar a receber o produto com vício. Todas as afirmações da unidade encontram suporte explícito nas fontes fornecidas.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftd4nm00rp48hxdiu2tetk",
+                    "lineStart": 3,
+                    "lineEnd": 5
+                  },
+                  {
+                    "chunkId": "cmuftd4nm00rp48hxdiu2tetk",
+                    "lineStart": 8,
+                    "lineEnd": 9
+                  },
+                  {
+                    "chunkId": "cmuftcq2800ol48hxb9a4dzzr",
+                    "lineStart": 7,
+                    "lineEnd": 10
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-online",
+      "id": "msg_011CfP1Kqpb4hq29YCNRDvdc",
+      "kind": "classification",
+      "latencyMs": 856,
+      "usage": {
+        "input_tokens": 287,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 5,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "consumidor"
+        }
+      ]
+    },
+    {
+      "case": "extra-online",
+      "id": "msg_011CfP1KvA2QYqEJMAjBBewt",
+      "kind": "grounded_answer",
+      "latencyMs": 4652,
+      "usage": {
+        "input_tokens": 1130,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18733,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 322,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01YKZNUt8oST3RZ2qxo77i9n",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: compra pela internet e direito de desistência. Capítulo pertinente: \"Direito de arrependimento\" (CHUNK 7 — Contratos: Cláusulas Abusivas). Trecho literal de suporte: \"Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\"",
+            "unsupported": false,
+            "answer": "Sim, você tem direito de desistir. Compras pela internet são feitas fora do estabelecimento comercial, então você tem **7 dias** para se arrepender, sem precisar justificar. O prazo conta a partir da assinatura do contrato ou do recebimento do produto — o que vier depois. Tudo que você pagou deve ser devolvido integralmente, com correção monetária."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-online",
+      "id": "msg_011CfP1LG9KXvJUPc1A8aPD6",
+      "kind": "support_verdict",
+      "latencyMs": 6954,
+      "usage": {
+        "input_tokens": 6063,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 501,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_019koxEBfPBLJU6Bd3UmtGx3",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Afirmações verificáveis da unidade: (1) Compras pela internet conferem direito de desistência; (2) O prazo é de 7 dias; (3) Não é necessário justificar; (4) O prazo conta 'a partir da assinatura do contrato ou do recebimento do produto — o que vier depois'; (5) Tudo que foi pago deve ser devolvido integralmente com correção monetária. Verificação: A fonte CHUNK 7, linha 1, afirma: 'Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.' A unidade reproduz fielmente essas informações. Porém, a unidade acrescenta 'o que vier depois', estabelecendo uma ordem de precedência (qual evento prevalece) que NÃO está explicitamente afirmada na fonte. A fonte apresenta as duas alternativas ('da assinatura do contrato ou do recebimento do produto') sem indicar qual prevalece ou qual vem depois. A unidade interpreta essa ambiguidade ao adicionar 'o que vier depois', criando uma regra de precedência não presente no texto original. Isso viola a instrução de não acrescentar precedência sem evidência explícita, mesmo que pareça correto. As demais afirmações (direito, prazo de 7 dias, sem justificativa, devolução integral com correção) têm suporte completo.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 1,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-online",
+      "id": "msg_011CfP1LmuiV4FPVj2aKTiJz",
+      "kind": "grounded_answer",
+      "latencyMs": 2168,
+      "usage": {
+        "input_tokens": 1767,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18733,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 268,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_018DDQ8viUwfLg8kyBEyse7H",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: compra pela internet. Capítulo pertinente: CHUNK 7 — Direito de arrependimento. Trecho literal: \"Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\"",
+            "unsupported": false,
+            "answer": "Sim. Compras pela internet conferem direito de desistência: você tem 7 dias para se arrepender sem justificar, contados da assinatura do contrato ou do recebimento do produto, e tudo que pagou deve ser devolvido integralmente com correção monetária."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-online",
+      "id": "msg_011CfP1Lw8MgaDMSqvUv97Mo",
+      "kind": "support_verdict",
+      "latencyMs": 6004,
+      "usage": {
+        "input_tokens": 6035,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 437,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_012tAgCwaW46LwqTmMhTWU2m",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) compras pela internet conferem direito de desistência; (2) prazo de 7 dias; (3) contados da assinatura do contrato ou do recebimento do produto; (4) sem necessidade de justificar; (5) devolução integral do que foi pago; (6) com correção monetária. A fonte CHUNK 7, linhas 0-1, afirma explicitamente: \"Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\" Todas as afirmações da unidade encontram suporte literal e integral no trecho citado. A unidade não menciona exceções (produtos personalizados ou perecíveis), que são discutidas na linha 3 da mesma fonte, mas a pergunta é genérica sobre direito de desistência em compra pela internet, e a resposta parafraseia fielmente o direito geral sem acrescentar condições não mencionadas na fonte. A resposta é conversacional no tom, mas o cabeçalho e o corpo afirmam direitos e consequências jurídicas específicas, portanto não é puramente conversacional.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 0,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-followup",
+      "id": "msg_011CfP1MPW7QVSuqDdTYLmgD",
+      "kind": "select_context",
+      "latencyMs": 1357,
+      "usage": {
+        "input_tokens": 1083,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 92,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01AtJgyn2z5pct3j6S9XGS6y",
+          "name": "select_context",
+          "input": {
+            "contexto": "Comprei um produto pela internet. Tenho direito de desistir da compra?",
+            "termos": [
+              "preciso explicar por que quero desistir",
+              "desistir da compra"
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-followup",
+      "id": "msg_011CfP1MV4UTjdJrK45XN9pY",
+      "kind": "classification",
+      "latencyMs": 647,
+      "usage": {
+        "input_tokens": 310,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 5,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "consumidor"
+        }
+      ]
+    },
+    {
+      "case": "extra-followup",
+      "id": "msg_011CfP1MYYq5sG6BXqgwaCbY",
+      "kind": "grounded_answer",
+      "latencyMs": 4086,
+      "usage": {
+        "input_tokens": 1153,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18851,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 292,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01Wucin92oqQK2LT6YQxUaWh",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: direito de arrependimento em compra pela internet. Capítulo pertinente: \"CHUNK 7 — CONTRATOS: CLÁUSULAS ABUSIVAS\", subcapítulo \"Direito de arrependimento\". Trecho literal: \"Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, **sem precisar justificar**. O prazo conta da assinatura do contrato ou do recebimento do produto.\"",
+            "unsupported": false,
+            "answer": "Não, você não precisa explicar o motivo. Compra pela internet dá direito de arrependimento de 7 dias sem justificativa — basta comunicar a desistência ao fornecedor. O prazo conta da assinatura do contrato ou do recebimento do produto, e você recebe de volta tudo que pagou, com correção monetária."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-followup",
+      "id": "msg_011CfP1Mr4HYTBxDtfw7yvBk",
+      "kind": "support_verdict",
+      "latencyMs": 7399,
+      "usage": {
+        "input_tokens": 6147,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 587,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01WKx18bpN7Nu1XPDTTgwnQK",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade contém as seguintes afirmações verificáveis:\n\n1. \"Não precisa explicar o motivo\" — afirmação sobre dispensa de justificativa para desistência.\n2. \"Compra pela internet dá direito de arrependimento de 7 dias\" — afirmação sobre prazo e direito.\n3. \"sem justificativa\" — reafirma dispensa de motivo.\n4. \"basta comunicar a desistência ao fornecedor\" — afirmação sobre procedimento.\n5. \"O prazo conta da assinatura do contrato ou do recebimento do produto\" — afirmação sobre início da contagem.\n6. \"você recebe de volta tudo que pagou, com correção monetária\" — afirmação sobre reembolso integral e correção.\n\nVerificação contra fonte cmuftcwlo00pz48hx6ea52k2k (CHUNK 7 — Direito de arrependimento), linhas 0-1:\n\nLinha 1 afirma: \"Se você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\"\n\nTodas as seis afirmações da unidade encontram suporte literal e integral nesta linha. A fonte sustenta: (1) dispensa de justificativa (\"sem precisar justificar\"), (2) direito de 7 dias para compra pela internet, (3) comunicação da desistência (implícita em \"desistir\"), (4) contagem da assinatura ou recebimento, (5) devolução integral com correção monetária. A unidade é uma paráfrase fiel do conteúdo da fonte, sem acréscimos ou desvios.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 1,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-change",
+      "id": "msg_011CfP1NQ28ejkNLkAH3Twim",
+      "kind": "select_context",
+      "latencyMs": 949,
+      "usage": {
+        "input_tokens": 1118,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 52,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_019RxBBw73SLEHT1A3JSRcoV",
+          "name": "select_context",
+          "input": {
+            "contexto": null,
+            "termos": []
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-change",
+      "id": "msg_011CfP1NU1zTTvWviqBy1gKV",
+      "kind": "classification",
+      "latencyMs": 646,
+      "usage": {
+        "input_tokens": 300,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 6,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "lgpd"
+        }
+      ]
+    },
+    {
+      "case": "extra-change",
+      "id": "msg_011CfP1NXRPa2VP9KGhJaJxN",
+      "kind": "grounded_answer",
+      "latencyMs": 4787,
+      "usage": {
+        "input_tokens": 1143,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 18891,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 376,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01TBaiyHpMjKj2z53SJs9m6o",
+          "name": "grounded_answer",
+          "input": {
+            "scopeAnalysis": "Fato gerador: obrigação de indicar DPO (encarregado de dados) para MEI sem tratamento de alto risco. Capítulo pertinente: \"Q&A — LGPD na prática do pequeno empresário\", seção sobre DPO. Trecho literal: \"Em regra não, se você é MEI, ME ou EPP que não realiza tratamento de alto risco. A Resolução CD/ANPD nº 2/2022 dispensa agentes de tratamento de pequeno porte da indicação formal de encarregado. Se um cliente ou parceiro perguntar quem é seu DPO, você pode informar que está dispensado dessa obrigação por enquadramento como agente de pequeno porte conforme a regulamentação da ANPD.\"",
+            "unsupported": false,
+            "answer": "Não. A Resolução CD/ANPD nº 2/2022 dispensa agentes de tratamento de pequeno porte — como MEI, ME e EPP sem tratamento de alto risco — da indicação formal de encarregado de dados. Se um cliente ou parceiro perguntar quem é seu DPO, você pode informar que está dispensado dessa obrigação por enquadramento como agente de pequeno porte conforme a regulamentação da ANPD."
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "extra-change",
+      "id": "msg_011CfP1Nt85ifXFWFsYNsBt1",
+      "kind": "support_verdict",
+      "latencyMs": 5246,
+      "usage": {
+        "input_tokens": 6666,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 412,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01PfzAXvCF556tANwuF7aCtY",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) A Resolução CD/ANPD nº 2/2022 dispensa agentes de tratamento de pequeno porte (MEI, ME, EPP sem tratamento de alto risco) da indicação formal de encarregado de dados; (2) Se um cliente ou parceiro perguntar quem é o DPO, pode-se informar que está dispensado dessa obrigação por enquadramento como agente de pequeno porte conforme a regulamentação da ANPD. A fonte (cmuftb3zk00cx48hx8r257nex, linhas 20-21) afirma literalmente: 'Em regra não, se você é MEI, ME ou EPP que não realiza tratamento de alto risco. A Resolução CD/ANPD nº 2/2022 dispensa agentes de tratamento de pequeno porte da indicação formal de encarregado. Se um cliente ou parceiro perguntar quem é seu DPO, você pode informar que está dispensado dessa obrigação por enquadramento como agente de pequeno porte conforme a regulamentação da ANPD.' Ambas as afirmações estão expressamente sustentadas pelo trecho citado, que reproduz fielmente o conteúdo da unidade.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftb3zk00cx48hx8r257nex",
+                    "lineStart": 20,
+                    "lineEnd": 21
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "esquecimento-barrier",
+      "id": "msg_011CfP1PGg9W6sW1Bkyn6DEw",
+      "kind": "support_verdict",
+      "latencyMs": 3343,
+      "usage": {
+        "input_tokens": 2040,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 272,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01AANJz2A9p6JqT8iTUkhyFn",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) o titular pode pedir eliminação de dados tratados com consentimento; (2) a lei chama isso de 'direito ao esquecimento'. A fonte sustenta a afirmação (1) literalmente: 'O titular pode pedir a eliminação dos dados pessoais tratados com consentimento'. Porém, a fonte não menciona a expressão 'direito ao esquecimento' nem a associa à eliminação de dados com consentimento. A fonte apenas descreve o direito de pedir eliminação com ressalva de hipóteses legais de conservação. A nomenclatura 'direito ao esquecimento' não está explicitamente atribuída pela fonte a essa situação específica. A primeira afirmação tem suporte; a segunda (nomenclatura) não está nas fontes fornecidas.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "barrier-fixture",
+                    "lineStart": 0,
+                    "lineEnd": 0
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "scope-final-holdout-suppliers-bad",
+      "id": "msg_011CfP1PX2qwgt6GJKHGy5Jy",
+      "kind": "support_verdict",
+      "latencyMs": 8083,
+      "usage": {
+        "input_tokens": 5217,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 660,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_0172QLFDgMsN9XdKq9rFQ6LN",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) Fabricante, produtor, construtor e importador respondem sempre pelo vício; (2) Comerciante responde em casos específicos: quando não dá para identificar o fabricante, quando o produto chegou sem identificação, ou quando a loja armazenou mal um produto perecível; (3) Comerciante tem obrigação de intermediar a reparação e não pode recusar reclamação ou mandar o consumidor direto para o fabricante.\n\nVerificação:\n- Afirmação 1 (fabricante, produtor, construtor, importador respondem sempre): A fonte cmuftd4nm00rp48hxdiu2tetk menciona responsabilidade solidária na cadeia de consumo (CDC art. 18) e que o comerciante responde junto com o fabricante, mas não lista explicitamente os sujeitos que sempre respondem (fabricante, produtor, construtor, importador). A fonte cmuftcq2800ol48hxb9a4dzzr afirma que \"A loja, a assistência técnica e o fabricante respondem solidariamente\" mas não menciona produtor, construtor ou importador especificamente.\n- Afirmação 2 (comerciante responde em casos específicos): A unidade lista três casos específicos, mas as fontes fornecidas não descrevem essas hipóteses específicas de responsabilidade do comerciante. As fontes tratam da obrigação de intermediação, não das hipóteses de responsabilidade direta do comerciante pelo vício.\n- Afirmação 3 (obrigação de intermediar): Totalmente apoiada pela fonte cmuftd4nm00rp48hxdiu2tetk, linhas 3-5 e 17-18.\n\nA unidade mistura afirmações com suporte (intermediação) com afirmações sem suporte explícito nas fontes (quem sempre responde; casos específicos de responsabilidade do comerciante). As fontes não detalham as hipóteses específicas mencionadas na unidade.",
+                "supported": false,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftd4nm00rp48hxdiu2tetk",
+                    "lineStart": 3,
+                    "lineEnd": 5
+                  },
+                  {
+                    "chunkId": "cmuftd4nm00rp48hxdiu2tetk",
+                    "lineStart": 17,
+                    "lineEnd": 18
+                  },
+                  {
+                    "chunkId": "cmuftcq2800ol48hxb9a4dzzr",
+                    "lineStart": 7,
+                    "lineEnd": 7
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "scope-final-holdout-suppliers-good",
+      "id": "msg_011CfP1Q7bj9BLTN6GcaUsQ9",
+      "kind": "support_verdict",
+      "latencyMs": 4911,
+      "usage": {
+        "input_tokens": 5099,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 432,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01TVau2miuy5CTdqRdP2SChh",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma que 'A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante.' Verificação: (1) Responsabilidade solidária na cadeia de consumo — a fonte cmuftd4nm00rp48hxdiu2tetk, linha 5, afirma explicitamente 'Essa obrigação decorre da responsabilidade solidária na cadeia de consumo (CDC, art. 18)'. A linha 18 reafirma: 'A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante.' (2) Quem responde — a fonte cmuftcq2800ol48hxb9a4dzzr, linha 7, afirma 'A loja, a assistência técnica e o fabricante respondem solidariamente'. Isso confirma que não é apenas o fabricante, mas também o comerciante (loja). A unidade responde corretamente à pergunta: não é apenas o fabricante, mas também o comerciante, em regime de solidariedade. A afirmação está integralmente apoiada pelas fontes.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftd4nm00rp48hxdiu2tetk",
+                    "lineStart": 5,
+                    "lineEnd": 5
+                  },
+                  {
+                    "chunkId": "cmuftd4nm00rp48hxdiu2tetk",
+                    "lineStart": 18,
+                    "lineEnd": 18
+                  },
+                  {
+                    "chunkId": "cmuftcq2800ol48hxb9a4dzzr",
+                    "lineStart": 7,
+                    "lineEnd": 7
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "scope-topic-change-bad",
+      "id": "msg_011CfP1QUXZY9MYqinBrYimY",
+      "kind": "support_verdict",
+      "latencyMs": 7112,
+      "usage": {
+        "input_tokens": 5946,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 578,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01UpwMXThBRr6vk7zziQMRMR",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Afirmações verificáveis da unidade: (1) Direito de arrependimento de 7 dias contados da assinatura do contrato ou do recebimento do produto; (2) Compra pela internet está fora do estabelecimento; (3) CDC garante essa possibilidade sem precisar justificar; (4) Tudo que foi pagado deve ser devolvido integralmente, com correção monetária; (5) Exceção: produto personalizado ou perecível; (6) Para esses produtos, o direito é controvertido; (7) Fornecedor tem argumento forte para reter ao menos os custos já incorridos; (8) Melhor caminho é tentar negociar. Verificação: A fonte CHUNK 7 (cmuftcwlo00pz48hx6ea52k2k) afirma explicitamente: 'Se você comprou fora do estabelecimento comercial (pela internet, por telefone, na porta de casa, por catálogo), tem 7 dias para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.' Isso sustenta as afirmações 1-4. A mesma fonte trata produtos personalizado ou perecível como 'ponto controvertido' e afirma: 'a aplicação do arrependimento é discutida: parte do entendimento afasta ou limita o direito, porque o item não pode ser revendido; outra parte o mantém' e recomenda 'não afirmar de forma chapada \"sempre tem\" nem \"nunca tem\" — sinalizar que é controvertido, que o fornecedor tem argumento forte para reter ao menos os custos já incorridos, e sugerir acordo.' Isso sustenta as afirmações 5-8. A unidade segue fielmente a orientação da fonte, inclusive ao sinalizar a controvérsia e sugerir negociação.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 0,
+                    "lineEnd": 3
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "scope-topic-change-good",
+      "id": "msg_011CfP1R127V8oXvyaQ43HAM",
+      "kind": "support_verdict",
+      "latencyMs": 3829,
+      "usage": {
+        "input_tokens": 5814,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 262,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01UFzM3KuBEgYkCsdUZLMWNE",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "Afirmação verificável: (1) Compra feita fora do estabelecimento comercial (pela internet) confere direito de desistência; (2) Prazo de 7 dias; (3) Sem necessidade de justificativa. O trecho citado (CHUNK 7, linhas 0-1) afirma literalmente: 'Se você comprou fora do estabelecimento comercial (pela internet, por telefone, na porta de casa, por catálogo), tem 7 dias para desistir, sem precisar justificar.' Todas as três afirmações estão expressamente cobertas pelo texto. A unidade é uma paráfrase fiel e delimitada ao mesmo caso descrito na fonte.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 0,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "scope-temporal-ordering-bad",
+      "id": "msg_011CfP1RHL9Xi9TJAbFnM7Z2",
+      "kind": "support_verdict",
+      "latencyMs": 4314,
+      "usage": {
+        "input_tokens": 2479,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 369,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01EnizFNbuzy7UVAi3AFBuVJ",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade contém as seguintes afirmações verificáveis: (1) o prazo para exercer o direito de arrependimento é de 7 dias; (2) o prazo é contado a partir da assinatura do contrato ou do recebimento do produto — o que ocorrer por último; (3) nesse período, você pode desistir sem justificar; (4) tudo que pagou deve ser devolvido integralmente, com correção monetária. A fonte (linhas 1) afirma explicitamente: \"tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\" Todas as afirmações da unidade encontram suporte literal e integral no trecho citado. A unidade responde à pergunta sobre prazo e direito de arrependimento em compra pela internet, contexto que coincide com a fonte (\"comprou **fora do estabelecimento comercial** (pela internet...\"). Não há acréscimos não apoiados, nem inferências além do texto.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 1,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "case": "scope-temporal-ordering-good",
+      "id": "msg_011CfP1RcBDshz2SDZQYBzsw",
+      "kind": "support_verdict",
+      "latencyMs": 3578,
+      "usage": {
+        "input_tokens": 2423,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 265,
+        "service_tier": "standard",
+        "inference_geo": "not_available"
+      },
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01DMiKLH6h31CERQChw9egPj",
+          "name": "support_verdict",
+          "input": {
+            "units": [
+              {
+                "index": 0,
+                "analysis": "A unidade afirma: (1) o prazo para exercer direito de arrependimento é de 7 dias; (2) o prazo conta da assinatura do contrato ou do recebimento do produto. A fonte (linhas 1) estabelece explicitamente: 'tem **7 dias** para desistir' e 'O prazo conta da assinatura do contrato ou do recebimento do produto.' A resposta reproduz fielmente essas duas afirmações sem acrescentar precedência entre os eventos (qual vem primeiro) nem outras condições. A paráfrase é literal e delimitada ao contexto descrito na fonte (compra fora do estabelecimento comercial). Não há acréscimos não apoiados.",
+                "supported": true,
+                "conversational": false,
+                "evidence": [
+                  {
+                    "chunkId": "cmuftcwlo00pz48hx6ea52k2k",
+                    "lineStart": 1,
+                    "lineEnd": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "lgpd-financial",
+      "session": 1,
+      "q": "Responda em uma frase: dados financeiros são automaticamente dados sensíveis?",
+      "reply": "Não encontrei suporte suficiente para responder com segurança a esse ponto específico. Prefiro não afirmar prazos ou consequências sem essa referência. Consulte um advogado para avaliar o caso. Nenhum crédito foi consumido.",
+      "failure": "SUPPORT_INSUFFICIENT",
+      "creditDelta": 0,
+      "latencyMs": 13791,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "generation_no_support",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v11",
+        "area": "lgpd",
+        "searchQuery": "Responda em uma frase: dados financeiros são automaticamente dados sensíveis?",
+        "excludedFromGeneration": [],
+        "chunks": [
+          {
+            "id": "cmuftb3q500cv48hxdhxbxmj7",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "bb3336581aa87c4d582215b0a7d33a26237dc261e62a4e975821b0f73c46e2fe",
+            "score": 0.8611525201295424,
+            "content": "## CHUNK 5 — Sanções: o que acontece se descumprir a LGPD\n\nA ANPD pode aplicar as seguintes sanções (art. 52):\n\n| Sanção | Limite |\n|--------|--------|\n| Advertência com prazo para correção | — |\n| Multa simples | Até 2% do faturamento da pessoa jurídica, **grupo ou conglomerado econômico** no Brasil no último exercício (excluídos tributos), limitado a R$ 50 milhões por infração (art. 52, II LGPD) |\n| Multa diária | Mesmo limite total |\n| Publicização da infração | — |\n| Bloqueio dos dados | Até regularização |\n| Eliminação dos dados | — |\n| Suspensão do banco de dados | Até 6 meses (renovável) |\n| Proibição de atividade de tratamento | Parcial ou total |\n\n💸 **Para MEI/pequeno empresário:** a ANPD tem priorizado orientação e advertências para pequenas empresas em primeira ocorrência. O risco mais imediato é **civil**.\n\n🔴 **Distinção crítica — dados comuns vs. dados sensíveis:**\n- **Dados pessoais comuns** (nome, telefone, e-mail): o titular que sofrer dano precisa **provar o prejuízo** concreto para obter indenização. O juiz pode inverter o ônus da prova quando houver verossimilhança da alegação ou hipossuficiência do titular (art. 42, §2º LGPD) — o enquadramento do cliente pessoa física como hipossuficiente frente ao empresário é frequente na jurisprudência consumerista (STJ, AREsp 2.130.619-SP, mar/2023).\n- **Dados sensíveis** (saúde, biometria, religião, origem étnica, dados financeiros sigilosos — art. 5º, II e art. 11 LGPD): o vazamento gera **dano moral presumido e responsabilidade objetiva** — o titular não precisa provar o prejuízo; basta provar o vazamento (STJ, REsp 2.121.904/SP, rel. Min. Nancy Andrighi, 3ª Turma, fev/2025).\n\n**Quem opera com dados sensíveis** (nutricionista, psicólogo, academia com biometria, clínica, farmácia) tem exposição a indenizações automáticas e deve adotar medidas de segurança reforçadas.\n\n---\n\n",
+            "chapter": "CHUNK 5 — Sanções: o que acontece se descumprir a LGPD",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb5au00d748hxka0km3fb",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "73c66cd3c99981089c44b581ea6189b8d4868bf740604c89d89c16205efeeb10",
+            "score": 0.8563777059770434,
+            "content": "## CHUNK 8 — LGPD nas relações de trabalho: dados de funcionários e prestadores\n> **Perfis atendidos:** ME / EPP com funcionários CLT ou autônomos contratados\n\nO MEI e o pequeno empresário com funcionários lidam com **dois universos de dados completamente distintos**: dados de clientes (relação de consumo) e dados de empregados/prestadores (relação de trabalho). O segundo é mais regulado e cheio de armadilhas.\n\n**Dados comuns de empregados** (CPF, carteira de trabalho, endereço, conta bancária):\n- Base legal: cumprimento de obrigação legal (eSocial, Receita Federal, Ministério do Trabalho) ou execução de contrato de trabalho — art. 7º, II e V LGPD\n- Não exige consentimento do funcionário\n\n**⚠️ Dados sensíveis na relação de trabalho — atenção redobrada:**\n\n🔴 **Ponto biométrico (impressão digital ou reconhecimento facial):** é dado sensível (art. 11 LGPD). O regime é mais restritivo que para dados comuns — **o legítimo interesse não pode ser usado como base legal para dados sensíveis**. A base válida é prevenção à fraude/segurança do titular (art. 11, II, g). Se o sistema de ponto biométrico vazar ou for mal armazenado pelo fornecedor do software, a empresa responde por danos morais na Justiça do Trabalho.\n\n🔴 **Exame médico admissional e periódico:** dado de saúde = dado sensível. Deve ser armazenado separadamente, com acesso restrito, e usado exclusivamente para a finalidade de segurança e saúde do trabalho.\n\n🔴 **Dados de dependentes:** certidão de nascimento de filhos menores para salário-família ou plano de saúde envolve dados de crianças — categoria com proteção reforçada pelo art. 14 LGPD.\n\n**Atenção sobre consentimento na relação de trabalho:** o consentimento do funcionário para tratar seus dados é considerado **juridicamente frágil** pela ANPD, pois há assimetria de poder entre empregado e empregador. A base legal correta para a maioria das situações é o cumprimento de obrigação legal — não o consentimento.\n\n**Regra prática:** ao contratar um sistema de ponto eletrônico biométrico, exija do fornecedor contrato com cláusula de proteção de dados e comprovação de medidas de segurança. A responsabilidade pelo vazamento pode recair sobre você mesmo que o sistema seja de terceiro.\n\n---\n\n*⚠️ Este documento contém informações jurídicas de caráter educativo. Situações concretas requerem análise por advogado. | Atualizado em 10/06/2026*\n",
+            "chapter": "CHUNK 8 — LGPD nas relações de trabalho: dados de funcionários e prestadores",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb3zk00cx48hx8r257nex",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "6588a6ee67ee00ddab3a15304f4a7193b445ece0d1858c09f96dbf14617c2301",
+            "score": 0.8502082592167169,
+            "content": "## Q&A — LGPD na prática do pequeno empresário\n\n**P: Preciso ter Política de Privacidade no meu site?**\nR: Sim, se você coleta qualquer dado pessoal no site (mesmo só um formulário de contato ou e-mail). A política deve informar quais dados coleta, para qual finalidade, por quanto tempo guarda, com quem compartilha e como o titular pode exercer seus direitos.\n\n**P: Posso adicionar clientes num grupo de WhatsApp de promoções sem autorização?**\nR: Não sem alguma base legal. O ideal é ter consentimento prévio (ex.: na hora da compra, perguntar se pode incluir no grupo). Adicionar sem consentimento pode gerar reclamação e, em caso de mensagem em massa sem opt-in, pode ainda violar o CDC (prática abusiva).\n\n**P: Posso compartilhar a lista de clientes com um parceiro ou fornecedor?**\nR: Somente se tiver base legal para isso (consentimento do cliente ou legítimo interesse claramente justificado). O parceiro que recebe os dados vira \"operador\" e você continua responsável. Recomendado: cláusula de proteção de dados no contrato com o parceiro.\n\n**P: Por quanto tempo posso guardar dados de clientes?**\nR: Pelo tempo necessário para cumprir a finalidade informada. Após encerrar a relação comercial, o dado deve ser eliminado — salvo obrigação legal de guarda (ex.: documentos fiscais por 5 anos, contratos por prazo legal específico).\n\n**P: Tenho câmera de segurança no estabelecimento. Isso gera obrigação de LGPD?**\nR: Sim. Câmera que grava rostos é tratamento de dado pessoal. Obrigação mínima: afixar aviso visível informando que o local é monitorado, indicar o responsável e a finalidade (segurança). Não compartilhar as imagens sem ordem judicial ou necessidade de investigação policial.\n\n**P: Um cliente pediu para apagar os dados dele. Sou obrigado a apagar tudo?**\nR: Se o tratamento era baseado em consentimento, sim — deve apagar. Se o tratamento é baseado em obrigação legal ou contrato em vigor, pode manter pelo tempo necessário. Dados fiscais (CPF, endereço de nota fiscal) devem ser guardados por exigência da legislação tributária.\n\n**P: Preciso ter um DPO (encarregado de dados)?**\nR: Em regra não, se você é MEI, ME ou EPP que não realiza tratamento de alto risco. A Resolução CD/ANPD nº 2/2022 dispensa agentes de tratamento de pequeno porte da indicação formal de encarregado. Se um cliente ou parceiro perguntar quem é seu DPO, você pode informar que está dispensado dessa obrigação por enquadramento como agente de pequeno porte conforme a regulamentação da ANPD.\n\n**P: Um cliente inadimplente ameaçou me processar por LGPD porque incluí o nome dele no SPC/Serasa. Tenho razão?**\nR: Sim. Negativar um devedor inadimplente é tratamento de dados com base no **exercício regular de direitos** (art. 7º, VI LGPD) e na **proteção ao crédito** (art. 7º, X). Você não precisa do consentimento do devedor para isso — a lei prevê expressamente essa hipótese. A ameaça não tem fundamento.\n\n---\n\n",
+            "chapter": "Q&A — LGPD na prática do pequeno empresário",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb4ig00d148hxb7b8usv0",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "e34dba3c0c87f35120af4d5d7909185be0b889efc33e7bf7e25471903b12f03f",
+            "score": 0.8416058860729445,
+            "content": "## Q&A — Marco Civil na prática\n\n**P: Posso ser responsabilizado por comentário ofensivo que um cliente fez no meu site?**\nR: O regime mudou. Até junho de 2025, o Marco Civil (art. 19) protegia o provedor que não descumprisse ordem judicial específica. O STF declarou esse artigo parcialmente inconstitucional (RE 1.037.396, jun/2025): agora, plataformas e sites devem ter canais próprios de notificação e remoção — e a inércia diante de conteúdo claramente ilícito pode gerar responsabilidade sem necessidade de ordem judicial. Na prática: tenha um e-mail ou formulário para denúncias visível no site e aja com agilidade ao receber notificação de conteúdo ofensivo publicado por terceiros.\n\n**P: Um cliente quer saber quem fez uma postagem anônima ofensiva contra ele no meu site. Sou obrigado a informar?**\nR: Não diretamente ao cliente. Os dados de identificação (IP, data/hora) só podem ser fornecidos mediante ordem judicial. Se o cliente quiser saber, deve ajuizar uma ação.\n\n**P: Posso usar os dados de navegação dos visitantes do meu site para direcionamento de anúncios?**\nR: Sim, desde que informe na Política de Privacidade e, dependendo da base legal, obtenha consentimento (ex.: banner de cookies com opt-in). A combinação LGPD + Marco Civil exige transparência sobre o uso de rastreadores.\n\n**P: Minha conta de negócios no Instagram foi suspensa. Tenho algum direito?**\nR: O Marco Civil não proíbe explicitamente que plataformas suspendam contas — elas têm autonomia contratual para isso com base nos termos de uso. Mas a jurisprudência do STJ vem reconhecendo que o banimento ou suspensão de usuários deve ser **proporcional, motivado e com possibilidade de defesa prévia**, especialmente quando a conta é usada para fins econômicos e a exclusão causa dano ao negócio. Na prática: (1) conteste pelo canal oficial da plataforma, informando que a suspensão afeta seu negócio e pedindo motivação; (2) se não obtiver resposta ou a justificativa for desproporcional, é possível ajuizar ação no JEC pedindo reativação e indenização — com chances razoáveis dependendo do caso concreto. O resultado varia muito: não há garantia legal expressa de reativação, mas há precedentes favoráveis ao usuário.\n\n---\n\n",
+            "chapter": "Q&A — Marco Civil na prática",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb3gs00ct48hxan59n1eq",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "9ebfff64d565914c264d340f276c9dbb8eccc671430609fa627e178a8291c7c6",
+            "score": 0.8414172205467872,
+            "content": "## CHUNK 4 — Segurança de dados: o que o MEI deve fazer na prática\n\nA LGPD exige medidas de segurança técnicas e administrativas (art. 46). Para o pequeno empresário, isso significa:\n\n**Medidas básicas obrigatórias:**\n- Senha forte e única para acessar planilhas, e-mail, sistemas com dados de cliente\n- Não compartilhar senhas entre funcionários\n- Não enviar lista de clientes por e-mail sem criptografia\n- Backups regulares de dados importantes\n- Limitar o acesso: só quem precisa ver os dados deve ter acesso\n\n🔴 **Violação de dados (vazamento):** se ocorrer um incidente que possa causar risco ao titular (ex.: lista de clientes com CPF foi roubada, banco de dados hackeado), o controlador deve comunicar à **ANPD e aos titulares afetados em até 3 dias úteis** após tomar ciência do incidente (Resolução CD/ANPD nº 15/2024, art. 7º). A comunicação deve ser o mais completa possível desde o início — não há prazo separado para relatório posterior.\n\n🔴 **Atenção: sofrer um ataque hacker não elimina a responsabilidade.** O STJ consolidou que, se o empresário não adotou medidas mínimas de segurança, o ataque é tratado como **fortuito interno** — e o controlador responde pelo vazamento mesmo sendo vítima. A alegação de \"terceiro malicioso\" só exime se houver prova de que as medidas adequadas foram adotadas (STJ, 3ª Turma, dez/2024; art. 6º, X LGPD — princípio da accountability).\n\n**Regra prática:** o MEI que trata apenas dados básicos de contato (nome, telefone, e-mail) para atender clientes e enviar cobranças já está em conformidade suficiente com medidas simples de segurança. O risco aumenta substancialmente quando trata **dados sensíveis** (saúde, biometria, religião, origem étnica) — veja o Chunk 5.\n\n---\n\n",
+            "chapter": "CHUNK 4 — Segurança de dados: o que o MEI deve fazer na prática",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          }
+        ],
+        "generationPolicy": {
+          "version": "grounded-generation-v6",
+          "hash": "6737f23d3221cea241e28516b2049e77350b37732242b509714e7d021ae807e4"
+        },
+        "generationId": "msg_011CfP1HWTTbLWyGTX1nDNVD",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "attempts": [
+          {
+            "attempt": 1,
+            "generationId": "msg_011CfP1GscQ86A7GRsw3rv7K",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "3642fa34403deabc28eb0ebcfaf56ab7ad0fc496d6eb0898c929101041d33306",
+            "latencyMs": 4209,
+            "usage": {
+              "input_tokens": 1128,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18980,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 324,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": false,
+              "requestId": "msg_011CfP1HBeMuCfaHRtvpypfR",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftb3q500cv48hxdhxbxmj7",
+                "cmuftb5au00d748hxka0km3fb",
+                "cmuftb3zk00cx48hx8r257nex",
+                "cmuftb4ig00d148hxb7b8usv0",
+                "cmuftb3gs00ct48hxan59n1eq"
+              ],
+              "excludedSourceIds": [],
+              "evidence": [],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1HBeMuCfaHRtvpypfR",
+                "latencyMs": 4384,
+                "usage": {
+                  "input_tokens": 6674,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 372,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          },
+          {
+            "attempt": 2,
+            "generationId": "msg_011CfP1HWTTbLWyGTX1nDNVD",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "latencyMs": 2978,
+            "usage": {
+              "input_tokens": 1665,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18980,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 237,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "consumer-followup",
+      "session": 0,
+      "q": "E qual é o prazo para exercer esse direito?",
+      "reply": "O prazo é de 7 dias, contados da assinatura do contrato ou do recebimento do produto.",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 16962,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_passed",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v11",
+        "area": "consumidor",
+        "searchQuery": "prazo para exercer esse direito desistir da compra produto pela internet",
+        "excludedFromGeneration": [],
+        "chunks": [
+          {
+            "id": "cmuftcwlo00pz48hx6ea52k2k",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "473bfb2703387d2481bac5a678ddb3813b9d2499d073388bf395c6bf91d1f7b0",
+            "score": 0.8714345937064155,
+            "content": "### Direito de arrependimento\nSe você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\n\n**Produto personalizado ou perecível (ponto controvertido):** para item feito sob encomenda/personalização — perecível (bolo e doces de festa, salgados, buffet, flores) ou sob medida/com identificação (roupa sob medida ou com nome, convite, caneca/camiseta estampada, joia gravada, móvel planejado) — a aplicação do arrependimento é **discutida**: parte do entendimento afasta ou limita o direito, porque o item não pode ser revendido; outra parte o mantém. Regra para a JUDITH: não afirmar de forma chapada \"sempre tem\" nem \"nunca tem\" — sinalizar que é controvertido, que o fornecedor tem argumento forte para reter ao menos os custos já incorridos, e sugerir acordo. Tratar bolo sob encomenda e peça personalizada com o mesmo critério.\n\n",
+            "chapter": "CHUNK 7 — CONTRATOS: CLÁUSULAS ABUSIVAS",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcrdd00ov48hxlh2eizye",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "293009e57068666eafeb20bb37c24cff850edaa08242a353f79db62750b9decf",
+            "score": 0.8699185672649598,
+            "content": "## Q&A — PRAZOS IMPORTANTES (RESUMO)\n\n**P: Quais são os prazos para reclamar pelo CDC?**\n\n| Situação | Tipo de prazo | Prazo | Base legal |\n|---|---|---|---|\n| Vício em produto não durável (alimento, bebida) | Decadência | 30 dias | CDC art. 26, I |\n| Vício em produto durável (eletrodoméstico, veículo, imóvel) | Decadência | 90 dias | CDC art. 26, II |\n| Vício em serviço não durável | Decadência | 30 dias | CDC art. 26, I |\n| Vício em serviço durável | Decadência | 90 dias | CDC art. 26, II |\n| Vício oculto | Decadência | 30 ou 90 dias — conta da **data em que o vício se tornou aparente** | CDC art. 26 §3° |\n| Acidente de consumo / fato do produto ou serviço | Prescrição CDC | 5 anos | CDC art. 27 |\n| Cobrança indevida (repetição do indébito / devolução em dobro) | Prescrição CC | 10 anos | CC art. 205 |\n| Negativação indevida (ação de indenização por dano moral) | Prescrição CC — controvérsia | **3 anos** (recomendado) ou 10 anos | CC art. 206 §3° V vs. art. 205 |\n| Plano de saúde — recusa indevida de cobertura | Prescrição | 1 ano (contratos de seguro — CC art. 206 §1° II) ou 5 anos (CDC art. 27) | Divergência: verificar ação específica |\n| Rescisão de compromisso de compra e venda (construtora) | Prescrição CC | 10 anos | CC art. 205 |\n\n**P: Fiz reclamação ao fornecedor. O prazo continua correndo?**\nR: Não. Reclamação formal ao fornecedor **obsta** (impede o curso d)o prazo de decadência enquanto estiver pendente — o prazo fica suspenso até que o fornecedor responda negativamente de forma clara (CDC art. 26 §2°, I). Tecnicamente é \"obstação\", não suspensão ou interrupção, mas o efeito prático é de suspensão: quando a reclamação é resolvida negativamente, o prazo recomeça do ponto onde parou. Mas reclamação no Procon não obsta o prazo.\n\n---\n\n",
+            "chapter": "Q&A — PRAZOS IMPORTANTES (RESUMO)",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd1ja00r148hxcuy4gzmb",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "089aeb6a364b0f1fceb9ddcf29e9aaf26cd7342f201ab486473991bfc5f53bba",
+            "score": 0.8695765476448845,
+            "content": "## Q&A — DEFESA JUDICIAL E DIREITOS PRÁTICOS\n\n**P: A loja disse que minha garantia acabou e não quer resolver o problema. O que fazer?**\nR: 1) Verifique se é vício aparente ou oculto. Para vício oculto em produto durável, o prazo de 90 dias começa quando o defeito aparece, não na compra. 2) Se ainda estiver no prazo, formalize a reclamação por escrito (e-mail, WhatsApp com confirmação) — isso congela o prazo de decadência (ele volta a correr de onde parou se o fornecedor negar). 3) Se recusarem, registre reclamação no Procon ou acione o JEC.\n\n**P: O Procon interrompe o prazo para reclamar?**\nR: Não. Apenas a reclamação direta ao fornecedor (comprovada) congela o prazo de decadência — ele volta a correr de onde parou se o fornecedor responder negativamente. O Procon é um canal de pressão e mediação, mas não afeta o prazo legal.\n\n**P: Quanto custa entrar na Justiça?**\nR: No Juizado Especial Cível (JEC), para causas até 40 salários mínimos: gratuidade total na 1ª instância. Não precisa de advogado para causas até 20 salários mínimos. É o caminho mais indicado para o consumidor comum.\n\n**P: O fornecedor pode me obrigar a usar arbitragem para resolver conflitos?**\nR: Não. Cláusula que imponha arbitragem de forma compulsória é nula no CDC. O consumidor sempre pode optar pela Justiça.\n\n**P: Fui prejudicado por propaganda enganosa. Tenho direito a indenização?**\nR: Sim. Além de poder exigir o cumprimento do que foi anunciado (ou produto equivalente ou reembolso), pode pleitear indenização por danos materiais e morais se o engano causou prejuízo.\n\n**P: Posso entrar com ação contra empresa estrangeira que vende pela internet?**\nR: Sim. O CDC se aplica. A ação pode ser proposta no seu domicílio.\n\n---\n\n",
+            "chapter": "Q&A — DEFESA JUDICIAL E DIREITOS PRÁTICOS",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd3d200rf48hx3ec47l6h",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "4b893192f3c888613733b6c10f87e594756231331237fcbaf4af167b5c89699a",
+            "score": 0.8691117598315442,
+            "content": "## CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER\n> **Perfis atendidos:** ME / EPP\n\nQuando sua empresa vende produtos ou presta serviços, ela está do **outro lado** do CDC — como fornecedora. Seus clientes têm todos os direitos descritos neste resumo, e sua empresa tem obrigações correspondentes. Descumpri-las pode gerar multa do Procon, ação judicial de dano moral e responsabilidade solidária na cadeia de fornecimento.\n\n**Prazo para resolver vício:** Se o cliente reclamar de produto ou serviço com vício, o fornecedor tem **30 dias para sanar o problema** (regra geral — CDC art. 18 §1°). Por acordo entre fornecedor e consumidor, esse prazo pode ser reduzido para até **7 dias** ou ampliado para até **180 dias**. Atenção: em contrato de adesão, a cláusula que estipular prazo diferente dos 30 dias deve estar **em destaque** (negrito, caixa ou cor diferente) — sem destaque, prevalece o prazo legal de 30 dias. Se não resolver no prazo, o consumidor pode exigir troca, reembolso integral ou abatimento — e sua empresa responde solidariamente com fabricante e distribuidor.\n\n**Oferta e publicidade vinculam:** Se você anunciou preço ou condição (site, redes sociais, vitrine, WhatsApp), é obrigado a cumprir. Erro de precificação em plataforma digital não desobriga automaticamente — o STJ tem entendido que a oferta vincula mesmo quando houve erro involuntário. Corrija imediatamente e documente o erro se isso ocorrer.\n\n**Publicidade enganosa tem responsabilidade objetiva:** Não precisa haver intenção de enganar. Se a publicidade induziu o cliente a erro, sua empresa responde — o ônus de provar que a informação era correta é seu, não do cliente.\n\n**Multa moratória em contratos com consumidor:** Limitada a **2% da prestação vencida**. Qualquer cláusula acima disso é nula. Revise contratos de parcelamento e prestação de serviços com clientes pessoa física.\n\n**Cláusulas abusivas são nulas de pleno direito:** O juiz pode declará-las nulas de ofício. Se o contrato de adesão da sua empresa exonera a responsabilidade por vício, essa cláusula não vale — mas a nulidade não desfaz o contrato inteiro, só aquela cláusula.\n\n---\n\n",
+            "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcq2800ol48hxb9a4dzzr",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "7788c24eda0c6295a26e8df69fc24b5ec9d8ab14eb1f2d7508baabc18a3efb65",
+            "score": 0.8655372120227222,
+            "content": "## Q&A — VÍCIO DO PRODUTO\n\n**P: Comprei um eletrodoméstico que parou de funcionar em 2 meses. O que posso exigir?**\nR: O produto é durável, então você tem 90 dias para reclamar do vício. Ao reclamar, o fornecedor tem **30 dias para consertar**. Se não resolver em 30 dias, você pode escolher:\n1. Trocar por produto igual em perfeitas condições;\n2. Reembolso total do valor pago (corrigido monetariamente), podendo cumular com indenização por danos;\n3. Abatimento proporcional no preço.\nA escolha é sua. A loja, a assistência técnica e o fabricante respondem solidariamente — você pode levar para qualquer um dos três.\n\n**P: A loja disse que tenho que levar na assistência técnica, não com eles. É verdade?**\nR: Não. O STJ decidiu que o consumidor pode escolher a quem reclamar: loja, assistência técnica ou fabricante. A loja não pode se recusar a receber o produto com vício.\n\n**P: E se o produto se quebrar de novo no conserto?**\nR: Se o vício for tão grave que o conserto comprometa a qualidade do produto, você pode pular o prazo de 30 dias e exigir troca, reembolso ou abatimento imediatamente. Isso também vale se o produto for essencial (ex.: geladeira, medicamentos).\n\n**P: A loja disse que o produto estava \"em ponta de estoque\" com pequenos defeitos. Tenho direito a reclamar?**\nR: Não, se você foi informado dos defeitos na venda. Produtos vendidos como ponta de estoque ou usados, desde que haja informação prévia e clara sobre o estado do bem, podem ter condições diferentes sem violar o CDC.\n\n**P: O produto teve um vício depois que a garantia venceu. Perdi o direito?**\nR: Depende se é vício aparente ou oculto. Para vício **oculto** (que só aparece com o tempo de uso), o prazo de 90 dias começa **quando o defeito ficou evidente**, não na data da compra. A garantia contratual adia o início do prazo: se o fabricante deu 1 ano de garantia, os 90 dias da garantia legal começam a contar só depois desse 1 ano.\n\n**P: O fabricante parou de vender peças de reposição do meu produto. Posso reclamar?**\nR: Sim. O CDC obriga fabricantes e importadores a manter disponíveis peças e componentes enquanto fabricarem o produto. Após o encerramento da fabricação, devem manter por prazo razoável. A redução artificial da vida útil do produto (obsolescência programada) pode configurar vício.\n\n---\n\n",
+            "chapter": "Q&A — VÍCIO DO PRODUTO",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          }
+        ],
+        "generationPolicy": {
+          "version": "grounded-generation-v6",
+          "hash": "6737f23d3221cea241e28516b2049e77350b37732242b509714e7d021ae807e4"
+        },
+        "generationId": "msg_011CfP1JVE4XDXT62qwG9vs8",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "542266f0cead3193501fa019288569eadf0050bcf37f2ca57f1fd264f27d8801",
+        "attempts": [
+          {
+            "attempt": 1,
+            "generationId": "msg_011CfP1HtZyvCnTgA3yrXLSz",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "a9c03410ee5f14457aab62bac952ad19d622dc5448f34a191c5230a2de6d92f0",
+            "latencyMs": 3621,
+            "usage": {
+              "input_tokens": 1153,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18710,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 286,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": false,
+              "requestId": "msg_011CfP1JA39cQsTFkKW3Qvcq",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftcwlo00pz48hx6ea52k2k",
+                "cmuftcrdd00ov48hxlh2eizye",
+                "cmuftd1ja00r148hxcuy4gzmb",
+                "cmuftd3d200rf48hx3ec47l6h",
+                "cmuftcq2800ol48hxb9a4dzzr"
+              ],
+              "excludedSourceIds": [],
+              "evidence": [],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1JA39cQsTFkKW3Qvcq",
+                "latencyMs": 4471,
+                "usage": {
+                  "input_tokens": 6030,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 332,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          },
+          {
+            "attempt": 2,
+            "generationId": "msg_011CfP1JVE4XDXT62qwG9vs8",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "542266f0cead3193501fa019288569eadf0050bcf37f2ca57f1fd264f27d8801",
+            "latencyMs": 2496,
+            "usage": {
+              "input_tokens": 1655,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18710,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 216,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": true,
+              "requestId": "msg_011CfP1JfzhrFooXAe9UJ7no",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftcwlo00pz48hx6ea52k2k",
+                "cmuftcrdd00ov48hxlh2eizye",
+                "cmuftd1ja00r148hxcuy4gzmb",
+                "cmuftd3d200rf48hx3ec47l6h",
+                "cmuftcq2800ol48hxb9a4dzzr"
+              ],
+              "excludedSourceIds": [],
+              "evidence": [
+                {
+                  "index": 0,
+                  "chunkIds": [
+                    "cmuftcwlo00pz48hx6ea52k2k"
+                  ]
+                }
+              ],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1JfzhrFooXAe9UJ7no",
+                "latencyMs": 4182,
+                "usage": {
+                  "input_tokens": 5974,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 290,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          }
+        ],
+        "verification": {
+          "supported": true,
+          "requestId": "msg_011CfP1JfzhrFooXAe9UJ7no",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v11",
+          "sourceIds": [
+            "cmuftcwlo00pz48hx6ea52k2k",
+            "cmuftcrdd00ov48hxlh2eizye",
+            "cmuftd1ja00r148hxcuy4gzmb",
+            "cmuftd3d200rf48hx3ec47l6h",
+            "cmuftcq2800ol48hxb9a4dzzr"
+          ],
+          "excludedSourceIds": [],
+          "evidence": [
+            {
+              "index": 0,
+              "chunkIds": [
+                "cmuftcwlo00pz48hx6ea52k2k"
+              ]
+            }
+          ],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfP1JfzhrFooXAe9UJ7no",
+            "latencyMs": 4182,
+            "usage": {
+              "input_tokens": 5974,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 290,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "final-holdout-suppliers",
+      "session": 9,
+      "q": "No CDC, quem responde pelo vício do produto: apenas o fabricante ou também o comerciante?",
+      "reply": "No CDC, a responsabilidade pelo vício do produto é solidária: o fabricante, o comerciante e a assistência técnica respondem juntos. O comerciante não pode se recusar a receber o produto com defeito ou mandar o consumidor direto para o fabricante — tem obrigação de intermediar a reparação, recebendo o produto, encaminhando e acompanhando até a devolução corrigida. Se o vício não for sanado em 30 dias, o consumidor pode exigir troca, reembolso ou abatimento de qualquer um deles.",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 11625,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_passed",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v11",
+        "area": "consumidor",
+        "searchQuery": "No CDC, quem responde pelo vício do produto: apenas o fabricante ou também o comerciante?",
+        "excludedFromGeneration": [
+          {
+            "id": "cmuftcrw600oz48hxo4ev1p03",
+            "reason": "SOURCE_SCOPE_CONFLICT"
+          }
+        ],
+        "chunks": [
+          {
+            "id": "cmuftd4nm00rp48hxdiu2tetk",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "eade0a15a61f1db65fac6232fbdb80af3a60290dbff02efd339260c261ce4e50",
+            "score": 0.8820734113057276,
+            "content": "### CHUNK STJ-C3 — Obrigação do Comerciante de Intermediar Reparação de Produto Defeituoso\n> **Perfis atendidos:** MEI / ME / EPP (varejista)\n\nO STJ firmou que o comerciante **não pode simplesmente mandar o consumidor falar direto com o fabricante**. O comerciante tem obrigação de **intermediar** o processo de reparação: receber o produto com defeito, encaminhar ao fabricante e devolver ao consumidor corrigido ou substituído.\n\nEssa obrigação decorre da responsabilidade solidária na cadeia de consumo (CDC, art. 18).\n\n**Prazos legais do CDC:**\n- Fornecedor tem **30 dias** para sanar o vício (regra geral). Por acordo com o consumidor, pode ser de 7 a 180 dias — mas em contratos de adesão a alteração deve estar em destaque\n- Se não sanar: consumidor escolhe entre substituição, abatimento do preço ou devolução do dinheiro\n- Produtos duráveis: prazo de reclamação de **90 dias** da entrega (vício aparente) ou do aparecimento do vício (vício oculto)\n\n**Para ME/EPP varejista:** ignorar a reclamação ou mandar o cliente direto para a assistência sem acompanhamento pode gerar condenação em dano moral além da obrigação de reparar.\n\n**P: Comprei um celular na loja há 2 semanas e parou de funcionar. A loja disse que é com a assistência técnica. Podem fazer isso?**\nR: Não podem se recusar a envolver. A loja tem obrigação de intermediar — receber o produto, encaminhar e acompanhar. Se o vício não for sanado em 30 dias, você tem direito a escolher entre: trocar, abater o preço ou receber o dinheiro de volta.\n\n**P: Sou dono de loja e meu fornecedor disse que clientes com defeito devem procurar diretamente a fábrica. Posso repassar isso aos consumidores?**\nR: Não. A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante. O que você pode fazer depois é cobrar o fabricante pelo custo internamente.\n\n**Referência:** STJ, REsp 1.568.938-RS (Info 678, 2020); CDC arts. 18, 26.\n\n---\n\n",
+            "chapter": "COMPLEMENTO STJ — Consumidor: Jurisprudência Prática",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcq2800ol48hxb9a4dzzr",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "7788c24eda0c6295a26e8df69fc24b5ec9d8ab14eb1f2d7508baabc18a3efb65",
+            "score": 0.8799952041836291,
+            "content": "## Q&A — VÍCIO DO PRODUTO\n\n**P: Comprei um eletrodoméstico que parou de funcionar em 2 meses. O que posso exigir?**\nR: O produto é durável, então você tem 90 dias para reclamar do vício. Ao reclamar, o fornecedor tem **30 dias para consertar**. Se não resolver em 30 dias, você pode escolher:\n1. Trocar por produto igual em perfeitas condições;\n2. Reembolso total do valor pago (corrigido monetariamente), podendo cumular com indenização por danos;\n3. Abatimento proporcional no preço.\nA escolha é sua. A loja, a assistência técnica e o fabricante respondem solidariamente — você pode levar para qualquer um dos três.\n\n**P: A loja disse que tenho que levar na assistência técnica, não com eles. É verdade?**\nR: Não. O STJ decidiu que o consumidor pode escolher a quem reclamar: loja, assistência técnica ou fabricante. A loja não pode se recusar a receber o produto com vício.\n\n**P: E se o produto se quebrar de novo no conserto?**\nR: Se o vício for tão grave que o conserto comprometa a qualidade do produto, você pode pular o prazo de 30 dias e exigir troca, reembolso ou abatimento imediatamente. Isso também vale se o produto for essencial (ex.: geladeira, medicamentos).\n\n**P: A loja disse que o produto estava \"em ponta de estoque\" com pequenos defeitos. Tenho direito a reclamar?**\nR: Não, se você foi informado dos defeitos na venda. Produtos vendidos como ponta de estoque ou usados, desde que haja informação prévia e clara sobre o estado do bem, podem ter condições diferentes sem violar o CDC.\n\n**P: O produto teve um vício depois que a garantia venceu. Perdi o direito?**\nR: Depende se é vício aparente ou oculto. Para vício **oculto** (que só aparece com o tempo de uso), o prazo de 90 dias começa **quando o defeito ficou evidente**, não na data da compra. A garantia contratual adia o início do prazo: se o fabricante deu 1 ano de garantia, os 90 dias da garantia legal começam a contar só depois desse 1 ano.\n\n**P: O fabricante parou de vender peças de reposição do meu produto. Posso reclamar?**\nR: Sim. O CDC obriga fabricantes e importadores a manter disponíveis peças e componentes enquanto fabricarem o produto. Após o encerramento da fabricação, devem manter por prazo razoável. A redução artificial da vida útil do produto (obsolescência programada) pode configurar vício.\n\n---\n\n",
+            "chapter": "Q&A — VÍCIO DO PRODUTO",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcrw600oz48hxo4ev1p03",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "1e9baa940937758d52eb3f694f44c4dadc2bb57de4e2f74c8d908691e038ae73",
+            "score": 0.8695490897167313,
+            "content": "### Quem responde pelo produto defeituoso?\n- Fabricante, produtor, construtor e importador: sempre.\n- Comerciante (loja): só em casos específicos — quando não dá para identificar o fabricante, quando o produto chegou sem identificação, ou quando a loja armazenou mal um produto perecível.\n\n",
+            "chapter": "CHUNK 4 — RESPONSABILIDADE POR ACIDENTE DE CONSUMO",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcp0o00od48hxof9eckpz",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "5f9f7fe1481b9ca990e62c166aa16f7e29200924a13559e22f13221359f26aea",
+            "score": 0.865945935998516,
+            "content": "## Q&A — CONCEITOS FUNDAMENTAIS\n\n**P: Uma empresa pode ser consumidora?**\nR: Sim, se usar o produto/serviço como destinatário final, sem incorporá-lo à sua atividade produtiva. Ex.: empresa que compra computador para uso administrativo. Mas se a empresa comprar maquinário para produção, o CDC em geral não se aplica — exceto se ela for pequena e demonstrar vulnerabilidade frente ao fornecedor (teoria finalista mitigada, adotada pelo STJ).\n\n**P: Microempresário pode invocar o CDC?**\nR: Depende. Se contratou o produto/serviço fora da atividade principal ou se demonstrar vulnerabilidade concreta (técnica, jurídica ou econômica) em relação ao fornecedor, pode ser reconhecido como consumidor pelo STJ.\n\n**P: O CDC protege quem assiste a uma partida de futebol e é ferido por artefato explosivo?**\nR: Sim. Torcedores são consumidores; danos por falha de segurança no evento configuram acidente de consumo. O clube mandante responde.\n\n---\n\n",
+            "chapter": "Q&A — CONCEITOS FUNDAMENTAIS",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd3d200rf48hx3ec47l6h",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "4b893192f3c888613733b6c10f87e594756231331237fcbaf4af167b5c89699a",
+            "score": 0.8643685855535662,
+            "content": "## CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER\n> **Perfis atendidos:** ME / EPP\n\nQuando sua empresa vende produtos ou presta serviços, ela está do **outro lado** do CDC — como fornecedora. Seus clientes têm todos os direitos descritos neste resumo, e sua empresa tem obrigações correspondentes. Descumpri-las pode gerar multa do Procon, ação judicial de dano moral e responsabilidade solidária na cadeia de fornecimento.\n\n**Prazo para resolver vício:** Se o cliente reclamar de produto ou serviço com vício, o fornecedor tem **30 dias para sanar o problema** (regra geral — CDC art. 18 §1°). Por acordo entre fornecedor e consumidor, esse prazo pode ser reduzido para até **7 dias** ou ampliado para até **180 dias**. Atenção: em contrato de adesão, a cláusula que estipular prazo diferente dos 30 dias deve estar **em destaque** (negrito, caixa ou cor diferente) — sem destaque, prevalece o prazo legal de 30 dias. Se não resolver no prazo, o consumidor pode exigir troca, reembolso integral ou abatimento — e sua empresa responde solidariamente com fabricante e distribuidor.\n\n**Oferta e publicidade vinculam:** Se você anunciou preço ou condição (site, redes sociais, vitrine, WhatsApp), é obrigado a cumprir. Erro de precificação em plataforma digital não desobriga automaticamente — o STJ tem entendido que a oferta vincula mesmo quando houve erro involuntário. Corrija imediatamente e documente o erro se isso ocorrer.\n\n**Publicidade enganosa tem responsabilidade objetiva:** Não precisa haver intenção de enganar. Se a publicidade induziu o cliente a erro, sua empresa responde — o ônus de provar que a informação era correta é seu, não do cliente.\n\n**Multa moratória em contratos com consumidor:** Limitada a **2% da prestação vencida**. Qualquer cláusula acima disso é nula. Revise contratos de parcelamento e prestação de serviços com clientes pessoa física.\n\n**Cláusulas abusivas são nulas de pleno direito:** O juiz pode declará-las nulas de ofício. Se o contrato de adesão da sua empresa exonera a responsabilidade por vício, essa cláusula não vale — mas a nulidade não desfaz o contrato inteiro, só aquela cláusula.\n\n---\n\n",
+            "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          }
+        ],
+        "generationPolicy": {
+          "version": "grounded-generation-v6",
+          "hash": "6737f23d3221cea241e28516b2049e77350b37732242b509714e7d021ae807e4"
+        },
+        "generationId": "msg_011CfP1K3byonDC5s15QujfK",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "ea8fc0fff80c0484e8d168261106c2fc1549b0ec4f6d609072e414a1a12fc82f",
+        "attempts": [
+          {
+            "attempt": 1,
+            "generationId": "msg_011CfP1K3byonDC5s15QujfK",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "ea8fc0fff80c0484e8d168261106c2fc1549b0ec4f6d609072e414a1a12fc82f",
+            "latencyMs": 4731,
+            "usage": {
+              "input_tokens": 1133,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 17846,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 395,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": true,
+              "requestId": "msg_011CfP1KPzKSXkw5sMhTyGWr",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftd4nm00rp48hxdiu2tetk",
+                "cmuftcq2800ol48hxb9a4dzzr",
+                "cmuftcp0o00od48hxof9eckpz",
+                "cmuftd3d200rf48hx3ec47l6h"
+              ],
+              "excludedSourceIds": [
+                "cmuftcrw600oz48hxo4ev1p03"
+              ],
+              "evidence": [
+                {
+                  "index": 0,
+                  "chunkIds": [
+                    "cmuftd4nm00rp48hxdiu2tetk",
+                    "cmuftd4nm00rp48hxdiu2tetk",
+                    "cmuftcq2800ol48hxb9a4dzzr"
+                  ]
+                }
+              ],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1KPzKSXkw5sMhTyGWr",
+                "latencyMs": 6000,
+                "usage": {
+                  "input_tokens": 5273,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 481,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          }
+        ],
+        "verification": {
+          "supported": true,
+          "requestId": "msg_011CfP1KPzKSXkw5sMhTyGWr",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v11",
+          "sourceIds": [
+            "cmuftd4nm00rp48hxdiu2tetk",
+            "cmuftcq2800ol48hxb9a4dzzr",
+            "cmuftcp0o00od48hxof9eckpz",
+            "cmuftd3d200rf48hx3ec47l6h"
+          ],
+          "excludedSourceIds": [
+            "cmuftcrw600oz48hxo4ev1p03"
+          ],
+          "evidence": [
+            {
+              "index": 0,
+              "chunkIds": [
+                "cmuftd4nm00rp48hxdiu2tetk",
+                "cmuftd4nm00rp48hxdiu2tetk",
+                "cmuftcq2800ol48hxb9a4dzzr"
+              ]
+            }
+          ],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfP1KPzKSXkw5sMhTyGWr",
+            "latencyMs": 6000,
+            "usage": {
+              "input_tokens": 5273,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 481,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "extra-online",
+      "session": 10,
+      "q": "Comprei um produto pela internet. Tenho direito de desistir da compra?",
+      "reply": "Sim. Compras pela internet conferem direito de desistência: você tem 7 dias para se arrepender sem justificar, contados da assinatura do contrato ou do recebimento do produto, e tudo que pagou deve ser devolvido integralmente com correção monetária.",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 20903,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_passed",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v11",
+        "area": "consumidor",
+        "searchQuery": "Comprei um produto pela internet. Tenho direito de desistir da compra?",
+        "excludedFromGeneration": [],
+        "chunks": [
+          {
+            "id": "cmuftcwlo00pz48hx6ea52k2k",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "473bfb2703387d2481bac5a678ddb3813b9d2499d073388bf395c6bf91d1f7b0",
+            "score": 0.8759777861592426,
+            "content": "### Direito de arrependimento\nSe você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\n\n**Produto personalizado ou perecível (ponto controvertido):** para item feito sob encomenda/personalização — perecível (bolo e doces de festa, salgados, buffet, flores) ou sob medida/com identificação (roupa sob medida ou com nome, convite, caneca/camiseta estampada, joia gravada, móvel planejado) — a aplicação do arrependimento é **discutida**: parte do entendimento afasta ou limita o direito, porque o item não pode ser revendido; outra parte o mantém. Regra para a JUDITH: não afirmar de forma chapada \"sempre tem\" nem \"nunca tem\" — sinalizar que é controvertido, que o fornecedor tem argumento forte para reter ao menos os custos já incorridos, e sugerir acordo. Tratar bolo sob encomenda e peça personalizada com o mesmo critério.\n\n",
+            "chapter": "CHUNK 7 — CONTRATOS: CLÁUSULAS ABUSIVAS",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd3mf00rh48hxdzh6qgqb",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "75d0e73703bcaf12ef15c984a0dc87064d691a391124221ee8fd410069e3b223",
+            "score": 0.8637202361760876,
+            "content": "### Q&A — CDC para Fornecedores ME/EPP\n\n**P: Meu cliente comprou um produto defeituoso do meu fornecedor. Ele pode me cobrar diretamente?**\nR: Sim. ME e EPP respondem solidariamente com o fabricante e distribuidor. Você deve resolver com o cliente e depois buscar regresso contra seu fornecedor. Não adianta alegar que \"o defeito não foi meu\" — o consumidor pode acionar qualquer elo da cadeia.\n\n**P: Postei um preço errado no Instagram. Sou obrigado a vender por aquele preço?**\nR: Em geral, sim — a oferta vincula. Se o erro for manifesto (ex.: R$10 por produto de R$1.000) e você corrigir imediatamente com comunicação clara, o STJ tem reconhecido exceções. O risco existe: documente o erro e a correção imediatamente, e evite processar pedidos feitos no período do preço errado sem resolver antes com o cliente.\n\n**P: Um cliente me processou no JEC. Preciso de advogado?**\nR: Sim. Para pessoas jurídicas (ME, EPP), advogado é **obrigatório** no JEC — ao contrário do consumidor pessoa física. O prazo para resposta costuma ser de 15 dias após a citação. Não ignore a citação: revelia no JEC gera presunção de veracidade dos fatos alegados pelo consumidor.\n\n**P: O Procon me autuou. O que acontece?**\nR: Multa administrativa prevista no art. 57 do CDC, graduada pelo porte do fornecedor e pela gravidade — a faixa em reais (de centenas de reais a milhões) é convertida e atualizada pelos índices de cada Procon, então o valor concreto varia por estado e por época; qualquer número é ordem de grandeza, não valor exato. Reincidência pode gerar interdição ou cassação do registro. O processo tem contraditório — você pode se defender. Não ignore a notificação; o prazo para defesa é o que consta no documento.\n\n**P: Meu cliente fez reclamação no consumidor.gov.br. Sou obrigado a responder?**\nR: Juridicamente, não há sanção imediata por não responder — mas a plataforma é pública e a ausência de resposta fica visível. Procons estaduais podem usar a falta de resposta como elemento para autuação administrativa. Empresas com mais de 500 funcionários têm obrigação legal de canais de SAC (Decreto 11.034/2022); para ME e EPP a obrigação é menos rígida, mas o risco reputacional é real.\n\n---\n\n",
+            "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd1ja00r148hxcuy4gzmb",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "089aeb6a364b0f1fceb9ddcf29e9aaf26cd7342f201ab486473991bfc5f53bba",
+            "score": 0.863332328120628,
+            "content": "## Q&A — DEFESA JUDICIAL E DIREITOS PRÁTICOS\n\n**P: A loja disse que minha garantia acabou e não quer resolver o problema. O que fazer?**\nR: 1) Verifique se é vício aparente ou oculto. Para vício oculto em produto durável, o prazo de 90 dias começa quando o defeito aparece, não na compra. 2) Se ainda estiver no prazo, formalize a reclamação por escrito (e-mail, WhatsApp com confirmação) — isso congela o prazo de decadência (ele volta a correr de onde parou se o fornecedor negar). 3) Se recusarem, registre reclamação no Procon ou acione o JEC.\n\n**P: O Procon interrompe o prazo para reclamar?**\nR: Não. Apenas a reclamação direta ao fornecedor (comprovada) congela o prazo de decadência — ele volta a correr de onde parou se o fornecedor responder negativamente. O Procon é um canal de pressão e mediação, mas não afeta o prazo legal.\n\n**P: Quanto custa entrar na Justiça?**\nR: No Juizado Especial Cível (JEC), para causas até 40 salários mínimos: gratuidade total na 1ª instância. Não precisa de advogado para causas até 20 salários mínimos. É o caminho mais indicado para o consumidor comum.\n\n**P: O fornecedor pode me obrigar a usar arbitragem para resolver conflitos?**\nR: Não. Cláusula que imponha arbitragem de forma compulsória é nula no CDC. O consumidor sempre pode optar pela Justiça.\n\n**P: Fui prejudicado por propaganda enganosa. Tenho direito a indenização?**\nR: Sim. Além de poder exigir o cumprimento do que foi anunciado (ou produto equivalente ou reembolso), pode pleitear indenização por danos materiais e morais se o engano causou prejuízo.\n\n**P: Posso entrar com ação contra empresa estrangeira que vende pela internet?**\nR: Sim. O CDC se aplica. A ação pode ser proposta no seu domicílio.\n\n---\n\n",
+            "chapter": "Q&A — DEFESA JUDICIAL E DIREITOS PRÁTICOS",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd4nm00rp48hxdiu2tetk",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "eade0a15a61f1db65fac6232fbdb80af3a60290dbff02efd339260c261ce4e50",
+            "score": 0.8629770444176422,
+            "content": "### CHUNK STJ-C3 — Obrigação do Comerciante de Intermediar Reparação de Produto Defeituoso\n> **Perfis atendidos:** MEI / ME / EPP (varejista)\n\nO STJ firmou que o comerciante **não pode simplesmente mandar o consumidor falar direto com o fabricante**. O comerciante tem obrigação de **intermediar** o processo de reparação: receber o produto com defeito, encaminhar ao fabricante e devolver ao consumidor corrigido ou substituído.\n\nEssa obrigação decorre da responsabilidade solidária na cadeia de consumo (CDC, art. 18).\n\n**Prazos legais do CDC:**\n- Fornecedor tem **30 dias** para sanar o vício (regra geral). Por acordo com o consumidor, pode ser de 7 a 180 dias — mas em contratos de adesão a alteração deve estar em destaque\n- Se não sanar: consumidor escolhe entre substituição, abatimento do preço ou devolução do dinheiro\n- Produtos duráveis: prazo de reclamação de **90 dias** da entrega (vício aparente) ou do aparecimento do vício (vício oculto)\n\n**Para ME/EPP varejista:** ignorar a reclamação ou mandar o cliente direto para a assistência sem acompanhamento pode gerar condenação em dano moral além da obrigação de reparar.\n\n**P: Comprei um celular na loja há 2 semanas e parou de funcionar. A loja disse que é com a assistência técnica. Podem fazer isso?**\nR: Não podem se recusar a envolver. A loja tem obrigação de intermediar — receber o produto, encaminhar e acompanhar. Se o vício não for sanado em 30 dias, você tem direito a escolher entre: trocar, abater o preço ou receber o dinheiro de volta.\n\n**P: Sou dono de loja e meu fornecedor disse que clientes com defeito devem procurar diretamente a fábrica. Posso repassar isso aos consumidores?**\nR: Não. A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante. O que você pode fazer depois é cobrar o fabricante pelo custo internamente.\n\n**Referência:** STJ, REsp 1.568.938-RS (Info 678, 2020); CDC arts. 18, 26.\n\n---\n\n",
+            "chapter": "COMPLEMENTO STJ — Consumidor: Jurisprudência Prática",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcq2800ol48hxb9a4dzzr",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "7788c24eda0c6295a26e8df69fc24b5ec9d8ab14eb1f2d7508baabc18a3efb65",
+            "score": 0.8629391400800601,
+            "content": "## Q&A — VÍCIO DO PRODUTO\n\n**P: Comprei um eletrodoméstico que parou de funcionar em 2 meses. O que posso exigir?**\nR: O produto é durável, então você tem 90 dias para reclamar do vício. Ao reclamar, o fornecedor tem **30 dias para consertar**. Se não resolver em 30 dias, você pode escolher:\n1. Trocar por produto igual em perfeitas condições;\n2. Reembolso total do valor pago (corrigido monetariamente), podendo cumular com indenização por danos;\n3. Abatimento proporcional no preço.\nA escolha é sua. A loja, a assistência técnica e o fabricante respondem solidariamente — você pode levar para qualquer um dos três.\n\n**P: A loja disse que tenho que levar na assistência técnica, não com eles. É verdade?**\nR: Não. O STJ decidiu que o consumidor pode escolher a quem reclamar: loja, assistência técnica ou fabricante. A loja não pode se recusar a receber o produto com vício.\n\n**P: E se o produto se quebrar de novo no conserto?**\nR: Se o vício for tão grave que o conserto comprometa a qualidade do produto, você pode pular o prazo de 30 dias e exigir troca, reembolso ou abatimento imediatamente. Isso também vale se o produto for essencial (ex.: geladeira, medicamentos).\n\n**P: A loja disse que o produto estava \"em ponta de estoque\" com pequenos defeitos. Tenho direito a reclamar?**\nR: Não, se você foi informado dos defeitos na venda. Produtos vendidos como ponta de estoque ou usados, desde que haja informação prévia e clara sobre o estado do bem, podem ter condições diferentes sem violar o CDC.\n\n**P: O produto teve um vício depois que a garantia venceu. Perdi o direito?**\nR: Depende se é vício aparente ou oculto. Para vício **oculto** (que só aparece com o tempo de uso), o prazo de 90 dias começa **quando o defeito ficou evidente**, não na data da compra. A garantia contratual adia o início do prazo: se o fabricante deu 1 ano de garantia, os 90 dias da garantia legal começam a contar só depois desse 1 ano.\n\n**P: O fabricante parou de vender peças de reposição do meu produto. Posso reclamar?**\nR: Sim. O CDC obriga fabricantes e importadores a manter disponíveis peças e componentes enquanto fabricarem o produto. Após o encerramento da fabricação, devem manter por prazo razoável. A redução artificial da vida útil do produto (obsolescência programada) pode configurar vício.\n\n---\n\n",
+            "chapter": "Q&A — VÍCIO DO PRODUTO",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          }
+        ],
+        "generationPolicy": {
+          "version": "grounded-generation-v6",
+          "hash": "6737f23d3221cea241e28516b2049e77350b37732242b509714e7d021ae807e4"
+        },
+        "generationId": "msg_011CfP1LmuiV4FPVj2aKTiJz",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "c2fe2583627e812a753f4d35e46d594089673d49b0d26d5ea25ca14bf6d778d5",
+        "attempts": [
+          {
+            "attempt": 1,
+            "generationId": "msg_011CfP1KvA2QYqEJMAjBBewt",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "ffb09b54745fd1165159076d0bdfe41b63504ec679ca4c988bc15a058add072d",
+            "latencyMs": 4652,
+            "usage": {
+              "input_tokens": 1130,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18733,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 322,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": false,
+              "requestId": "msg_011CfP1LG9KXvJUPc1A8aPD6",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftcwlo00pz48hx6ea52k2k",
+                "cmuftd3mf00rh48hxdzh6qgqb",
+                "cmuftd1ja00r148hxcuy4gzmb",
+                "cmuftd4nm00rp48hxdiu2tetk",
+                "cmuftcq2800ol48hxb9a4dzzr"
+              ],
+              "excludedSourceIds": [],
+              "evidence": [],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1LG9KXvJUPc1A8aPD6",
+                "latencyMs": 6954,
+                "usage": {
+                  "input_tokens": 6063,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 501,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          },
+          {
+            "attempt": 2,
+            "generationId": "msg_011CfP1LmuiV4FPVj2aKTiJz",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "c2fe2583627e812a753f4d35e46d594089673d49b0d26d5ea25ca14bf6d778d5",
+            "latencyMs": 2168,
+            "usage": {
+              "input_tokens": 1767,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18733,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 268,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": true,
+              "requestId": "msg_011CfP1Lw8MgaDMSqvUv97Mo",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftcwlo00pz48hx6ea52k2k",
+                "cmuftd3mf00rh48hxdzh6qgqb",
+                "cmuftd1ja00r148hxcuy4gzmb",
+                "cmuftd4nm00rp48hxdiu2tetk",
+                "cmuftcq2800ol48hxb9a4dzzr"
+              ],
+              "excludedSourceIds": [],
+              "evidence": [
+                {
+                  "index": 0,
+                  "chunkIds": [
+                    "cmuftcwlo00pz48hx6ea52k2k"
+                  ]
+                }
+              ],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1Lw8MgaDMSqvUv97Mo",
+                "latencyMs": 6005,
+                "usage": {
+                  "input_tokens": 6035,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 437,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          }
+        ],
+        "verification": {
+          "supported": true,
+          "requestId": "msg_011CfP1Lw8MgaDMSqvUv97Mo",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v11",
+          "sourceIds": [
+            "cmuftcwlo00pz48hx6ea52k2k",
+            "cmuftd3mf00rh48hxdzh6qgqb",
+            "cmuftd1ja00r148hxcuy4gzmb",
+            "cmuftd4nm00rp48hxdiu2tetk",
+            "cmuftcq2800ol48hxb9a4dzzr"
+          ],
+          "excludedSourceIds": [],
+          "evidence": [
+            {
+              "index": 0,
+              "chunkIds": [
+                "cmuftcwlo00pz48hx6ea52k2k"
+              ]
+            }
+          ],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfP1Lw8MgaDMSqvUv97Mo",
+            "latencyMs": 6005,
+            "usage": {
+              "input_tokens": 6035,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 437,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "extra-followup",
+      "session": 10,
+      "q": "E preciso explicar por que quero desistir?",
+      "reply": "Não, você não precisa explicar o motivo. Compra pela internet dá direito de arrependimento de 7 dias sem justificativa — basta comunicar a desistência ao fornecedor. O prazo conta da assinatura do contrato ou do recebimento do produto, e você recebe de volta tudo que pagou, com correção monetária.",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 13744,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_passed",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v11",
+        "area": "consumidor",
+        "searchQuery": "preciso explicar por que quero desistir desistir da compra",
+        "excludedFromGeneration": [],
+        "chunks": [
+          {
+            "id": "cmuftcrdd00ov48hxlh2eizye",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "293009e57068666eafeb20bb37c24cff850edaa08242a353f79db62750b9decf",
+            "score": 0.8587665506104282,
+            "content": "## Q&A — PRAZOS IMPORTANTES (RESUMO)\n\n**P: Quais são os prazos para reclamar pelo CDC?**\n\n| Situação | Tipo de prazo | Prazo | Base legal |\n|---|---|---|---|\n| Vício em produto não durável (alimento, bebida) | Decadência | 30 dias | CDC art. 26, I |\n| Vício em produto durável (eletrodoméstico, veículo, imóvel) | Decadência | 90 dias | CDC art. 26, II |\n| Vício em serviço não durável | Decadência | 30 dias | CDC art. 26, I |\n| Vício em serviço durável | Decadência | 90 dias | CDC art. 26, II |\n| Vício oculto | Decadência | 30 ou 90 dias — conta da **data em que o vício se tornou aparente** | CDC art. 26 §3° |\n| Acidente de consumo / fato do produto ou serviço | Prescrição CDC | 5 anos | CDC art. 27 |\n| Cobrança indevida (repetição do indébito / devolução em dobro) | Prescrição CC | 10 anos | CC art. 205 |\n| Negativação indevida (ação de indenização por dano moral) | Prescrição CC — controvérsia | **3 anos** (recomendado) ou 10 anos | CC art. 206 §3° V vs. art. 205 |\n| Plano de saúde — recusa indevida de cobertura | Prescrição | 1 ano (contratos de seguro — CC art. 206 §1° II) ou 5 anos (CDC art. 27) | Divergência: verificar ação específica |\n| Rescisão de compromisso de compra e venda (construtora) | Prescrição CC | 10 anos | CC art. 205 |\n\n**P: Fiz reclamação ao fornecedor. O prazo continua correndo?**\nR: Não. Reclamação formal ao fornecedor **obsta** (impede o curso d)o prazo de decadência enquanto estiver pendente — o prazo fica suspenso até que o fornecedor responda negativamente de forma clara (CDC art. 26 §2°, I). Tecnicamente é \"obstação\", não suspensão ou interrupção, mas o efeito prático é de suspensão: quando a reclamação é resolvida negativamente, o prazo recomeça do ponto onde parou. Mas reclamação no Procon não obsta o prazo.\n\n---\n\n",
+            "chapter": "Q&A — PRAZOS IMPORTANTES (RESUMO)",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcq2800ol48hxb9a4dzzr",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "7788c24eda0c6295a26e8df69fc24b5ec9d8ab14eb1f2d7508baabc18a3efb65",
+            "score": 0.8569443093733876,
+            "content": "## Q&A — VÍCIO DO PRODUTO\n\n**P: Comprei um eletrodoméstico que parou de funcionar em 2 meses. O que posso exigir?**\nR: O produto é durável, então você tem 90 dias para reclamar do vício. Ao reclamar, o fornecedor tem **30 dias para consertar**. Se não resolver em 30 dias, você pode escolher:\n1. Trocar por produto igual em perfeitas condições;\n2. Reembolso total do valor pago (corrigido monetariamente), podendo cumular com indenização por danos;\n3. Abatimento proporcional no preço.\nA escolha é sua. A loja, a assistência técnica e o fabricante respondem solidariamente — você pode levar para qualquer um dos três.\n\n**P: A loja disse que tenho que levar na assistência técnica, não com eles. É verdade?**\nR: Não. O STJ decidiu que o consumidor pode escolher a quem reclamar: loja, assistência técnica ou fabricante. A loja não pode se recusar a receber o produto com vício.\n\n**P: E se o produto se quebrar de novo no conserto?**\nR: Se o vício for tão grave que o conserto comprometa a qualidade do produto, você pode pular o prazo de 30 dias e exigir troca, reembolso ou abatimento imediatamente. Isso também vale se o produto for essencial (ex.: geladeira, medicamentos).\n\n**P: A loja disse que o produto estava \"em ponta de estoque\" com pequenos defeitos. Tenho direito a reclamar?**\nR: Não, se você foi informado dos defeitos na venda. Produtos vendidos como ponta de estoque ou usados, desde que haja informação prévia e clara sobre o estado do bem, podem ter condições diferentes sem violar o CDC.\n\n**P: O produto teve um vício depois que a garantia venceu. Perdi o direito?**\nR: Depende se é vício aparente ou oculto. Para vício **oculto** (que só aparece com o tempo de uso), o prazo de 90 dias começa **quando o defeito ficou evidente**, não na data da compra. A garantia contratual adia o início do prazo: se o fabricante deu 1 ano de garantia, os 90 dias da garantia legal começam a contar só depois desse 1 ano.\n\n**P: O fabricante parou de vender peças de reposição do meu produto. Posso reclamar?**\nR: Sim. O CDC obriga fabricantes e importadores a manter disponíveis peças e componentes enquanto fabricarem o produto. Após o encerramento da fabricação, devem manter por prazo razoável. A redução artificial da vida útil do produto (obsolescência programada) pode configurar vício.\n\n---\n\n",
+            "chapter": "Q&A — VÍCIO DO PRODUTO",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftcwlo00pz48hx6ea52k2k",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "473bfb2703387d2481bac5a678ddb3813b9d2499d073388bf395c6bf91d1f7b0",
+            "score": 0.8547637348465631,
+            "content": "### Direito de arrependimento\nSe você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\n\n**Produto personalizado ou perecível (ponto controvertido):** para item feito sob encomenda/personalização — perecível (bolo e doces de festa, salgados, buffet, flores) ou sob medida/com identificação (roupa sob medida ou com nome, convite, caneca/camiseta estampada, joia gravada, móvel planejado) — a aplicação do arrependimento é **discutida**: parte do entendimento afasta ou limita o direito, porque o item não pode ser revendido; outra parte o mantém. Regra para a JUDITH: não afirmar de forma chapada \"sempre tem\" nem \"nunca tem\" — sinalizar que é controvertido, que o fornecedor tem argumento forte para reter ao menos os custos já incorridos, e sugerir acordo. Tratar bolo sob encomenda e peça personalizada com o mesmo critério.\n\n",
+            "chapter": "CHUNK 7 — CONTRATOS: CLÁUSULAS ABUSIVAS",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd3mf00rh48hxdzh6qgqb",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "75d0e73703bcaf12ef15c984a0dc87064d691a391124221ee8fd410069e3b223",
+            "score": 0.8546824745530152,
+            "content": "### Q&A — CDC para Fornecedores ME/EPP\n\n**P: Meu cliente comprou um produto defeituoso do meu fornecedor. Ele pode me cobrar diretamente?**\nR: Sim. ME e EPP respondem solidariamente com o fabricante e distribuidor. Você deve resolver com o cliente e depois buscar regresso contra seu fornecedor. Não adianta alegar que \"o defeito não foi meu\" — o consumidor pode acionar qualquer elo da cadeia.\n\n**P: Postei um preço errado no Instagram. Sou obrigado a vender por aquele preço?**\nR: Em geral, sim — a oferta vincula. Se o erro for manifesto (ex.: R$10 por produto de R$1.000) e você corrigir imediatamente com comunicação clara, o STJ tem reconhecido exceções. O risco existe: documente o erro e a correção imediatamente, e evite processar pedidos feitos no período do preço errado sem resolver antes com o cliente.\n\n**P: Um cliente me processou no JEC. Preciso de advogado?**\nR: Sim. Para pessoas jurídicas (ME, EPP), advogado é **obrigatório** no JEC — ao contrário do consumidor pessoa física. O prazo para resposta costuma ser de 15 dias após a citação. Não ignore a citação: revelia no JEC gera presunção de veracidade dos fatos alegados pelo consumidor.\n\n**P: O Procon me autuou. O que acontece?**\nR: Multa administrativa prevista no art. 57 do CDC, graduada pelo porte do fornecedor e pela gravidade — a faixa em reais (de centenas de reais a milhões) é convertida e atualizada pelos índices de cada Procon, então o valor concreto varia por estado e por época; qualquer número é ordem de grandeza, não valor exato. Reincidência pode gerar interdição ou cassação do registro. O processo tem contraditório — você pode se defender. Não ignore a notificação; o prazo para defesa é o que consta no documento.\n\n**P: Meu cliente fez reclamação no consumidor.gov.br. Sou obrigado a responder?**\nR: Juridicamente, não há sanção imediata por não responder — mas a plataforma é pública e a ausência de resposta fica visível. Procons estaduais podem usar a falta de resposta como elemento para autuação administrativa. Empresas com mais de 500 funcionários têm obrigação legal de canais de SAC (Decreto 11.034/2022); para ME e EPP a obrigação é menos rígida, mas o risco reputacional é real.\n\n---\n\n",
+            "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          },
+          {
+            "id": "cmuftd3d200rf48hx3ec47l6h",
+            "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+            "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+            "contentHash": "4b893192f3c888613733b6c10f87e594756231331237fcbaf4af167b5c89699a",
+            "score": 0.8540008641399318,
+            "content": "## CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER\n> **Perfis atendidos:** ME / EPP\n\nQuando sua empresa vende produtos ou presta serviços, ela está do **outro lado** do CDC — como fornecedora. Seus clientes têm todos os direitos descritos neste resumo, e sua empresa tem obrigações correspondentes. Descumpri-las pode gerar multa do Procon, ação judicial de dano moral e responsabilidade solidária na cadeia de fornecimento.\n\n**Prazo para resolver vício:** Se o cliente reclamar de produto ou serviço com vício, o fornecedor tem **30 dias para sanar o problema** (regra geral — CDC art. 18 §1°). Por acordo entre fornecedor e consumidor, esse prazo pode ser reduzido para até **7 dias** ou ampliado para até **180 dias**. Atenção: em contrato de adesão, a cláusula que estipular prazo diferente dos 30 dias deve estar **em destaque** (negrito, caixa ou cor diferente) — sem destaque, prevalece o prazo legal de 30 dias. Se não resolver no prazo, o consumidor pode exigir troca, reembolso integral ou abatimento — e sua empresa responde solidariamente com fabricante e distribuidor.\n\n**Oferta e publicidade vinculam:** Se você anunciou preço ou condição (site, redes sociais, vitrine, WhatsApp), é obrigado a cumprir. Erro de precificação em plataforma digital não desobriga automaticamente — o STJ tem entendido que a oferta vincula mesmo quando houve erro involuntário. Corrija imediatamente e documente o erro se isso ocorrer.\n\n**Publicidade enganosa tem responsabilidade objetiva:** Não precisa haver intenção de enganar. Se a publicidade induziu o cliente a erro, sua empresa responde — o ônus de provar que a informação era correta é seu, não do cliente.\n\n**Multa moratória em contratos com consumidor:** Limitada a **2% da prestação vencida**. Qualquer cláusula acima disso é nula. Revise contratos de parcelamento e prestação de serviços com clientes pessoa física.\n\n**Cláusulas abusivas são nulas de pleno direito:** O juiz pode declará-las nulas de ofício. Se o contrato de adesão da sua empresa exonera a responsabilidade por vício, essa cláusula não vale — mas a nulidade não desfaz o contrato inteiro, só aquela cláusula.\n\n---\n\n",
+            "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+            "fontes": [
+              "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+              "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+            ]
+          }
+        ],
+        "generationPolicy": {
+          "version": "grounded-generation-v6",
+          "hash": "6737f23d3221cea241e28516b2049e77350b37732242b509714e7d021ae807e4"
+        },
+        "generationId": "msg_011CfP1MYYq5sG6BXqgwaCbY",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "ab848bf83a20d3094a401ea632be35c5e9097dd788635ff54962472263d92cad",
+        "attempts": [
+          {
+            "attempt": 1,
+            "generationId": "msg_011CfP1MYYq5sG6BXqgwaCbY",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "ab848bf83a20d3094a401ea632be35c5e9097dd788635ff54962472263d92cad",
+            "latencyMs": 4086,
+            "usage": {
+              "input_tokens": 1153,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18851,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 292,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": true,
+              "requestId": "msg_011CfP1Mr4HYTBxDtfw7yvBk",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftcrdd00ov48hxlh2eizye",
+                "cmuftcq2800ol48hxb9a4dzzr",
+                "cmuftcwlo00pz48hx6ea52k2k",
+                "cmuftd3mf00rh48hxdzh6qgqb",
+                "cmuftd3d200rf48hx3ec47l6h"
+              ],
+              "excludedSourceIds": [],
+              "evidence": [
+                {
+                  "index": 0,
+                  "chunkIds": [
+                    "cmuftcwlo00pz48hx6ea52k2k"
+                  ]
+                }
+              ],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1Mr4HYTBxDtfw7yvBk",
+                "latencyMs": 7400,
+                "usage": {
+                  "input_tokens": 6147,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 587,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          }
+        ],
+        "verification": {
+          "supported": true,
+          "requestId": "msg_011CfP1Mr4HYTBxDtfw7yvBk",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v11",
+          "sourceIds": [
+            "cmuftcrdd00ov48hxlh2eizye",
+            "cmuftcq2800ol48hxb9a4dzzr",
+            "cmuftcwlo00pz48hx6ea52k2k",
+            "cmuftd3mf00rh48hxdzh6qgqb",
+            "cmuftd3d200rf48hx3ec47l6h"
+          ],
+          "excludedSourceIds": [],
+          "evidence": [
+            {
+              "index": 0,
+              "chunkIds": [
+                "cmuftcwlo00pz48hx6ea52k2k"
+              ]
+            }
+          ],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfP1Mr4HYTBxDtfw7yvBk",
+            "latencyMs": 7400,
+            "usage": {
+              "input_tokens": 6147,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 587,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "extra-change",
+      "session": 10,
+      "q": "Agora sobre proteção de dados: sendo MEI sem tratamento de alto risco, preciso indicar formalmente um encarregado de dados?",
+      "reply": "Não. A Resolução CD/ANPD nº 2/2022 dispensa agentes de tratamento de pequeno porte — como MEI, ME e EPP sem tratamento de alto risco — da indicação formal de encarregado de dados. Se um cliente ou parceiro perguntar quem é seu DPO, você pode informar que está dispensado dessa obrigação por enquadramento como agente de pequeno porte conforme a regulamentação da ANPD.",
+      "failure": null,
+      "creditDelta": 1,
+      "latencyMs": 11877,
+      "audit": {
+        "schemaVersion": 1,
+        "stage": "support_passed",
+        "model": "claude-haiku-4-5-20251001",
+        "prompt": {
+          "version": "v22072026",
+          "hash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+        },
+        "supportPolicy": "support-v11",
+        "area": "lgpd",
+        "searchQuery": "Agora sobre proteção de dados: sendo MEI sem tratamento de alto risco, preciso indicar formalmente um encarregado de dados?",
+        "excludedFromGeneration": [],
+        "chunks": [
+          {
+            "id": "cmuftb3zk00cx48hx8r257nex",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "6588a6ee67ee00ddab3a15304f4a7193b445ece0d1858c09f96dbf14617c2301",
+            "score": 0.8862206478007815,
+            "content": "## Q&A — LGPD na prática do pequeno empresário\n\n**P: Preciso ter Política de Privacidade no meu site?**\nR: Sim, se você coleta qualquer dado pessoal no site (mesmo só um formulário de contato ou e-mail). A política deve informar quais dados coleta, para qual finalidade, por quanto tempo guarda, com quem compartilha e como o titular pode exercer seus direitos.\n\n**P: Posso adicionar clientes num grupo de WhatsApp de promoções sem autorização?**\nR: Não sem alguma base legal. O ideal é ter consentimento prévio (ex.: na hora da compra, perguntar se pode incluir no grupo). Adicionar sem consentimento pode gerar reclamação e, em caso de mensagem em massa sem opt-in, pode ainda violar o CDC (prática abusiva).\n\n**P: Posso compartilhar a lista de clientes com um parceiro ou fornecedor?**\nR: Somente se tiver base legal para isso (consentimento do cliente ou legítimo interesse claramente justificado). O parceiro que recebe os dados vira \"operador\" e você continua responsável. Recomendado: cláusula de proteção de dados no contrato com o parceiro.\n\n**P: Por quanto tempo posso guardar dados de clientes?**\nR: Pelo tempo necessário para cumprir a finalidade informada. Após encerrar a relação comercial, o dado deve ser eliminado — salvo obrigação legal de guarda (ex.: documentos fiscais por 5 anos, contratos por prazo legal específico).\n\n**P: Tenho câmera de segurança no estabelecimento. Isso gera obrigação de LGPD?**\nR: Sim. Câmera que grava rostos é tratamento de dado pessoal. Obrigação mínima: afixar aviso visível informando que o local é monitorado, indicar o responsável e a finalidade (segurança). Não compartilhar as imagens sem ordem judicial ou necessidade de investigação policial.\n\n**P: Um cliente pediu para apagar os dados dele. Sou obrigado a apagar tudo?**\nR: Se o tratamento era baseado em consentimento, sim — deve apagar. Se o tratamento é baseado em obrigação legal ou contrato em vigor, pode manter pelo tempo necessário. Dados fiscais (CPF, endereço de nota fiscal) devem ser guardados por exigência da legislação tributária.\n\n**P: Preciso ter um DPO (encarregado de dados)?**\nR: Em regra não, se você é MEI, ME ou EPP que não realiza tratamento de alto risco. A Resolução CD/ANPD nº 2/2022 dispensa agentes de tratamento de pequeno porte da indicação formal de encarregado. Se um cliente ou parceiro perguntar quem é seu DPO, você pode informar que está dispensado dessa obrigação por enquadramento como agente de pequeno porte conforme a regulamentação da ANPD.\n\n**P: Um cliente inadimplente ameaçou me processar por LGPD porque incluí o nome dele no SPC/Serasa. Tenho razão?**\nR: Sim. Negativar um devedor inadimplente é tratamento de dados com base no **exercício regular de direitos** (art. 7º, VI LGPD) e na **proteção ao crédito** (art. 7º, X). Você não precisa do consentimento do devedor para isso — a lei prevê expressamente essa hipótese. A ameaça não tem fundamento.\n\n---\n\n",
+            "chapter": "Q&A — LGPD na prática do pequeno empresário",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb3gs00ct48hxan59n1eq",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "9ebfff64d565914c264d340f276c9dbb8eccc671430609fa627e178a8291c7c6",
+            "score": 0.8750824267512316,
+            "content": "## CHUNK 4 — Segurança de dados: o que o MEI deve fazer na prática\n\nA LGPD exige medidas de segurança técnicas e administrativas (art. 46). Para o pequeno empresário, isso significa:\n\n**Medidas básicas obrigatórias:**\n- Senha forte e única para acessar planilhas, e-mail, sistemas com dados de cliente\n- Não compartilhar senhas entre funcionários\n- Não enviar lista de clientes por e-mail sem criptografia\n- Backups regulares de dados importantes\n- Limitar o acesso: só quem precisa ver os dados deve ter acesso\n\n🔴 **Violação de dados (vazamento):** se ocorrer um incidente que possa causar risco ao titular (ex.: lista de clientes com CPF foi roubada, banco de dados hackeado), o controlador deve comunicar à **ANPD e aos titulares afetados em até 3 dias úteis** após tomar ciência do incidente (Resolução CD/ANPD nº 15/2024, art. 7º). A comunicação deve ser o mais completa possível desde o início — não há prazo separado para relatório posterior.\n\n🔴 **Atenção: sofrer um ataque hacker não elimina a responsabilidade.** O STJ consolidou que, se o empresário não adotou medidas mínimas de segurança, o ataque é tratado como **fortuito interno** — e o controlador responde pelo vazamento mesmo sendo vítima. A alegação de \"terceiro malicioso\" só exime se houver prova de que as medidas adequadas foram adotadas (STJ, 3ª Turma, dez/2024; art. 6º, X LGPD — princípio da accountability).\n\n**Regra prática:** o MEI que trata apenas dados básicos de contato (nome, telefone, e-mail) para atender clientes e enviar cobranças já está em conformidade suficiente com medidas simples de segurança. O risco aumenta substancialmente quando trata **dados sensíveis** (saúde, biometria, religião, origem étnica) — veja o Chunk 5.\n\n---\n\n",
+            "chapter": "CHUNK 4 — Segurança de dados: o que o MEI deve fazer na prática",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb5au00d748hxka0km3fb",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "73c66cd3c99981089c44b581ea6189b8d4868bf740604c89d89c16205efeeb10",
+            "score": 0.8731037297548755,
+            "content": "## CHUNK 8 — LGPD nas relações de trabalho: dados de funcionários e prestadores\n> **Perfis atendidos:** ME / EPP com funcionários CLT ou autônomos contratados\n\nO MEI e o pequeno empresário com funcionários lidam com **dois universos de dados completamente distintos**: dados de clientes (relação de consumo) e dados de empregados/prestadores (relação de trabalho). O segundo é mais regulado e cheio de armadilhas.\n\n**Dados comuns de empregados** (CPF, carteira de trabalho, endereço, conta bancária):\n- Base legal: cumprimento de obrigação legal (eSocial, Receita Federal, Ministério do Trabalho) ou execução de contrato de trabalho — art. 7º, II e V LGPD\n- Não exige consentimento do funcionário\n\n**⚠️ Dados sensíveis na relação de trabalho — atenção redobrada:**\n\n🔴 **Ponto biométrico (impressão digital ou reconhecimento facial):** é dado sensível (art. 11 LGPD). O regime é mais restritivo que para dados comuns — **o legítimo interesse não pode ser usado como base legal para dados sensíveis**. A base válida é prevenção à fraude/segurança do titular (art. 11, II, g). Se o sistema de ponto biométrico vazar ou for mal armazenado pelo fornecedor do software, a empresa responde por danos morais na Justiça do Trabalho.\n\n🔴 **Exame médico admissional e periódico:** dado de saúde = dado sensível. Deve ser armazenado separadamente, com acesso restrito, e usado exclusivamente para a finalidade de segurança e saúde do trabalho.\n\n🔴 **Dados de dependentes:** certidão de nascimento de filhos menores para salário-família ou plano de saúde envolve dados de crianças — categoria com proteção reforçada pelo art. 14 LGPD.\n\n**Atenção sobre consentimento na relação de trabalho:** o consentimento do funcionário para tratar seus dados é considerado **juridicamente frágil** pela ANPD, pois há assimetria de poder entre empregado e empregador. A base legal correta para a maioria das situações é o cumprimento de obrigação legal — não o consentimento.\n\n**Regra prática:** ao contratar um sistema de ponto eletrônico biométrico, exija do fornecedor contrato com cláusula de proteção de dados e comprovação de medidas de segurança. A responsabilidade pelo vazamento pode recair sobre você mesmo que o sistema seja de terceiro.\n\n---\n\n*⚠️ Este documento contém informações jurídicas de caráter educativo. Situações concretas requerem análise por advogado. | Atualizado em 10/06/2026*\n",
+            "chapter": "CHUNK 8 — LGPD nas relações de trabalho: dados de funcionários e prestadores",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb3q500cv48hxdhxbxmj7",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "bb3336581aa87c4d582215b0a7d33a26237dc261e62a4e975821b0f73c46e2fe",
+            "score": 0.871199595867364,
+            "content": "## CHUNK 5 — Sanções: o que acontece se descumprir a LGPD\n\nA ANPD pode aplicar as seguintes sanções (art. 52):\n\n| Sanção | Limite |\n|--------|--------|\n| Advertência com prazo para correção | — |\n| Multa simples | Até 2% do faturamento da pessoa jurídica, **grupo ou conglomerado econômico** no Brasil no último exercício (excluídos tributos), limitado a R$ 50 milhões por infração (art. 52, II LGPD) |\n| Multa diária | Mesmo limite total |\n| Publicização da infração | — |\n| Bloqueio dos dados | Até regularização |\n| Eliminação dos dados | — |\n| Suspensão do banco de dados | Até 6 meses (renovável) |\n| Proibição de atividade de tratamento | Parcial ou total |\n\n💸 **Para MEI/pequeno empresário:** a ANPD tem priorizado orientação e advertências para pequenas empresas em primeira ocorrência. O risco mais imediato é **civil**.\n\n🔴 **Distinção crítica — dados comuns vs. dados sensíveis:**\n- **Dados pessoais comuns** (nome, telefone, e-mail): o titular que sofrer dano precisa **provar o prejuízo** concreto para obter indenização. O juiz pode inverter o ônus da prova quando houver verossimilhança da alegação ou hipossuficiência do titular (art. 42, §2º LGPD) — o enquadramento do cliente pessoa física como hipossuficiente frente ao empresário é frequente na jurisprudência consumerista (STJ, AREsp 2.130.619-SP, mar/2023).\n- **Dados sensíveis** (saúde, biometria, religião, origem étnica, dados financeiros sigilosos — art. 5º, II e art. 11 LGPD): o vazamento gera **dano moral presumido e responsabilidade objetiva** — o titular não precisa provar o prejuízo; basta provar o vazamento (STJ, REsp 2.121.904/SP, rel. Min. Nancy Andrighi, 3ª Turma, fev/2025).\n\n**Quem opera com dados sensíveis** (nutricionista, psicólogo, academia com biometria, clínica, farmácia) tem exposição a indenizações automáticas e deve adotar medidas de segurança reforçadas.\n\n---\n\n",
+            "chapter": "CHUNK 5 — Sanções: o que acontece se descumprir a LGPD",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          },
+          {
+            "id": "cmuftb2xw00cp48hxxv97r5g4",
+            "sourceId": "kbimp_793a176c5d92dc688419de04f48064f1",
+            "version": "41f4dfa565695662bfdb209b3794a43338a242d7b2374a7b5dbd1244e5996425",
+            "contentHash": "cb041bcc3083907d3c889fe3a964dfbc1755d5e7f2056479045343d75e11895d",
+            "score": 0.8707265341151309,
+            "content": "## CHUNK 2 — Bases legais: quando posso usar dados de clientes?\n\nA LGPD exige que todo tratamento de dados tenha uma **base legal** — uma das hipóteses previstas no art. 7º. As mais relevantes para MEI/autônomo:\n\n| Base legal | Quando usar |\n|-----------|-------------|\n| **Consentimento** | Quando o cliente autoriza expressamente (ex.: cadastro com aceite, opt-in de WhatsApp) |\n| **Execução de contrato** | Para cumprir o contrato com o próprio titular (ex.: entrega de produto, prestação de serviço) |\n| **Cumprimento de obrigação legal** | Para cumprir exigências legais (ex.: emissão de nota fiscal, retenção de dados contábeis, envio ao eSocial) |\n| **Legítimo interesse** | Para atividades razoavelmente esperadas pelo cliente, com proporcionalidade (ex.: envio de promoções relacionadas ao que ele comprou) |\n| **Exercício regular de direitos** | Para uso em processos judiciais, administrativos ou arbitrais (ex.: negativar inadimplente, juntar histórico de conversas para defesa no JEC, protestar dívida em cartório) — art. 7º, VI |\n| **Proteção ao crédito** | Consulta a cadastros de inadimplência |\n| **Tutela da saúde** | Para profissionais de saúde (nutricionista, psicólogo, fisioterapeuta, dentista) no atendimento ao paciente — art. 7º, VIII |\n\n**Atenção:** consentimento não é a única base legal e muitas vezes não é a melhor. A execução de contrato ou o legítimo interesse cobrem boa parte das situações do pequeno empresário sem necessidade de pedir autorização formal.\n\n🔴 **Importante:** o exercício regular de direitos (art. 7º, VI) permite tratar dados do cliente devedor para cobrar dívidas e se defender em processos — **sem precisar do consentimento dele**. O MEI que desconhece essa base legal pode deixar de exercer seus direitos por medo indevido de violar a LGPD.\n\n---\n\n",
+            "chapter": "CHUNK 2 — Bases legais: quando posso usar dados de clientes?",
+            "fontes": [
+              "Lei 13.709/2018 (LGPD) + Lei 12.965/2014 (Marco Civil da Internet) + Res. CD/ANPD 2/2022; 4/2023; 15/2024 + STJ (REsp 2.121.904/SP; AREsp 2.130.619-SP) + STF (RE 1.037.396, Tema 987)"
+            ]
+          }
+        ],
+        "generationPolicy": {
+          "version": "grounded-generation-v6",
+          "hash": "6737f23d3221cea241e28516b2049e77350b37732242b509714e7d021ae807e4"
+        },
+        "generationId": "msg_011CfP1NXRPa2VP9KGhJaJxN",
+        "actualModel": "claude-haiku-4-5-20251001",
+        "draftHash": "695a11560f5e82275906d0237a81843a08a2d2df5f2dd4b50fa66435e70882bf",
+        "attempts": [
+          {
+            "attempt": 1,
+            "generationId": "msg_011CfP1NXRPa2VP9KGhJaJxN",
+            "actualModel": "claude-haiku-4-5-20251001",
+            "draftHash": "695a11560f5e82275906d0237a81843a08a2d2df5f2dd4b50fa66435e70882bf",
+            "latencyMs": 4788,
+            "usage": {
+              "input_tokens": 1143,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 18891,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 376,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            },
+            "verification": {
+              "supported": true,
+              "requestId": "msg_011CfP1Nt85ifXFWFsYNsBt1",
+              "model": "claude-haiku-4-5-20251001",
+              "policyVersion": "support-v11",
+              "sourceIds": [
+                "cmuftb3zk00cx48hx8r257nex",
+                "cmuftb3gs00ct48hxan59n1eq",
+                "cmuftb5au00d748hxka0km3fb",
+                "cmuftb3q500cv48hxdhxbxmj7",
+                "cmuftb2xw00cp48hxxv97r5g4"
+              ],
+              "excludedSourceIds": [],
+              "evidence": [
+                {
+                  "index": 0,
+                  "chunkIds": [
+                    "cmuftb3zk00cx48hx8r257nex"
+                  ]
+                }
+              ],
+              "metrics": {
+                "model": "claude-haiku-4-5-20251001",
+                "requestId": "msg_011CfP1Nt85ifXFWFsYNsBt1",
+                "latencyMs": 5246,
+                "usage": {
+                  "input_tokens": 6666,
+                  "cache_creation_input_tokens": 0,
+                  "cache_read_input_tokens": 0,
+                  "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 0
+                  },
+                  "output_tokens": 412,
+                  "service_tier": "standard",
+                  "inference_geo": "not_available"
+                }
+              }
+            }
+          }
+        ],
+        "verification": {
+          "supported": true,
+          "requestId": "msg_011CfP1Nt85ifXFWFsYNsBt1",
+          "model": "claude-haiku-4-5-20251001",
+          "policyVersion": "support-v11",
+          "sourceIds": [
+            "cmuftb3zk00cx48hx8r257nex",
+            "cmuftb3gs00ct48hxan59n1eq",
+            "cmuftb5au00d748hxka0km3fb",
+            "cmuftb3q500cv48hxdhxbxmj7",
+            "cmuftb2xw00cp48hxxv97r5g4"
+          ],
+          "excludedSourceIds": [],
+          "evidence": [
+            {
+              "index": 0,
+              "chunkIds": [
+                "cmuftb3zk00cx48hx8r257nex"
+              ]
+            }
+          ],
+          "metrics": {
+            "model": "claude-haiku-4-5-20251001",
+            "requestId": "msg_011CfP1Nt85ifXFWFsYNsBt1",
+            "latencyMs": 5246,
+            "usage": {
+              "input_tokens": 6666,
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 0
+              },
+              "output_tokens": 412,
+              "service_tier": "standard",
+              "inference_geo": "not_available"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "snapshot": {
+    "sha256": "4355951f0a8edee4e579df268e6a1c07399a0346685eced715986d7ce1a894ae",
+    "sources": [
+      {
+        "id": "kbimp_0426279e1c9dff2763d2b948b1b2a87d",
+        "slug": "resumo-processo-civil",
+        "titulo": "JUDITH — Resumo RAG: Processo Civil"
+      },
+      {
+        "id": "kbimp_11995abb60de8c8b3d5920a8758f66ea",
+        "slug": "resumo-direito-autoral",
+        "titulo": "JUDITH — Resumo RAG: Direito Autoral"
+      },
+      {
+        "id": "kbimp_12a204514e974a63720f5ac1e4a8d4a5",
+        "slug": "resumo-previdenciario-mei",
+        "titulo": "JUDITH — Resumo RAG: Previdência Social — MEI, Autônomo e Pequeno Empregador"
+      },
+      {
+        "id": "kbimp_1a4375c7be2aec9636a2bee90b76bbbe",
+        "slug": "resumo-ambiental",
+        "titulo": "JUDITH – Direito Ambiental: Resumo Prático"
+      },
+      {
+        "id": "kbimp_213e0e6bfdb5989ca91e5218ce3d505d",
+        "slug": "resumo-civil-parte-geral",
+        "titulo": "JUDITH — Resumo RAG: Direito Civil — Parte Geral (LINDB + Parte Geral)"
+      },
+      {
+        "id": "kbimp_3f1203d529f44253278e51e0d5928245",
+        "slug": "resumo-civil-contratos",
+        "titulo": "JUDITH — Resumo RAG: Direito Civil III"
+      },
+      {
+        "id": "kbimp_45f30cb9e8c87d192a5eef9a03ea3d21",
+        "slug": "resumo-eca",
+        "titulo": "JUDITH – Base de Conhecimento: ECA (Lei 8.069/1990)"
+      },
+      {
+        "id": "kbimp_54c53ff4989007552f9b41042a4c31f7",
+        "slug": "base-guias",
+        "titulo": "JUDITH — Base de Conhecimento: Guias de Orientação Administrativa"
+      },
+      {
+        "id": "kbimp_793a176c5d92dc688419de04f48064f1",
+        "slug": "resumo-lgpd-marco-civil",
+        "titulo": "JUDITH — Resumo RAG: LGPD + Marco Civil da Internet"
+      },
+      {
+        "id": "kbimp_869079a2dc1e64376c06e8d8d72bea75",
+        "slug": "resumo-simples-nacional",
+        "titulo": "JUDITH — Base de Conhecimento: Simples Nacional e MEI"
+      },
+      {
+        "id": "kbimp_907be514ae694c671c9af0d995d121ea",
+        "slug": "resumo-civil-obrigacoes",
+        "titulo": "JUDITH — Resumo RAG: Direito Civil II"
+      },
+      {
+        "id": "kbimp_94918ad074260d858096ffdbf1a9fa72",
+        "slug": "resumo-tributario",
+        "titulo": "JUDITH — Base de Conhecimento: Direito Tributário"
+      },
+      {
+        "id": "kbimp_95fe541b711e92909cb6527ed63b0fa5",
+        "slug": "resumo-locacao-comercial",
+        "titulo": "JUDITH — Resumo RAG: Locação Comercial"
+      },
+      {
+        "id": "kbimp_998232b790208335d715e916bb692440",
+        "slug": "resumo-empresarial",
+        "titulo": "JUDITH — Base de Conhecimento: Direito Empresarial"
+      },
+      {
+        "id": "kbimp_a46ad4936a8b055b40221a59844a2627",
+        "slug": "resumo-penal-tributario",
+        "titulo": "JUDITH — Resumo RAG: Crimes Contra a Ordem Tributária e Relações de Consumo"
+      },
+      {
+        "id": "kbimp_dec202215e3d5559ca0f79f80f0267c2",
+        "slug": "resumo-familia-sucessoes",
+        "titulo": "JUDITH — Resumo: Família e Sucessões"
+      },
+      {
+        "id": "kbimp_e3fc3f1c6a167dab88f2291e67c66f1c",
+        "slug": "resumo-administrativo",
+        "titulo": "RAG FEITO — JUDITH: Direito Administrativo"
+      },
+      {
+        "id": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "slug": "resumo-consumidor",
+        "titulo": "JUDITH — Base de Conhecimento: Direito do Consumidor"
+      }
+    ],
+    "documents": 18,
+    "chunks": 503,
+    "embeddings": 503,
+    "promptVersion": "v22072026",
+    "promptHash": "1074a64ce472b3a5664cda40300efcde9d9398df5b6b6e9f43e5dc9d2322bb9d"
+  },
+  "seededHistory": [
+    [
+      0,
+      [
+        "Mudando de assunto: comprei um produto pela internet. Posso desistir da compra mesmo sem defeito?"
+      ]
+    ],
+    [
+      1,
+      [
+        "Pela LGPD, um cliente pode pedir a eliminação de dados?",
+        "E se a empresa se recusar a apagar?"
+      ]
+    ]
+  ],
+  "barrier": {
+    "answer": "O titular pode pedir a eliminação dos dados tratados com consentimento; a lei chama isso de direito ao esquecimento.",
+    "source": "O titular pode pedir a eliminação dos dados pessoais tratados com consentimento, ressalvadas as hipóteses legais de conservação.",
+    "real": {
+      "supported": false,
+      "requestId": "msg_011CfP1PGg9W6sW1Bkyn6DEw",
+      "model": "claude-haiku-4-5-20251001",
+      "policyVersion": "support-v11",
+      "sourceIds": [
+        "barrier-fixture"
+      ],
+      "excludedSourceIds": [],
+      "evidence": [],
+      "metrics": {
+        "model": "claude-haiku-4-5-20251001",
+        "requestId": "msg_011CfP1PGg9W6sW1Bkyn6DEw",
+        "latencyMs": 3343,
+        "usage": {
+          "input_tokens": 2040,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_tokens": 272,
+          "service_tier": "standard",
+          "inference_geo": "not_available"
+        }
+      },
+      "feedback": [
+        {
+          "index": 0,
+          "reason": "Afirmações sem suporte integral ou com escopo diferente das fontes.",
+          "detail": "A unidade afirma: (1) o titular pode pedir eliminação de dados tratados com consentimento; (2) a lei chama isso de 'direito ao esquecimento'. A fonte sustenta a afirmação (1) literalmente: 'O titular pode pedir a eliminação dos dados pessoais tratados com consentimento'. Porém, a fonte não menciona a expressão 'direito ao esquecimento' nem a associa à eliminação de dados com consentimento. A fonte apenas descreve o direito de pedir eliminação com ressalva de hipóteses legais de conservação. A nomenclatura 'direito ao esquecimento' não está explicitamente atribuída pela fonte a essa situação específica. A primeira afirmação tem suporte; a segunda (nomenclatura) não está nas fontes fornecidas."
+        }
+      ]
+    },
+    "forcedVoteBlocked": true
+  },
+  "scopeControls": [
+    {
+      "id": "final-holdout-suppliers",
+      "type": "bad",
+      "answer": "No CDC, responde pelo vício do produto o fabricante, o produtor, o construtor e o importador — sempre. O comerciante (loja) responde em casos específicos: quando não dá para identificar o fabricante, quando o produto chegou sem identificação, ou quando a loja armazenou mal um produto perecível. Além disso, o comerciante tem obrigação de intermediar a reparação: não pode recusar a reclamação ou mandar o consumidor direto para o fabricante — deve receber o produto com defeito e acompanhar o processo de conserto.",
+      "expected": false,
+      "result": {
+        "supported": false,
+        "requestId": "msg_011CfP1PX2qwgt6GJKHGy5Jy",
+        "model": "claude-haiku-4-5-20251001",
+        "policyVersion": "support-v11",
+        "sourceIds": [
+          "cmuftd4nm00rp48hxdiu2tetk",
+          "cmuftcq2800ol48hxb9a4dzzr",
+          "cmuftcp0o00od48hxof9eckpz",
+          "cmuftd3d200rf48hx3ec47l6h"
+        ],
+        "excludedSourceIds": [
+          "cmuftcrw600oz48hxo4ev1p03"
+        ],
+        "evidence": [],
+        "metrics": {
+          "model": "claude-haiku-4-5-20251001",
+          "requestId": "msg_011CfP1PX2qwgt6GJKHGy5Jy",
+          "latencyMs": 8083,
+          "usage": {
+            "input_tokens": 5217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 660,
+            "service_tier": "standard",
+            "inference_geo": "not_available"
+          }
+        },
+        "feedback": [
+          {
+            "index": 0,
+            "reason": "Afirmações sem suporte integral ou com escopo diferente das fontes.",
+            "detail": "A unidade afirma: (1) Fabricante, produtor, construtor e importador respondem sempre pelo vício; (2) Comerciante responde em casos específicos: quando não dá para identificar o fabricante, quando o produto chegou sem identificação, ou quando a loja armazenou mal um produto perecível; (3) Comerciante tem obrigação de intermediar a reparação e não pode recusar reclamação ou mandar o consumidor direto para o fabricante.\n\nVerificação:\n- Afirmação 1 (fabricante, produtor, construtor, importador respondem sempre): A fonte cmuftd4nm00rp48hxdiu2tetk menciona responsabilidade solidária na cadeia de consumo (CDC art. 18) e que o comerciante responde junto com o fabricante, mas não lista explicitamente os sujeitos que sempre respondem (fabricante, produtor, construtor, importador). A fonte cmuftcq2800ol48hxb9a4dzzr afirma que \"A loja, a assistência técnica e o fabricante respondem solidariamente\" mas não menciona produtor, construtor ou importador especificamente.\n- Afirmação 2 (comerciante responde em casos específicos): A unidade lista três casos específicos, mas as fontes fornecidas não descrevem essas hipóteses específicas de responsabilidade do comerciante. As fontes tratam da obrigação "
+          }
+        ]
+      }
+    },
+    {
+      "id": "final-holdout-suppliers",
+      "type": "good",
+      "answer": "A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante.",
+      "expected": true,
+      "result": {
+        "supported": true,
+        "requestId": "msg_011CfP1Q7bj9BLTN6GcaUsQ9",
+        "model": "claude-haiku-4-5-20251001",
+        "policyVersion": "support-v11",
+        "sourceIds": [
+          "cmuftd4nm00rp48hxdiu2tetk",
+          "cmuftcq2800ol48hxb9a4dzzr",
+          "cmuftcp0o00od48hxof9eckpz",
+          "cmuftd3d200rf48hx3ec47l6h"
+        ],
+        "excludedSourceIds": [
+          "cmuftcrw600oz48hxo4ev1p03"
+        ],
+        "evidence": [
+          {
+            "index": 0,
+            "chunkIds": [
+              "cmuftd4nm00rp48hxdiu2tetk",
+              "cmuftd4nm00rp48hxdiu2tetk",
+              "cmuftcq2800ol48hxb9a4dzzr"
+            ]
+          }
+        ],
+        "metrics": {
+          "model": "claude-haiku-4-5-20251001",
+          "requestId": "msg_011CfP1Q7bj9BLTN6GcaUsQ9",
+          "latencyMs": 4911,
+          "usage": {
+            "input_tokens": 5099,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 432,
+            "service_tier": "standard",
+            "inference_geo": "not_available"
+          }
+        },
+        "feedback": []
+      }
+    },
+    {
+      "id": "topic-change",
+      "type": "bad",
+      "answer": "Sim, você tem direito de arrependimento de 7 dias contados da assinatura do contrato ou do recebimento do produto — a compra pela internet está fora do estabelecimento, então o CDC garante essa possibilidade sem precisar justificar. Tudo que você pagou deve ser devolvido integralmente, com correção monetária. A única exceção é produto personalizado ou perecível (bolo sob encomenda, roupa sob medida com nome, convite estampado), onde o direito é controvertido — nesses casos, o fornecedor tem argumento forte para reter ao menos os custos já incorridos, então o melhor caminho é tentar negociar.",
+      "expected": false,
+      "result": {
+        "supported": false,
+        "requestId": "msg_011CfP1QUXZY9MYqinBrYimY",
+        "model": "claude-haiku-4-5-20251001",
+        "policyVersion": "support-v11",
+        "sourceIds": [
+          "cmuftd4nm00rp48hxdiu2tetk",
+          "cmuftcq2800ol48hxb9a4dzzr",
+          "cmuftd5fn00rv48hxjvduc59i",
+          "cmuftcwlo00pz48hx6ea52k2k",
+          "cmuftd1ja00r148hxcuy4gzmb"
+        ],
+        "excludedSourceIds": [],
+        "evidence": [],
+        "metrics": {
+          "model": "claude-haiku-4-5-20251001",
+          "requestId": "msg_011CfP1QUXZY9MYqinBrYimY",
+          "latencyMs": 7112,
+          "usage": {
+            "input_tokens": 5946,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 578,
+            "service_tier": "standard",
+            "inference_geo": "not_available"
+          }
+        },
+        "feedback": [
+          {
+            "index": 0,
+            "reason": "Evidência literal incompleta, número/termo sem fonte ou unidade conversacional não permitida.",
+            "detail": "Afirmações verificáveis da unidade: (1) Direito de arrependimento de 7 dias contados da assinatura do contrato ou do recebimento do produto; (2) Compra pela internet está fora do estabelecimento; (3) CDC garante essa possibilidade sem precisar justificar; (4) Tudo que foi pagado deve ser devolvido integralmente, com correção monetária; (5) Exceção: produto personalizado ou perecível; (6) Para esses produtos, o direito é controvertido; (7) Fornecedor tem argumento forte para reter ao menos os custos já incorridos; (8) Melhor caminho é tentar negociar. Verificação: A fonte CHUNK 7 (cmuftcwlo00pz48hx6ea52k2k) afirma explicitamente: 'Se você comprou fora do estabelecimento comercial (pela internet, por telefone, na porta de casa, por catálogo), tem 7 dias para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.' Isso sustenta as afirmações 1-4. A mesma fonte trata produtos personalizado ou perecível como 'ponto controvertido' e afirma: 'a aplicação do arrependimento é discutida: parte do entendimento afasta ou limita o direito, porque o item não pode ser revendi"
+          }
+        ]
+      }
+    },
+    {
+      "id": "topic-change",
+      "type": "good",
+      "answer": "Se você comprou fora do estabelecimento comercial, pela internet, tem 7 dias para desistir, sem precisar justificar.",
+      "expected": true,
+      "result": {
+        "supported": true,
+        "requestId": "msg_011CfP1R127V8oXvyaQ43HAM",
+        "model": "claude-haiku-4-5-20251001",
+        "policyVersion": "support-v11",
+        "sourceIds": [
+          "cmuftd4nm00rp48hxdiu2tetk",
+          "cmuftcq2800ol48hxb9a4dzzr",
+          "cmuftd5fn00rv48hxjvduc59i",
+          "cmuftcwlo00pz48hx6ea52k2k",
+          "cmuftd1ja00r148hxcuy4gzmb"
+        ],
+        "excludedSourceIds": [],
+        "evidence": [
+          {
+            "index": 0,
+            "chunkIds": [
+              "cmuftcwlo00pz48hx6ea52k2k"
+            ]
+          }
+        ],
+        "metrics": {
+          "model": "claude-haiku-4-5-20251001",
+          "requestId": "msg_011CfP1R127V8oXvyaQ43HAM",
+          "latencyMs": 3829,
+          "usage": {
+            "input_tokens": 5814,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 262,
+            "service_tier": "standard",
+            "inference_geo": "not_available"
+          }
+        },
+        "feedback": []
+      }
+    },
+    {
+      "id": "temporal-ordering",
+      "type": "bad",
+      "answer": "O prazo para exercer o direito de arrependimento é de **7 dias**, contados a partir da assinatura do contrato ou do recebimento do produto — o que ocorrer por último. Nesse período, você pode desistir sem justificar, e tudo que pagou deve ser devolvido integralmente, com correção monetária.",
+      "expected": false,
+      "result": {
+        "supported": false,
+        "requestId": "msg_011CfP1RHL9Xi9TJAbFnM7Z2",
+        "model": "claude-haiku-4-5-20251001",
+        "policyVersion": "support-v11",
+        "sourceIds": [
+          "cmuftcwlo00pz48hx6ea52k2k"
+        ],
+        "excludedSourceIds": [],
+        "evidence": [],
+        "metrics": {
+          "model": "claude-haiku-4-5-20251001",
+          "requestId": "msg_011CfP1RHL9Xi9TJAbFnM7Z2",
+          "latencyMs": 4314,
+          "usage": {
+            "input_tokens": 2479,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 369,
+            "service_tier": "standard",
+            "inference_geo": "not_available"
+          }
+        },
+        "feedback": [
+          {
+            "index": 0,
+            "reason": "Evidência literal incompleta, número/termo sem fonte ou unidade conversacional não permitida.",
+            "detail": "A unidade contém as seguintes afirmações verificáveis: (1) o prazo para exercer o direito de arrependimento é de 7 dias; (2) o prazo é contado a partir da assinatura do contrato ou do recebimento do produto — o que ocorrer por último; (3) nesse período, você pode desistir sem justificar; (4) tudo que pagou deve ser devolvido integralmente, com correção monetária. A fonte (linhas 1) afirma explicitamente: \"tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\" Todas as afirmações da unidade encontram suporte literal e integral no trecho citado. A unidade responde à pergunta sobre prazo e direito de arrependimento em compra pela internet, contexto que coincide com a fonte (\"comprou **fora do estabelecimento comercial** (pela internet...\"). Não há acréscimos não apoiados, nem inferências além do texto."
+          }
+        ]
+      }
+    },
+    {
+      "id": "temporal-ordering",
+      "type": "good",
+      "answer": "O prazo é de 7 dias, contados da assinatura do contrato ou do recebimento do produto.",
+      "expected": true,
+      "result": {
+        "supported": true,
+        "requestId": "msg_011CfP1RcBDshz2SDZQYBzsw",
+        "model": "claude-haiku-4-5-20251001",
+        "policyVersion": "support-v11",
+        "sourceIds": [
+          "cmuftcwlo00pz48hx6ea52k2k"
+        ],
+        "excludedSourceIds": [],
+        "evidence": [
+          {
+            "index": 0,
+            "chunkIds": [
+              "cmuftcwlo00pz48hx6ea52k2k"
+            ]
+          }
+        ],
+        "metrics": {
+          "model": "claude-haiku-4-5-20251001",
+          "requestId": "msg_011CfP1RcBDshz2SDZQYBzsw",
+          "latencyMs": 3578,
+          "usage": {
+            "input_tokens": 2423,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 265,
+            "service_tier": "standard",
+            "inference_geo": "not_available"
+          }
+        },
+        "feedback": []
+      }
+    }
+  ],
+  "acceptance": {
+    "accepted": 5,
+    "blocked": 1,
+    "unsupportedBlocked": true
+  },
+  "finishedAt": "2026-09-24T21:54:06.749Z"
+}

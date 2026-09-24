@@ -3,14 +3,15 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const base = path.resolve(__dirname, '../dist');
 const replace = (id, exports) => { require.cache[require.resolve(id)] = { exports }; };
-let answer = 'civil', generation = 0, loads = 0, classification, empty = false, context = null, rewrite;
+let answer = 'civil', generation = 0, loads = 0, classification, empty = false, context = null, rewrite, terms;
 replace(path.join(base, 'config/env.js'), { env: { ANTHROPIC_API_KEY: 'fake', JUDITH_MODEL_HAIKU: 'fake', LOCAL_EMBEDDINGS_URL: 'http://isolated.invalid' } });
 replace('@anthropic-ai/sdk', class { messages = { create: async req => {
-  if (req.max_tokens === 256) { rewrite = req; assert.equal(req.tool_choice.name, 'select_context'); return { content: [{ type: 'tool_use', name: 'select_context', input: { contexto: context } }] }; }
+  if (req.max_tokens === 256) { rewrite = req; assert.equal(req.tool_choice.name, 'select_context'); return { content: [{ type: 'tool_use', name: 'select_context', input: { contexto: context, termos: terms ?? [JSON.parse(req.messages[0].content).perguntaAtual, context] } }] }; }
   if (req.max_tokens === 40) { classification = req; return { content: [{ type: 'text', text: answer }] }; }
   generation++; throw new Error('Legal generation must not happen');
 } }; });
-replace(path.join(base, 'judith/prompts/principal.js'), { getPromptPrincipal: async () => 'Preserved prompt' });
+replace(path.join(base, 'judith/prompts/principal.js'), { getPrincipalSnapshot: async () => ({text:'Preserved prompt',version:'test'}) });
+replace(path.join(base, 'knowledge/audit.js'), {writeAudit:async()=>{}});
 replace(path.join(base, 'knowledge/repository.js'), { loadCandidates: async area => {
   assert.equal(area, 'civil'); loads++;
   if (empty) return [];
@@ -38,6 +39,19 @@ test('busca: classificação inválida, nenhuma área e embeddings offline imped
   assert.equal(generation, 0); empty = false;
 });
 
+test('continuação: consulta curta é literal; pergunta completa preservada; termos inventados ou só do histórico falham', async () => {
+  const provider=createProvider(),question='E qual é o prazo para exercer esse direito?';
+  context='comprei um produto pela internet. Posso desistir da compra mesmo sem defeito?';
+  const history=[{role:'user',content:context},{role:'assistant',content:'Não use esta resposta como fonte: prazo inventado de 99 dias.'}];
+  terms=['prazo','desistir da compra','pela internet'];
+  assert.deepEqual(await provider.contextualize(question,history),{searchText:'prazo desistir da compra pela internet',resolvedQuestion:question+'\nContexto informado pelo usuário: '+context});
+  assert.ok(!rewrite.messages[0].content.includes('99 dias'));
+  for(const bad of [['prazo','desistir','7 dias'],['desistir','pela internet'],['prazo'],['prazo',42]]){
+    terms=bad;await assert.rejects(provider.contextualize(question,history),e=>e.code==='CLASSIFICATION_INVALID');
+  }
+  terms=undefined;context=null;
+});
+
 test('classificador: recebe histórico com papéis e pergunta atual, com precedência explícita para assunto novo', async () => {
   answer = 'civil';
   const history = [{ role: 'user', content: 'Meu contrato de locação terminou.' }, { role: 'assistant', content: 'Você pretende renovar?' }];
@@ -62,5 +76,5 @@ test('consulta extrativa: mudança de assunto usa só pergunta atual; fatos inve
   context = 'O empregado foi demitido ontem';
   await assert.rejects(provider.contextualize('E agora?', history), e => e.code === 'CLASSIFICATION_INVALID');
   context = history[0].content;
-  assert.equal(await provider.contextualize('E agora?', history), 'E agora?\nContexto informado pelo usuário: ' + context);
+  assert.deepEqual(await provider.contextualize('E agora?', history), {resolvedQuestion:'E agora?\nContexto informado pelo usuário: ' + context,searchText:'E agora? '+context});
 });

@@ -1,0 +1,148 @@
+[
+  {
+    "id": "final-holdout-suppliers",
+    "question": "No CDC, quem responde pelo vício do produto: apenas o fabricante ou também o comerciante?",
+    "bad": "No CDC, responde pelo vício do produto o fabricante, o produtor, o construtor e o importador — sempre. O comerciante (loja) responde em casos específicos: quando não dá para identificar o fabricante, quando o produto chegou sem identificação, ou quando a loja armazenou mal um produto perecível. Além disso, o comerciante tem obrigação de intermediar a reparação: não pode recusar a reclamação ou mandar o consumidor direto para o fabricante — deve receber o produto com defeito e acompanhar o processo de conserto.",
+    "good": "A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante.",
+    "chunks": [
+      {
+        "id": "cmuftd4nm00rp48hxdiu2tetk",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "eade0a15a61f1db65fac6232fbdb80af3a60290dbff02efd339260c261ce4e50",
+        "score": 0.8820734113057276,
+        "content": "### CHUNK STJ-C3 — Obrigação do Comerciante de Intermediar Reparação de Produto Defeituoso\n> **Perfis atendidos:** MEI / ME / EPP (varejista)\n\nO STJ firmou que o comerciante **não pode simplesmente mandar o consumidor falar direto com o fabricante**. O comerciante tem obrigação de **intermediar** o processo de reparação: receber o produto com defeito, encaminhar ao fabricante e devolver ao consumidor corrigido ou substituído.\n\nEssa obrigação decorre da responsabilidade solidária na cadeia de consumo (CDC, art. 18).\n\n**Prazos legais do CDC:**\n- Fornecedor tem **30 dias** para sanar o vício (regra geral). Por acordo com o consumidor, pode ser de 7 a 180 dias — mas em contratos de adesão a alteração deve estar em destaque\n- Se não sanar: consumidor escolhe entre substituição, abatimento do preço ou devolução do dinheiro\n- Produtos duráveis: prazo de reclamação de **90 dias** da entrega (vício aparente) ou do aparecimento do vício (vício oculto)\n\n**Para ME/EPP varejista:** ignorar a reclamação ou mandar o cliente direto para a assistência sem acompanhamento pode gerar condenação em dano moral além da obrigação de reparar.\n\n**P: Comprei um celular na loja há 2 semanas e parou de funcionar. A loja disse que é com a assistência técnica. Podem fazer isso?**\nR: Não podem se recusar a envolver. A loja tem obrigação de intermediar — receber o produto, encaminhar e acompanhar. Se o vício não for sanado em 30 dias, você tem direito a escolher entre: trocar, abater o preço ou receber o dinheiro de volta.\n\n**P: Sou dono de loja e meu fornecedor disse que clientes com defeito devem procurar diretamente a fábrica. Posso repassar isso aos consumidores?**\nR: Não. A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante. O que você pode fazer depois é cobrar o fabricante pelo custo internamente.\n\n**Referência:** STJ, REsp 1.568.938-RS (Info 678, 2020); CDC arts. 18, 26.\n\n---\n\n",
+        "chapter": "COMPLEMENTO STJ — Consumidor: Jurisprudência Prática",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftcq2800ol48hxb9a4dzzr",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "7788c24eda0c6295a26e8df69fc24b5ec9d8ab14eb1f2d7508baabc18a3efb65",
+        "score": 0.8799952041836291,
+        "content": "## Q&A — VÍCIO DO PRODUTO\n\n**P: Comprei um eletrodoméstico que parou de funcionar em 2 meses. O que posso exigir?**\nR: O produto é durável, então você tem 90 dias para reclamar do vício. Ao reclamar, o fornecedor tem **30 dias para consertar**. Se não resolver em 30 dias, você pode escolher:\n1. Trocar por produto igual em perfeitas condições;\n2. Reembolso total do valor pago (corrigido monetariamente), podendo cumular com indenização por danos;\n3. Abatimento proporcional no preço.\nA escolha é sua. A loja, a assistência técnica e o fabricante respondem solidariamente — você pode levar para qualquer um dos três.\n\n**P: A loja disse que tenho que levar na assistência técnica, não com eles. É verdade?**\nR: Não. O STJ decidiu que o consumidor pode escolher a quem reclamar: loja, assistência técnica ou fabricante. A loja não pode se recusar a receber o produto com vício.\n\n**P: E se o produto se quebrar de novo no conserto?**\nR: Se o vício for tão grave que o conserto comprometa a qualidade do produto, você pode pular o prazo de 30 dias e exigir troca, reembolso ou abatimento imediatamente. Isso também vale se o produto for essencial (ex.: geladeira, medicamentos).\n\n**P: A loja disse que o produto estava \"em ponta de estoque\" com pequenos defeitos. Tenho direito a reclamar?**\nR: Não, se você foi informado dos defeitos na venda. Produtos vendidos como ponta de estoque ou usados, desde que haja informação prévia e clara sobre o estado do bem, podem ter condições diferentes sem violar o CDC.\n\n**P: O produto teve um vício depois que a garantia venceu. Perdi o direito?**\nR: Depende se é vício aparente ou oculto. Para vício **oculto** (que só aparece com o tempo de uso), o prazo de 90 dias começa **quando o defeito ficou evidente**, não na data da compra. A garantia contratual adia o início do prazo: se o fabricante deu 1 ano de garantia, os 90 dias da garantia legal começam a contar só depois desse 1 ano.\n\n**P: O fabricante parou de vender peças de reposição do meu produto. Posso reclamar?**\nR: Sim. O CDC obriga fabricantes e importadores a manter disponíveis peças e componentes enquanto fabricarem o produto. Após o encerramento da fabricação, devem manter por prazo razoável. A redução artificial da vida útil do produto (obsolescência programada) pode configurar vício.\n\n---\n\n",
+        "chapter": "Q&A — VÍCIO DO PRODUTO",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftcrw600oz48hxo4ev1p03",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "1e9baa940937758d52eb3f694f44c4dadc2bb57de4e2f74c8d908691e038ae73",
+        "score": 0.8695490897167313,
+        "content": "### Quem responde pelo produto defeituoso?\n- Fabricante, produtor, construtor e importador: sempre.\n- Comerciante (loja): só em casos específicos — quando não dá para identificar o fabricante, quando o produto chegou sem identificação, ou quando a loja armazenou mal um produto perecível.\n\n",
+        "chapter": "CHUNK 4 — RESPONSABILIDADE POR ACIDENTE DE CONSUMO",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftcp0o00od48hxof9eckpz",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "5f9f7fe1481b9ca990e62c166aa16f7e29200924a13559e22f13221359f26aea",
+        "score": 0.865945935998516,
+        "content": "## Q&A — CONCEITOS FUNDAMENTAIS\n\n**P: Uma empresa pode ser consumidora?**\nR: Sim, se usar o produto/serviço como destinatário final, sem incorporá-lo à sua atividade produtiva. Ex.: empresa que compra computador para uso administrativo. Mas se a empresa comprar maquinário para produção, o CDC em geral não se aplica — exceto se ela for pequena e demonstrar vulnerabilidade frente ao fornecedor (teoria finalista mitigada, adotada pelo STJ).\n\n**P: Microempresário pode invocar o CDC?**\nR: Depende. Se contratou o produto/serviço fora da atividade principal ou se demonstrar vulnerabilidade concreta (técnica, jurídica ou econômica) em relação ao fornecedor, pode ser reconhecido como consumidor pelo STJ.\n\n**P: O CDC protege quem assiste a uma partida de futebol e é ferido por artefato explosivo?**\nR: Sim. Torcedores são consumidores; danos por falha de segurança no evento configuram acidente de consumo. O clube mandante responde.\n\n---\n\n",
+        "chapter": "Q&A — CONCEITOS FUNDAMENTAIS",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftd3d200rf48hx3ec47l6h",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "4b893192f3c888613733b6c10f87e594756231331237fcbaf4af167b5c89699a",
+        "score": 0.8643685855535662,
+        "content": "## CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER\n> **Perfis atendidos:** ME / EPP\n\nQuando sua empresa vende produtos ou presta serviços, ela está do **outro lado** do CDC — como fornecedora. Seus clientes têm todos os direitos descritos neste resumo, e sua empresa tem obrigações correspondentes. Descumpri-las pode gerar multa do Procon, ação judicial de dano moral e responsabilidade solidária na cadeia de fornecimento.\n\n**Prazo para resolver vício:** Se o cliente reclamar de produto ou serviço com vício, o fornecedor tem **30 dias para sanar o problema** (regra geral — CDC art. 18 §1°). Por acordo entre fornecedor e consumidor, esse prazo pode ser reduzido para até **7 dias** ou ampliado para até **180 dias**. Atenção: em contrato de adesão, a cláusula que estipular prazo diferente dos 30 dias deve estar **em destaque** (negrito, caixa ou cor diferente) — sem destaque, prevalece o prazo legal de 30 dias. Se não resolver no prazo, o consumidor pode exigir troca, reembolso integral ou abatimento — e sua empresa responde solidariamente com fabricante e distribuidor.\n\n**Oferta e publicidade vinculam:** Se você anunciou preço ou condição (site, redes sociais, vitrine, WhatsApp), é obrigado a cumprir. Erro de precificação em plataforma digital não desobriga automaticamente — o STJ tem entendido que a oferta vincula mesmo quando houve erro involuntário. Corrija imediatamente e documente o erro se isso ocorrer.\n\n**Publicidade enganosa tem responsabilidade objetiva:** Não precisa haver intenção de enganar. Se a publicidade induziu o cliente a erro, sua empresa responde — o ônus de provar que a informação era correta é seu, não do cliente.\n\n**Multa moratória em contratos com consumidor:** Limitada a **2% da prestação vencida**. Qualquer cláusula acima disso é nula. Revise contratos de parcelamento e prestação de serviços com clientes pessoa física.\n\n**Cláusulas abusivas são nulas de pleno direito:** O juiz pode declará-las nulas de ofício. Se o contrato de adesão da sua empresa exonera a responsabilidade por vício, essa cláusula não vale — mas a nulidade não desfaz o contrato inteiro, só aquela cláusula.\n\n---\n\n",
+        "chapter": "CHUNK 15 — CDC DO LADO DO FORNECEDOR: O QUE ME E EPP PRECISAM SABER",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "topic-change",
+    "question": "Mudando de assunto: comprei um produto pela internet. Posso desistir da compra mesmo sem defeito?",
+    "bad": "Sim, você tem direito de arrependimento de 7 dias contados da assinatura do contrato ou do recebimento do produto — a compra pela internet está fora do estabelecimento, então o CDC garante essa possibilidade sem precisar justificar. Tudo que você pagou deve ser devolvido integralmente, com correção monetária. A única exceção é produto personalizado ou perecível (bolo sob encomenda, roupa sob medida com nome, convite estampado), onde o direito é controvertido — nesses casos, o fornecedor tem argumento forte para reter ao menos os custos já incorridos, então o melhor caminho é tentar negociar.",
+    "good": "Se você comprou fora do estabelecimento comercial, pela internet, tem 7 dias para desistir, sem precisar justificar.",
+    "chunks": [
+      {
+        "id": "cmuftd4nm00rp48hxdiu2tetk",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "eade0a15a61f1db65fac6232fbdb80af3a60290dbff02efd339260c261ce4e50",
+        "score": 0.8824818431193749,
+        "content": "### CHUNK STJ-C3 — Obrigação do Comerciante de Intermediar Reparação de Produto Defeituoso\n> **Perfis atendidos:** MEI / ME / EPP (varejista)\n\nO STJ firmou que o comerciante **não pode simplesmente mandar o consumidor falar direto com o fabricante**. O comerciante tem obrigação de **intermediar** o processo de reparação: receber o produto com defeito, encaminhar ao fabricante e devolver ao consumidor corrigido ou substituído.\n\nEssa obrigação decorre da responsabilidade solidária na cadeia de consumo (CDC, art. 18).\n\n**Prazos legais do CDC:**\n- Fornecedor tem **30 dias** para sanar o vício (regra geral). Por acordo com o consumidor, pode ser de 7 a 180 dias — mas em contratos de adesão a alteração deve estar em destaque\n- Se não sanar: consumidor escolhe entre substituição, abatimento do preço ou devolução do dinheiro\n- Produtos duráveis: prazo de reclamação de **90 dias** da entrega (vício aparente) ou do aparecimento do vício (vício oculto)\n\n**Para ME/EPP varejista:** ignorar a reclamação ou mandar o cliente direto para a assistência sem acompanhamento pode gerar condenação em dano moral além da obrigação de reparar.\n\n**P: Comprei um celular na loja há 2 semanas e parou de funcionar. A loja disse que é com a assistência técnica. Podem fazer isso?**\nR: Não podem se recusar a envolver. A loja tem obrigação de intermediar — receber o produto, encaminhar e acompanhar. Se o vício não for sanado em 30 dias, você tem direito a escolher entre: trocar, abater o preço ou receber o dinheiro de volta.\n\n**P: Sou dono de loja e meu fornecedor disse que clientes com defeito devem procurar diretamente a fábrica. Posso repassar isso aos consumidores?**\nR: Não. A responsabilidade na cadeia de consumo é solidária — você responde junto com o fabricante. O que você pode fazer depois é cobrar o fabricante pelo custo internamente.\n\n**Referência:** STJ, REsp 1.568.938-RS (Info 678, 2020); CDC arts. 18, 26.\n\n---\n\n",
+        "chapter": "COMPLEMENTO STJ — Consumidor: Jurisprudência Prática",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftcq2800ol48hxb9a4dzzr",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "7788c24eda0c6295a26e8df69fc24b5ec9d8ab14eb1f2d7508baabc18a3efb65",
+        "score": 0.8819427366888375,
+        "content": "## Q&A — VÍCIO DO PRODUTO\n\n**P: Comprei um eletrodoméstico que parou de funcionar em 2 meses. O que posso exigir?**\nR: O produto é durável, então você tem 90 dias para reclamar do vício. Ao reclamar, o fornecedor tem **30 dias para consertar**. Se não resolver em 30 dias, você pode escolher:\n1. Trocar por produto igual em perfeitas condições;\n2. Reembolso total do valor pago (corrigido monetariamente), podendo cumular com indenização por danos;\n3. Abatimento proporcional no preço.\nA escolha é sua. A loja, a assistência técnica e o fabricante respondem solidariamente — você pode levar para qualquer um dos três.\n\n**P: A loja disse que tenho que levar na assistência técnica, não com eles. É verdade?**\nR: Não. O STJ decidiu que o consumidor pode escolher a quem reclamar: loja, assistência técnica ou fabricante. A loja não pode se recusar a receber o produto com vício.\n\n**P: E se o produto se quebrar de novo no conserto?**\nR: Se o vício for tão grave que o conserto comprometa a qualidade do produto, você pode pular o prazo de 30 dias e exigir troca, reembolso ou abatimento imediatamente. Isso também vale se o produto for essencial (ex.: geladeira, medicamentos).\n\n**P: A loja disse que o produto estava \"em ponta de estoque\" com pequenos defeitos. Tenho direito a reclamar?**\nR: Não, se você foi informado dos defeitos na venda. Produtos vendidos como ponta de estoque ou usados, desde que haja informação prévia e clara sobre o estado do bem, podem ter condições diferentes sem violar o CDC.\n\n**P: O produto teve um vício depois que a garantia venceu. Perdi o direito?**\nR: Depende se é vício aparente ou oculto. Para vício **oculto** (que só aparece com o tempo de uso), o prazo de 90 dias começa **quando o defeito ficou evidente**, não na data da compra. A garantia contratual adia o início do prazo: se o fabricante deu 1 ano de garantia, os 90 dias da garantia legal começam a contar só depois desse 1 ano.\n\n**P: O fabricante parou de vender peças de reposição do meu produto. Posso reclamar?**\nR: Sim. O CDC obriga fabricantes e importadores a manter disponíveis peças e componentes enquanto fabricarem o produto. Após o encerramento da fabricação, devem manter por prazo razoável. A redução artificial da vida útil do produto (obsolescência programada) pode configurar vício.\n\n---\n\n",
+        "chapter": "Q&A — VÍCIO DO PRODUTO",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftd5fn00rv48hxjvduc59i",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "e02f85716ea83a918e755acc9cb52f65a8737cde8d00831d0d40db944d7f04ee",
+        "score": 0.8805229227998203,
+        "content": "## CHUNK 17 — TROCA DE PRODUTO SEM DEFEITO: O LOJISTA É OBRIGADO?\n> **Perfis atendidos:** MEI / ME / EPP (loja física) e consumidor\n> **Adicionado em:** 03/07/2026 (auditoria A/B/C — lacuna C1)\n\n**Regra que quase ninguém conhece:** em compra feita **na loja física**, não existe direito legal de troca de produto **sem vício** — o CDC só obriga troca/devolução quando há defeito (arts. 18-20) ou quando a compra foi feita fora do estabelecimento (7 dias de arrependimento, art. 49). Trocar por tamanho, cor ou gosto é **cortesia comercial**, não obrigação.\n\n**A exceção que pega o lojista:** se a loja **anunciou** política de troca (cartaz, etiqueta, site, rede social, \"troca garantida até 30 dias\"), essa promessa **vincula** (arts. 30 e 35 CDC) — vira obrigação nos termos anunciados. Condições e prazos da política devem estar visíveis e claros; restrição não informada na venda não pode ser oposta depois.\n\n**Boas práticas para o lojista:** definir a política por escrito (prazo, estado do produto, exigência de etiqueta/nota), treinar a equipe e informar no ato da venda (\"troca em até X dias com etiqueta\"). Para presentes, vale prever \"troca com etiqueta de presente\", sem depender da nota em nome do comprador.\n\n**P: Cliente quer trocar um presente sem defeito e sem nota. Sou obrigado?**\nR: Não, salvo se sua loja anunciou política de troca — aí valem os termos anunciados. Recusar com educação e oferecer alternativa (vale-compra) é legal e preserva o cliente.\n\n**P: Anunciei \"troca grátis em 30 dias\" no Instagram e quero recusar uma troca. Posso?**\nR: Não — a oferta vincula (art. 30 CDC). Você pode mudar a política para vendas futuras, nunca para quem comprou sob a promessa.\n\n---\n\n",
+        "chapter": "CHUNK 17 — TROCA DE PRODUTO SEM DEFEITO: O LOJISTA É OBRIGADO?",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftcwlo00pz48hx6ea52k2k",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "473bfb2703387d2481bac5a678ddb3813b9d2499d073388bf395c6bf91d1f7b0",
+        "score": 0.8773454277871802,
+        "content": "### Direito de arrependimento\nSe você comprou **fora do estabelecimento comercial** (pela internet, por telefone, na porta de casa, por catálogo), tem **7 dias** para desistir, sem precisar justificar. O prazo conta da assinatura do contrato ou do recebimento do produto. Tudo que pagou deve ser devolvido integralmente, com correção monetária.\n\n**Produto personalizado ou perecível (ponto controvertido):** para item feito sob encomenda/personalização — perecível (bolo e doces de festa, salgados, buffet, flores) ou sob medida/com identificação (roupa sob medida ou com nome, convite, caneca/camiseta estampada, joia gravada, móvel planejado) — a aplicação do arrependimento é **discutida**: parte do entendimento afasta ou limita o direito, porque o item não pode ser revendido; outra parte o mantém. Regra para a JUDITH: não afirmar de forma chapada \"sempre tem\" nem \"nunca tem\" — sinalizar que é controvertido, que o fornecedor tem argumento forte para reter ao menos os custos já incorridos, e sugerir acordo. Tratar bolo sob encomenda e peça personalizada com o mesmo critério.\n\n",
+        "chapter": "CHUNK 7 — CONTRATOS: CLÁUSULAS ABUSIVAS",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      },
+      {
+        "id": "cmuftd1ja00r148hxcuy4gzmb",
+        "sourceId": "kbimp_eb0823d67d9d1ebe8e17aeff29ec26fc",
+        "version": "0c185d8be6aa7976475d48da9f11078aa39936cbc93c7e219272f86d37607165",
+        "contentHash": "089aeb6a364b0f1fceb9ddcf29e9aaf26cd7342f201ab486473991bfc5f53bba",
+        "score": 0.877344602433436,
+        "content": "## Q&A — DEFESA JUDICIAL E DIREITOS PRÁTICOS\n\n**P: A loja disse que minha garantia acabou e não quer resolver o problema. O que fazer?**\nR: 1) Verifique se é vício aparente ou oculto. Para vício oculto em produto durável, o prazo de 90 dias começa quando o defeito aparece, não na compra. 2) Se ainda estiver no prazo, formalize a reclamação por escrito (e-mail, WhatsApp com confirmação) — isso congela o prazo de decadência (ele volta a correr de onde parou se o fornecedor negar). 3) Se recusarem, registre reclamação no Procon ou acione o JEC.\n\n**P: O Procon interrompe o prazo para reclamar?**\nR: Não. Apenas a reclamação direta ao fornecedor (comprovada) congela o prazo de decadência — ele volta a correr de onde parou se o fornecedor responder negativamente. O Procon é um canal de pressão e mediação, mas não afeta o prazo legal.\n\n**P: Quanto custa entrar na Justiça?**\nR: No Juizado Especial Cível (JEC), para causas até 40 salários mínimos: gratuidade total na 1ª instância. Não precisa de advogado para causas até 20 salários mínimos. É o caminho mais indicado para o consumidor comum.\n\n**P: O fornecedor pode me obrigar a usar arbitragem para resolver conflitos?**\nR: Não. Cláusula que imponha arbitragem de forma compulsória é nula no CDC. O consumidor sempre pode optar pela Justiça.\n\n**P: Fui prejudicado por propaganda enganosa. Tenho direito a indenização?**\nR: Sim. Além de poder exigir o cumprimento do que foi anunciado (ou produto equivalente ou reembolso), pode pleitear indenização por danos materiais e morais se o engano causou prejuízo.\n\n**P: Posso entrar com ação contra empresa estrangeira que vende pela internet?**\nR: Sim. O CDC se aplica. A ação pode ser proposta no seu domicílio.\n\n---\n\n",
+        "chapter": "Q&A — DEFESA JUDICIAL E DIREITOS PRÁTICOS",
+        "fontes": [
+          "Caderno Sistematizado Direito do Consumidor 2026.1 (170 páginas)",
+          "CDC (arts. 18, 26, 27, 28 §5°), CC (arts. 206 §3° V, 406), Lei 14.181/2021, Lei 14.905/2024, STJ REsp 1.900.843/DF (teoria menor + sócio não gestor), STJ REsp 2.188.689-RS (credor não obrigado), STJ REsp 2.235.175/RS (câncer × rol ANS), ADI 7.265/DF STF"
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,59 @@
+{
+  "at": "2026-09-24T16:34:56.778Z",
+  "database": "isolated MariaDB 10.11",
+  "productionAccess": false,
+  "tests": [
+    {
+      "name": "import 18 real candidates, no publication, excluded Propaganda",
+      "created": 18,
+      "skipped": 0,
+      "receipt": "/receipts/run-1.json.attempt-1.json"
+    },
+    {
+      "name": "repeat idempotent",
+      "created": 0,
+      "skipped": 18,
+      "receipt": "/receipts/run-2.json.attempt-1.json"
+    },
+    {
+      "name": "selective recovery and recovery repeat",
+      "ok": true
+    },
+    {
+      "name": "existing slug conflict aborts whole batch",
+      "ok": true
+    },
+    {
+      "name": "failure after fifth insert rolls back all five",
+      "ok": true
+    },
+    {
+      "name": "concurrent executors, one import and one skip",
+      "results": [
+        {
+          "created": 18,
+          "skipped": 0,
+          "receipt": "/receipts/run-5.json.attempt-1.json"
+        },
+        {
+          "created": 0,
+          "skipped": 18,
+          "receipt": "/receipts/run-6.json.attempt-1.json"
+        }
+      ]
+    },
+    {
+      "name": "edited record blocks selective recovery; prior deletions roll back",
+      "ok": true
+    },
+    {
+      "name": "stale snapshot rejected",
+      "ok": true
+    },
+    {
+      "name": "17 baseline records and prompt unchanged after all tests",
+      "ok": true
+    }
+  ],
+  "ok": true
+}
