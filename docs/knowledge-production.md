@@ -1,5 +1,7 @@
 # Publicação da base de conhecimento — 23/09/2026
 
+> Retomada conferida em 24/09: [evidências, aceitação real e pendências do Admin](knowledge-review-2026-09-24.md). Produção permanece em 5d0f2cc; edição/reindexação/busca nova e reutilização de cinco vetores comprovadas em banco isolado. Todos os 19 cadernos da entrega foram localizados nos Downloads; dois trabalhistas posteriores seguem não localizados. Referências abaixo à falta dos arquivos e a saldo OpenAI são históricas.
+
 ## Estado atual — indexação por chunk, 5d0f2cc
 
 - Em execução: `5d0f2cc014b32aa23dd7d7c52a25e1a36ad144fb`, branch da VPS `release-incr-5d0f2cc`, imagem `judith-backend:incr-5d0f2cc` (`sha256:30db70b57a13bb23fd083b74f99be5d42a907418a9b8ce52ad16b6c017c88abf`). Parser `markdown-v2`. Serviço de embeddings inalterado (`judith-embeddings:local-3c1e265`).

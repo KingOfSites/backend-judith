@@ -83,11 +83,13 @@ app.post("/webhook/evolution", async (req, reply) => {
         pushName: parsed.pushName,
         text: textoParaPipeline,
         hasAttachment: parsed.hasAttachment && !isAudio,
+        messageId: parsed.messageId,
       });
       app.log.info(
         {
           user: parsed.whatsappNumber,
           model: result.modelUsed,
+          knowledgeFailure: result.knowledgeFailure,
           sessionId: result.sessionId,
           n: result.replies.length,
         },

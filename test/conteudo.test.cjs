@@ -68,4 +68,14 @@ test('respostas consultam base somente em duvida e preservam prompts/perfil', as
     assert.deepEqual(request.system.at(-2).cache_control, { type: 'ephemeral' });
     assert.match(request.system.at(-1).text, /Perfil do usuário/);
   }
+  for (const history of [[], [{ role: 'assistant', content: 'Órfã 1' }, { role: 'assistant', content: 'Órfã 2' }], [{ role: 'assistant', content: 'Órfã' }, { role: 'user', content: 'Pergunta sem resposta' }, { role: 'user', content: 'Outra pergunta' }]]) {
+    const before = structuredClone(history);
+    await askJudith({ tier: 'HAIKU', funcao: 'duvida', user: null, history, userMessage: 'pergunta simulada' });
+    assert.equal(request.messages[0].role, 'user');
+    assert.ok(request.messages.every(m => !m.content.startsWith('Órfã')));
+    assert.deepEqual(request.messages.slice(0, -1), history.filter(m => m.role === 'user'));
+    assert.deepEqual(request.messages.at(-1), { role: 'user', content: 'pergunta simulada' });
+    assert.equal(request.messages.filter(m => m.content === 'pergunta simulada').length, 1);
+    assert.deepEqual(history, before);
+  }
 });

@@ -1,0 +1,30 @@
+{
+  "at": "2026-09-24T14:11:52.184Z",
+  "model": "local:multilingual-e5-large:3d7cfbdacd47fdda877c5cd8a79fbcc4f2a574f3:onnx-qint8-avx512-vnni:1024:tokens480:mean-v1",
+  "synthetic": true,
+  "jobs": [
+    {
+      "id": "cmufm1vxm0002pccitnb9rwat",
+      "status": "completed",
+      "result": {
+        "changed": 2,
+        "unchanged": 0,
+        "removed": 0,
+        "embeddingsCreated": 6,
+        "embeddingsReused": 6,
+        "chunks": 12,
+        "chunksCreated": 12,
+        "chunksUpdated": 0,
+        "chunksRepositioned": 0,
+        "chunksUnchanged": 0,
+        "chunksRemoved": 0,
+        "areaLinksAdded": 12,
+        "areaLinksRemoved": 0
+      },
+      "passageCalls": 6
+    }
+  ],
+  "searches": [],
+  "ok": false,
+  "error": "CLASSIFICATION_INVALID"
+}

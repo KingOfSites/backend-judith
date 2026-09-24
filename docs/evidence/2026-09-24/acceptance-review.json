@@ -1,0 +1,283 @@
+{
+  "at": "2026-09-24T14:15:29.966Z",
+  "model": "local:multilingual-e5-large:3d7cfbdacd47fdda877c5cd8a79fbcc4f2a574f3:onnx-qint8-avx512-vnni:1024:tokens480:mean-v1",
+  "synthetic": true,
+  "classifierResponses": [
+    {
+      "maxTokens": 40,
+      "stop": "end_turn",
+      "text": "lgpd",
+      "selections": []
+    },
+    {
+      "maxTokens": 40,
+      "stop": "end_turn",
+      "text": "lgpd",
+      "selections": []
+    },
+    {
+      "maxTokens": 256,
+      "stop": "tool_use",
+      "text": "",
+      "selections": [
+        {
+          "contexto": "Como solicitar a eliminação dos meus dados pessoais pela LGPD?"
+        }
+      ]
+    },
+    {
+      "maxTokens": 40,
+      "stop": "end_turn",
+      "text": "lgpd",
+      "selections": []
+    },
+    {
+      "maxTokens": 40,
+      "stop": "end_turn",
+      "text": "trabalhista",
+      "selections": []
+    },
+    {
+      "maxTokens": 256,
+      "stop": "tool_use",
+      "text": "",
+      "selections": [
+        {
+          "contexto": null
+        }
+      ]
+    },
+    {
+      "maxTokens": 40,
+      "stop": "end_turn",
+      "text": "trabalhista",
+      "selections": []
+    }
+  ],
+  "jobs": [
+    {
+      "id": "cmufm6jv20002lkdd332gglef",
+      "status": "completed",
+      "result": {
+        "changed": 2,
+        "unchanged": 0,
+        "removed": 0,
+        "embeddingsCreated": 6,
+        "embeddingsReused": 6,
+        "chunks": 12,
+        "chunksCreated": 12,
+        "chunksUpdated": 0,
+        "chunksRepositioned": 0,
+        "chunksUnchanged": 0,
+        "chunksRemoved": 0,
+        "areaLinksAdded": 12,
+        "areaLinksRemoved": 0
+      },
+      "passageCalls": 6
+    },
+    {
+      "id": "cmufm6l83000ulkddgjbfccri",
+      "status": "completed",
+      "result": {
+        "changed": 1,
+        "unchanged": 1,
+        "removed": 0,
+        "embeddingsCreated": 1,
+        "embeddingsReused": 5,
+        "chunks": 6,
+        "chunksCreated": 0,
+        "chunksUpdated": 1,
+        "chunksRepositioned": 0,
+        "chunksUnchanged": 5,
+        "chunksRemoved": 0,
+        "areaLinksAdded": 0,
+        "areaLinksRemoved": 0
+      },
+      "passageCalls": 1
+    },
+    {
+      "id": "cmufm6m93000xlkdd1qx65fsj",
+      "status": "completed",
+      "result": {
+        "changed": 0,
+        "unchanged": 2,
+        "removed": 0,
+        "embeddingsCreated": 0,
+        "embeddingsReused": 0,
+        "chunks": 0,
+        "chunksCreated": 0,
+        "chunksUpdated": 0,
+        "chunksRepositioned": 0,
+        "chunksUnchanged": 0,
+        "chunksRemoved": 0,
+        "areaLinksAdded": 0,
+        "areaLinksRemoved": 0
+      },
+      "passageCalls": 0
+    },
+    {
+      "id": "cmufm6now0011lkddy3r1k5kn",
+      "status": "completed",
+      "result": {
+        "changed": 1,
+        "unchanged": 2,
+        "removed": 0,
+        "embeddingsCreated": 1,
+        "embeddingsReused": 0,
+        "chunks": 1,
+        "chunksCreated": 1,
+        "chunksUpdated": 0,
+        "chunksRepositioned": 0,
+        "chunksUnchanged": 0,
+        "chunksRemoved": 0,
+        "areaLinksAdded": 1,
+        "areaLinksRemoved": 0
+      },
+      "passageCalls": 1
+    }
+  ],
+  "searches": [
+    {
+      "area": "lgpd",
+      "events": [
+        "classified:lgpd",
+        "sql-area-filter",
+        "embed:query"
+      ],
+      "chunks": [
+        {
+          "id": "cmufm6kgh0005lkddk30xtk53",
+          "content": "## Eliminação de dados pessoais\nNeste cenário sintético, o pedido de eliminação dos dados pessoais deve ser enviado ao canal Alfa.\n",
+          "score": 0.8533185032822923
+        },
+        {
+          "id": "cmufm6kgn000dlkddj9kh81ja",
+          "content": "## Revogação do consentimento\nBloco sintético 3: Revogação do consentimento e proteção de dados pessoais.\n",
+          "score": 0.8187174796231941
+        },
+        {
+          "id": "cmufm6kgk0009lkddrjx1r78k",
+          "content": "## Correção de dados\nBloco sintético 1: Correção de dados e proteção de dados pessoais.\n",
+          "score": 0.8151678279732525
+        },
+        {
+          "id": "cmufm6kgo000flkdd70yp47kz",
+          "content": "## Segurança de dados\nBloco sintético 4: Segurança de dados e proteção de dados pessoais.\n",
+          "score": 0.8076112168053237
+        },
+        {
+          "id": "cmufm6kgm000blkdd6y6a11my",
+          "content": "## Portabilidade de dados\nBloco sintético 2: Portabilidade de dados e proteção de dados pessoais.\n",
+          "score": 0.8025175371336122
+        }
+      ],
+      "expectedText": "Neste cenário sintético, o pedido de eliminação dos dados pessoais deve ser enviado ao canal Alfa."
+    },
+    {
+      "area": "lgpd",
+      "events": [
+        "classified:lgpd",
+        "sql-area-filter",
+        "embed:query"
+      ],
+      "chunks": [
+        {
+          "id": "cmufm6kgh0005lkddk30xtk53",
+          "content": "## Eliminação de dados pessoais\nNeste cenário sintético, o pedido de eliminação dos dados pessoais deve ser enviado ao canal Beta atualizado.\n",
+          "score": 0.8527732820697043
+        },
+        {
+          "id": "cmufm6kgn000dlkddj9kh81ja",
+          "content": "## Revogação do consentimento\nBloco sintético 3: Revogação do consentimento e proteção de dados pessoais.\n",
+          "score": 0.8187174796231941
+        },
+        {
+          "id": "cmufm6kgk0009lkddrjx1r78k",
+          "content": "## Correção de dados\nBloco sintético 1: Correção de dados e proteção de dados pessoais.\n",
+          "score": 0.8151678279732525
+        },
+        {
+          "id": "cmufm6kgo000flkdd70yp47kz",
+          "content": "## Segurança de dados\nBloco sintético 4: Segurança de dados e proteção de dados pessoais.\n",
+          "score": 0.8076112168053237
+        },
+        {
+          "id": "cmufm6kgm000blkdd6y6a11my",
+          "content": "## Portabilidade de dados\nBloco sintético 2: Portabilidade de dados e proteção de dados pessoais.\n",
+          "score": 0.8025175371336122
+        }
+      ],
+      "expectedText": "Neste cenário sintético, o pedido de eliminação dos dados pessoais deve ser enviado ao canal Beta atualizado."
+    }
+  ],
+  "staleExcludedBeforeReindex": true,
+  "vectors": [
+    {
+      "id": "cmufm6kgh0005lkddk30xtk53",
+      "unchanged": false,
+      "beforeEmbedding": "8476787f055dc1532f00a9473f64cd55c0df8ae70835acd7eafe24a23828ab5c",
+      "afterEmbedding": "e473ed074b8235bef425bf87edafc5a38b47d12bc97b7a5a951156a2514daa52",
+      "beforeVectorHash": "309cb3983d8aeca87dcd457bdaddb12d21141a66b666195a7b77beeafc65616b",
+      "afterVectorHash": "891cd0abd3979a8d1fdd5ae1795bd7563b697288faf3f419f7ed95f6b27c039c",
+      "dimensions": 1024
+    },
+    {
+      "id": "cmufm6kgj0007lkdd9byhmv86",
+      "unchanged": true,
+      "beforeEmbedding": "c319ed14e02cde352206c9472e7587dac47425be84380bb8292e6841775430e3",
+      "afterEmbedding": "c319ed14e02cde352206c9472e7587dac47425be84380bb8292e6841775430e3",
+      "beforeVectorHash": "0a04204edf47c443955967a2df6dd322ac7bdc2f9c83be819d9cfad5af7d5cf6",
+      "afterVectorHash": "0a04204edf47c443955967a2df6dd322ac7bdc2f9c83be819d9cfad5af7d5cf6",
+      "dimensions": 1024
+    },
+    {
+      "id": "cmufm6kgk0009lkddrjx1r78k",
+      "unchanged": true,
+      "beforeEmbedding": "00ba7bf96521ea89993bf779656671b7af11a5ae4e8a26670d290d958d14cba1",
+      "afterEmbedding": "00ba7bf96521ea89993bf779656671b7af11a5ae4e8a26670d290d958d14cba1",
+      "beforeVectorHash": "7fb47e91e87ad108c54be091c744ba1423e19679e2c07617f43273f902118f2d",
+      "afterVectorHash": "7fb47e91e87ad108c54be091c744ba1423e19679e2c07617f43273f902118f2d",
+      "dimensions": 1024
+    },
+    {
+      "id": "cmufm6kgm000blkdd6y6a11my",
+      "unchanged": true,
+      "beforeEmbedding": "b9c9c68f11815c08c12460704fb784a3422111b5d05e9d5f0ab52d692c2cd8dd",
+      "afterEmbedding": "b9c9c68f11815c08c12460704fb784a3422111b5d05e9d5f0ab52d692c2cd8dd",
+      "beforeVectorHash": "715c7e50fbddf9bab2d4a174f2dab79c3287720aaa28041cae18413a0536b46e",
+      "afterVectorHash": "715c7e50fbddf9bab2d4a174f2dab79c3287720aaa28041cae18413a0536b46e",
+      "dimensions": 1024
+    },
+    {
+      "id": "cmufm6kgn000dlkddj9kh81ja",
+      "unchanged": true,
+      "beforeEmbedding": "5abe84d1d8eda9d82b640bc6eb7c442b967a2bd6a928506951fe8dac18c32bf4",
+      "afterEmbedding": "5abe84d1d8eda9d82b640bc6eb7c442b967a2bd6a928506951fe8dac18c32bf4",
+      "beforeVectorHash": "83fb83c6db9193fa783af5d9e391165e0317c0c3e7d19d11bc4b340d8422b61c",
+      "afterVectorHash": "83fb83c6db9193fa783af5d9e391165e0317c0c3e7d19d11bc4b340d8422b61c",
+      "dimensions": 1024
+    },
+    {
+      "id": "cmufm6kgo000flkdd70yp47kz",
+      "unchanged": true,
+      "beforeEmbedding": "fbe6de746544acd2315e3402c0cddd61b59c7578465a24b7263d22711b60c8ad",
+      "afterEmbedding": "fbe6de746544acd2315e3402c0cddd61b59c7578465a24b7263d22711b60c8ad",
+      "beforeVectorHash": "af314f7e1790e8ae5a8ea28d58934edb0f3127acf7e57cde946a8462fa8d6e3e",
+      "afterVectorHash": "af314f7e1790e8ae5a8ea28d58934edb0f3127acf7e57cde946a8462fa8d6e3e",
+      "dimensions": 1024
+    }
+  ],
+  "continuation": {
+    "query": "E como faço esse pedido?\nContexto informado pelo usuário: Como solicitar a eliminação dos meus dados pessoais pela LGPD?",
+    "area": "lgpd",
+    "rank": 1
+  },
+  "topicChange": {
+    "query": "Quais são os direitos de férias anuais remuneradas de um empregado?",
+    "area": "trabalhista",
+    "sameRankingAsNoHistory": true,
+    "first": "Férias sintéticas"
+  },
+  "parserVersion": "markdown-v3",
+  "ok": true
+}

@@ -4,6 +4,9 @@ import { askJudith, ChatTurn } from "./claude.js";
 import { processarOnboarding } from "./onboarding/flow.js";
 import { checarCota, registrarUso } from "./quota.js";
 import { routeIntent } from "./router.js";
+import { KnowledgeSearchError, knowledgeMessage } from "../knowledge/errors.js";
+import { smalltalk } from "./smalltalk.js";
+import { createHash } from "node:crypto";
 
 // Limite de histórico de sessão (Seção 4.5 do briefing v6): 8 turnos cheios.
 const TURN_WINDOW = 8;
@@ -39,6 +42,7 @@ export type HandleInput = {
   pushName?: string;
   text: string;
   hasAttachment: boolean;
+  messageId?: string;
 };
 
 export type HandleOutput = {
@@ -47,6 +51,7 @@ export type HandleOutput = {
   sessionId?: string;
   userId: string;
   modelUsed?: string;
+  knowledgeFailure?: string;
 };
 
 export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
@@ -66,6 +71,8 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   }
 
   // 2. Onboarding deixou seguir — checa assinatura/cota antes de chamar IA
+  const commonReply = !input.hasAttachment ? smalltalk(resultado.mensagemParaIA) : null;
+  if (commonReply) return { replies: [commonReply], userId: user.id };
   const route = routeIntent({ text: resultado.mensagemParaIA, hasAttachment: input.hasAttachment });
 
   const cota = await checarCota(user, route.funcao);
@@ -93,25 +100,35 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   const session = await getOrCreateActiveSession(user.id);
   const history = await loadHistory(session.id);
 
-  const result = await askJudith({
-    tier: route.tier,
-    funcao: route.funcao,
-    user,
-    history,
-    userMessage: resultado.mensagemParaIA,
-  });
+  // Persist incoming text before any fallible search/generation. Stable transport ID prevents
+  // duplicate history and charging on webhook redelivery; a new user message has a new ID.
+  const incomingId = input.messageId ? createHash("sha256").update(JSON.stringify([user.id, input.messageId])).digest("hex") : undefined;
+  try {
+    await prisma.message.create({ data: { ...(incomingId ? { id: incomingId } : {}), sessionId: session.id, role: MessageRole.USER, content: resultado.mensagemParaIA } });
+  } catch (error) {
+    if (incomingId && typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return { replies: [], userId: user.id, sessionId: session.id };
+    throw error;
+  }
+  await prisma.session.update({ where: { id: session.id }, data: { lastSeenAt: new Date() } });
+
+  let result;
+  try {
+    result = await askJudith({
+      tier: route.tier,
+      funcao: route.funcao,
+      user,
+      history,
+      userMessage: resultado.mensagemParaIA,
+    });
+  } catch (error) {
+    if (!(error instanceof KnowledgeSearchError)) throw error;
+    return { replies: [knowledgeMessage(error.code)], sessionId: session.id, userId: user.id, knowledgeFailure: error.code };
+  }
 
   if (!result.text.trim()) throw new Error("A IA retornou uma resposta vazia");
 
   await prisma.$transaction(async (db) => {
     await registrarUso(db, user.id, route.funcao);
-    await db.message.create({
-      data: {
-        sessionId: session.id,
-        role: MessageRole.USER,
-        content: resultado.mensagemParaIA,
-      },
-    });
     await db.message.create({
       data: {
         sessionId: session.id,

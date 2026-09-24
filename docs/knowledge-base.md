@@ -1,5 +1,7 @@
 # Base de conhecimento — implementação e operação
 
+> Atualização de 24/09: consulte [a retomada e o handoff do Admin](knowledge-review-2026-09-24.md). Embeddings são locais; as referências históricas a créditos OpenAI neste documento estão superadas por [local-embeddings.md](local-embeddings.md). Os 19 arquivos da entrega foram localizados, sem importação ou correção automática.
+
 ## Estado da entrega
 
 Implementação publicada na VPS em 23/09/2026 após autorização explícita do usuário para migração e deploy. Consulte [knowledge-production.md](knowledge-production.md) para versão, backup, testes reais e pendências operacionais. Prompts e fichas foram preservados. A análise inicial está em [knowledge-analysis.md](knowledge-analysis.md). Não há importação automática dos Markdown históricos nem publicação automática de fichas.
@@ -9,7 +11,7 @@ Implementação publicada na VPS em 23/09/2026 após autorização explícita do
 - `src/knowledge/areas.ts`: contrato reutilizável, 12 áreas exatas, listas por vírgula e erros estruturados. Não depende de banco/SDK; pode ser compartilhado com Admin, ou utilizado via endpoint.
 - `src/knowledge/parser.ts`: capítulos/subcapítulos, escopo de áreas, preservação de conteúdo, código opaco.
 - `src/knowledge/core.ts`: fingerprints, preparação incremental, cache semântico, cosseno e top 5.
-- `src/knowledge/provider.ts`: classificador Claude e embeddings OpenAI; instrução técnica nova e independente das seções aprovadas A/B/C.
+- `src/knowledge/provider.ts`: classificador Claude e embeddings locais E5; instrução técnica nova e independente das seções aprovadas A/B/C.
 - `src/knowledge/repository.ts`: seleção SQL por área/publicação, snapshot consistente e rejeição de fontes obsoletas.
 - `src/knowledge/indexer.ts`, `worker.ts`: jobs persistidos, progresso, lease, fencing, cache e transação de publicação do índice.
 - `src/routes/knowledge.ts`: validação, solicitação e consulta autenticadas.
@@ -19,6 +21,8 @@ Implementação publicada na VPS em 23/09/2026 após autorização explícita do
 - `test/knowledge*.test.cjs`, `test/indexer.test.cjs`, `test/fixtures/`: casos novos; testes de conteúdo/fluxo existentes ajustados à consulta exclusiva em dúvida. `package.json` contém `npm test`.
 
 ## Áreas e parser
+
+Correção local de 24/09, ainda não publicada: parser `markdown-v3` ignora a capa inteira antes do primeiro `##` real, inclusive prosa e `###` de capa. Continua lendo e validando áreas/frontmatter nessa região para definir a área inicial dos capítulos. Código cercado não inicia capítulo. Caderno com zero blocos é rejeitado por `KnowledgeValidationError`, campo `conteudo`, valor `SEM_BLOCOS`: requer capítulo `##` seguido de conteúdo. A validação HTTP retorna 422 também para rascunho vazio, e o indexador aplica a mesma regra. A mudança de versão invalida fingerprints antigos; numa implantação futura será necessário reindexar os publicados. Vetores de capítulos iguais continuam reutilizáveis.
 
 Valores: administrativo, ambiental, civil, consumidor, eca, empresarial, lgpd, tributario, previdenciario, processual, trabalhista, autoral. Slug é identificador independente; `civil-contratos` não é área. Espaços ao redor dos itens são removidos; grafia/case/acentos não são corrigidos. Itens vazios ou desconhecidos invalidam a lista inteira.
 
@@ -61,10 +65,10 @@ O banco real foi inspecionado na publicação: MariaDB 10.11.14, InnoDB, utf8mb4
 
 ## Busca
 
-1. Apenas `askJudith` com `funcao === "duvida"` chama `getBaseConhecimento(pergunta)`. Roteador, cotas, onboarding, redação, análise, bots de clientes e seções aprovadas não mudam.
-2. Claude Haiku, usando configuração existente, escolhe **uma área predominante** das 12 ou `nenhuma`. Resposta desconhecida/múltipla é erro; não há correção nem fallback. `nenhuma` retorna base vazia. Perguntas ambíguas ou dependentes de histórico precisam de avaliação de qualidade; o classificador recebe a pergunta atual.
+1. Apenas `askJudith` com `funcao === "duvida"` chama `getBaseConhecimento(pergunta, histórico)`. Redação, análise, bots de clientes e seções aprovadas permanecem intactos.
+2. Claude Haiku escolhe **uma área predominante** das 12 ou `nenhuma`, a partir da consulta atual. Com histórico, uma etapa extrativa examina até oito mensagens anteriores do usuário (nenhuma da assistente) e escolhe um único trecho literal de até 300 caracteres somente para continuação. O backend verifica que o trecho existe literalmente; texto inventado falha explicitamente. Pergunta autossuficiente/mudança de assunto deve usar só a pergunta atual. Saída de área fora da lista exata gera `CLASSIFICATION_INVALID`; não há conversão editorial. `nenhuma` gera `KNOWLEDGE_OUT_OF_SCOPE`, com explicação do escopo; área sem candidatos gera `KNOWLEDGE_NO_CONTEXT`, informando ausência de conteúdo publicado disponível; somente falhas técnicas sugerem tentar novamente. Nenhum desses caminhos chama o gerador jurídico ou registra consumo. Código sanitizado aparece em `judith.reply.knowledgeFailure`.
 3. SQL parametrizado filtra `KnowledgeChunkArea.area`, documento publicado, ficha ainda PUBLICADA e a versão da representação antes de qualquer similaridade. A fonte atual é lida uma vez por ficha em transação RepeatableRead; fingerprint diferente remove os candidatos daquele caderno. Fichas excluídas não passam pelo JOIN. Não há cache de resultados antigos.
-4. Calcula embedding da pergunta somente se houver candidatos; compara vetores desses candidatos por similaridade de cosseno. Ordena por score decrescente e ID no empate, devolvendo no máximo cinco (todos, se forem menos). Sem expansão para outras áreas ou busca por palavras-chave.
+4. Embedding recebe só pergunta atual, opcionalmente seguida do trecho curto extraído. Nunca recebe o histórico completo ou respostas anteriores da JUDITH. Só calcula com candidatos filtrados; ordena por cosseno decrescente e ID no empate, devolvendo no máximo cinco blocos completos. Sem expansão para outras áreas ou busca por palavras-chave.
 5. O contexto contém conteúdo integral, título, capítulo, subcapítulo e fontes. Não há `.slice` de texto ou corte de contexto. Se os cinco chunks ultrapassarem limites do provedor de resposta, a API poderá falhar e o tratamento existente avisará falha ao usuário; não há truncamento silencioso.
 
 Representação atual: `intfloat/multilingual-e5-large`, ONNX INT8 local, 1024 dimensões, revisão fixa e identificador versionado no código. Não usa OpenAI nem provedor pago para embeddings. Para chunks extensos, todas as janelas de até 480 tokens participam de uma média ponderada normalizada; o chunk devolvido continua integral. Consulte [local-embeddings.md](local-embeddings.md) para modelo, infraestrutura, testes reais de qualidade, limites e implantação. Anthropic permanece responsável pela classificação de área e respostas.

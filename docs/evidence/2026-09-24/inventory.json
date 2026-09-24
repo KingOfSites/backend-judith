@@ -1,0 +1,266 @@
+{
+  "directory": "C:\\Users\\Kauã\\Downloads\\judith-entrega-extracted\\JUDITH-ENTREGA-23072026\\01-conteudo-ia\\base-rag",
+  "notebooks": [
+    {
+      "name": "JUDITH-base-guias-v1.md",
+      "bytes": 21242,
+      "sha256": "290bec8c9384acb17d141cdc7140ee64841a81e0eb83a6bb0eac293679e369e5"
+    },
+    {
+      "name": "JUDITH-base-propaganda-v1.md",
+      "bytes": 13083,
+      "sha256": "dd13e6903d7728432e03398ed8d6df6fdf18d7dd46551c64dc8479dfaae0b602"
+    },
+    {
+      "name": "JUDITH-resumo-administrativo-v2.md",
+      "bytes": 57354,
+      "sha256": "85a27cc965c0e85d4fc76b0787b0321168d6dbc949a7989d81d305969f3f0d80"
+    },
+    {
+      "name": "JUDITH-resumo-ambiental-v2.md",
+      "bytes": 62508,
+      "sha256": "4d009c3d7f321a75b7fdbf1357390429e910cb5503ac5210532e7c08581a3dfa"
+    },
+    {
+      "name": "JUDITH-resumo-civil-contratos-v2.md",
+      "bytes": 55660,
+      "sha256": "41dd2b48064fcf74986e958f1b4c6535afa582e23474aa977832fb6cfd67a9c8"
+    },
+    {
+      "name": "JUDITH-resumo-civil-obrigacoes-v1.md",
+      "bytes": 40124,
+      "sha256": "995183df0e5d1d826e7c53e48262bd0228d221fe5c3cafec77d5b166986baa55"
+    },
+    {
+      "name": "JUDITH-resumo-civil-parte-geral-v1.md",
+      "bytes": 47376,
+      "sha256": "47175ffce942c1fe121d81a105cc51176f7c8046b54517c4b35cd7c714200ac5"
+    },
+    {
+      "name": "JUDITH-resumo-consumidor-v1.md",
+      "bytes": 65936,
+      "sha256": "8e28b721d54f08f8ef30486e6a88b35c6bffd1260e51b6e159d36989540fb2e5"
+    },
+    {
+      "name": "JUDITH-resumo-direito-autoral-v1.md",
+      "bytes": 22561,
+      "sha256": "b88216c00914fa02003aa4df71950df5a952673692a719e403c7997e8c6e2b92"
+    },
+    {
+      "name": "JUDITH-resumo-eca-v2.md",
+      "bytes": 26838,
+      "sha256": "f7a5b4ef10983ecd1653479e767c21c78f89a71119ff65e024166bfb61efaf00"
+    },
+    {
+      "name": "JUDITH-resumo-empresarial-v1.md",
+      "bytes": 68718,
+      "sha256": "f7fc088fef3321149634caf4d58884a78fc87abc29064176d09460b303cb19a1"
+    },
+    {
+      "name": "JUDITH-resumo-familia-sucessoes-v2.md",
+      "bytes": 25719,
+      "sha256": "402a2824c4b5b89145a503f264bf06479150b9bc62340ab0a6dd788928c79931"
+    },
+    {
+      "name": "JUDITH-resumo-lgpd-marco-civil-v3.md",
+      "bytes": 22796,
+      "sha256": "0660c4677f0dab93ae99a976a249e89f37b118d53e4d3b9a9b0948bcb2484b38"
+    },
+    {
+      "name": "JUDITH-resumo-locacao-comercial-v1.md",
+      "bytes": 18515,
+      "sha256": "204c2a35beb17ab623082bab1c11ac13699609ba5009f6d10e39cb854dd6ef50"
+    },
+    {
+      "name": "JUDITH-resumo-penal-tributario-v2.md",
+      "bytes": 13865,
+      "sha256": "e2d3a07045b093081eea7061cb02804d8844b60d00a9c4a6215de1fef1b3dd1a"
+    },
+    {
+      "name": "JUDITH-resumo-previdenciario-mei-v1.md",
+      "bytes": 31901,
+      "sha256": "2a8559bfd0d7e99a92614a46c4da64de98daf10236c03f02064c85c82606fbb1"
+    },
+    {
+      "name": "JUDITH-resumo-processo-civil-v1.md",
+      "bytes": 102451,
+      "sha256": "5e42f8a857aca1990ac458954a3c392aafde2777cc704b67379cde89db054989"
+    },
+    {
+      "name": "JUDITH-resumo-simples-nacional-v2.md",
+      "bytes": 42669,
+      "sha256": "7954d454ebe769429996316a3f03e7e35ae772511bf28bda239d692933317183"
+    },
+    {
+      "name": "JUDITH-resumo-tributario-v1.md",
+      "bytes": 92811,
+      "sha256": "ee67ea242dce40dd297cfe7e47e3c95a419b3a6b7cde27436d01a335e025ee95"
+    }
+  ],
+  "archives": [
+    {
+      "name": "JUDITH-ENTREGA-23072026 (1).zip",
+      "sha256": "d78b669b1b19b13f4d50f2eff8d37ca4892a8b18c16efddf67d033e94274bfc0",
+      "notebooks": [
+        {
+          "name": "JUDITH-base-guias-v1.md",
+          "sha256": "290bec8c9384acb17d141cdc7140ee64841a81e0eb83a6bb0eac293679e369e5"
+        },
+        {
+          "name": "JUDITH-base-propaganda-v1.md",
+          "sha256": "dd13e6903d7728432e03398ed8d6df6fdf18d7dd46551c64dc8479dfaae0b602"
+        },
+        {
+          "name": "JUDITH-resumo-administrativo-v2.md",
+          "sha256": "85a27cc965c0e85d4fc76b0787b0321168d6dbc949a7989d81d305969f3f0d80"
+        },
+        {
+          "name": "JUDITH-resumo-ambiental-v2.md",
+          "sha256": "4d009c3d7f321a75b7fdbf1357390429e910cb5503ac5210532e7c08581a3dfa"
+        },
+        {
+          "name": "JUDITH-resumo-civil-contratos-v2.md",
+          "sha256": "41dd2b48064fcf74986e958f1b4c6535afa582e23474aa977832fb6cfd67a9c8"
+        },
+        {
+          "name": "JUDITH-resumo-civil-obrigacoes-v1.md",
+          "sha256": "995183df0e5d1d826e7c53e48262bd0228d221fe5c3cafec77d5b166986baa55"
+        },
+        {
+          "name": "JUDITH-resumo-civil-parte-geral-v1.md",
+          "sha256": "47175ffce942c1fe121d81a105cc51176f7c8046b54517c4b35cd7c714200ac5"
+        },
+        {
+          "name": "JUDITH-resumo-consumidor-v1.md",
+          "sha256": "8e28b721d54f08f8ef30486e6a88b35c6bffd1260e51b6e159d36989540fb2e5"
+        },
+        {
+          "name": "JUDITH-resumo-direito-autoral-v1.md",
+          "sha256": "b88216c00914fa02003aa4df71950df5a952673692a719e403c7997e8c6e2b92"
+        },
+        {
+          "name": "JUDITH-resumo-eca-v2.md",
+          "sha256": "f7a5b4ef10983ecd1653479e767c21c78f89a71119ff65e024166bfb61efaf00"
+        },
+        {
+          "name": "JUDITH-resumo-empresarial-v1.md",
+          "sha256": "f7fc088fef3321149634caf4d58884a78fc87abc29064176d09460b303cb19a1"
+        },
+        {
+          "name": "JUDITH-resumo-familia-sucessoes-v2.md",
+          "sha256": "402a2824c4b5b89145a503f264bf06479150b9bc62340ab0a6dd788928c79931"
+        },
+        {
+          "name": "JUDITH-resumo-lgpd-marco-civil-v3.md",
+          "sha256": "0660c4677f0dab93ae99a976a249e89f37b118d53e4d3b9a9b0948bcb2484b38"
+        },
+        {
+          "name": "JUDITH-resumo-locacao-comercial-v1.md",
+          "sha256": "204c2a35beb17ab623082bab1c11ac13699609ba5009f6d10e39cb854dd6ef50"
+        },
+        {
+          "name": "JUDITH-resumo-penal-tributario-v2.md",
+          "sha256": "e2d3a07045b093081eea7061cb02804d8844b60d00a9c4a6215de1fef1b3dd1a"
+        },
+        {
+          "name": "JUDITH-resumo-previdenciario-mei-v1.md",
+          "sha256": "2a8559bfd0d7e99a92614a46c4da64de98daf10236c03f02064c85c82606fbb1"
+        },
+        {
+          "name": "JUDITH-resumo-processo-civil-v1.md",
+          "sha256": "5e42f8a857aca1990ac458954a3c392aafde2777cc704b67379cde89db054989"
+        },
+        {
+          "name": "JUDITH-resumo-simples-nacional-v2.md",
+          "sha256": "7954d454ebe769429996316a3f03e7e35ae772511bf28bda239d692933317183"
+        },
+        {
+          "name": "JUDITH-resumo-tributario-v1.md",
+          "sha256": "ee67ea242dce40dd297cfe7e47e3c95a419b3a6b7cde27436d01a335e025ee95"
+        }
+      ]
+    },
+    {
+      "name": "JUDITH-ENTREGA-23072026.zip",
+      "sha256": "d78b669b1b19b13f4d50f2eff8d37ca4892a8b18c16efddf67d033e94274bfc0",
+      "notebooks": [
+        {
+          "name": "JUDITH-base-guias-v1.md",
+          "sha256": "290bec8c9384acb17d141cdc7140ee64841a81e0eb83a6bb0eac293679e369e5"
+        },
+        {
+          "name": "JUDITH-base-propaganda-v1.md",
+          "sha256": "dd13e6903d7728432e03398ed8d6df6fdf18d7dd46551c64dc8479dfaae0b602"
+        },
+        {
+          "name": "JUDITH-resumo-administrativo-v2.md",
+          "sha256": "85a27cc965c0e85d4fc76b0787b0321168d6dbc949a7989d81d305969f3f0d80"
+        },
+        {
+          "name": "JUDITH-resumo-ambiental-v2.md",
+          "sha256": "4d009c3d7f321a75b7fdbf1357390429e910cb5503ac5210532e7c08581a3dfa"
+        },
+        {
+          "name": "JUDITH-resumo-civil-contratos-v2.md",
+          "sha256": "41dd2b48064fcf74986e958f1b4c6535afa582e23474aa977832fb6cfd67a9c8"
+        },
+        {
+          "name": "JUDITH-resumo-civil-obrigacoes-v1.md",
+          "sha256": "995183df0e5d1d826e7c53e48262bd0228d221fe5c3cafec77d5b166986baa55"
+        },
+        {
+          "name": "JUDITH-resumo-civil-parte-geral-v1.md",
+          "sha256": "47175ffce942c1fe121d81a105cc51176f7c8046b54517c4b35cd7c714200ac5"
+        },
+        {
+          "name": "JUDITH-resumo-consumidor-v1.md",
+          "sha256": "8e28b721d54f08f8ef30486e6a88b35c6bffd1260e51b6e159d36989540fb2e5"
+        },
+        {
+          "name": "JUDITH-resumo-direito-autoral-v1.md",
+          "sha256": "b88216c00914fa02003aa4df71950df5a952673692a719e403c7997e8c6e2b92"
+        },
+        {
+          "name": "JUDITH-resumo-eca-v2.md",
+          "sha256": "f7a5b4ef10983ecd1653479e767c21c78f89a71119ff65e024166bfb61efaf00"
+        },
+        {
+          "name": "JUDITH-resumo-empresarial-v1.md",
+          "sha256": "f7fc088fef3321149634caf4d58884a78fc87abc29064176d09460b303cb19a1"
+        },
+        {
+          "name": "JUDITH-resumo-familia-sucessoes-v2.md",
+          "sha256": "402a2824c4b5b89145a503f264bf06479150b9bc62340ab0a6dd788928c79931"
+        },
+        {
+          "name": "JUDITH-resumo-lgpd-marco-civil-v3.md",
+          "sha256": "0660c4677f0dab93ae99a976a249e89f37b118d53e4d3b9a9b0948bcb2484b38"
+        },
+        {
+          "name": "JUDITH-resumo-locacao-comercial-v1.md",
+          "sha256": "204c2a35beb17ab623082bab1c11ac13699609ba5009f6d10e39cb854dd6ef50"
+        },
+        {
+          "name": "JUDITH-resumo-penal-tributario-v2.md",
+          "sha256": "e2d3a07045b093081eea7061cb02804d8844b60d00a9c4a6215de1fef1b3dd1a"
+        },
+        {
+          "name": "JUDITH-resumo-previdenciario-mei-v1.md",
+          "sha256": "2a8559bfd0d7e99a92614a46c4da64de98daf10236c03f02064c85c82606fbb1"
+        },
+        {
+          "name": "JUDITH-resumo-processo-civil-v1.md",
+          "sha256": "5e42f8a857aca1990ac458954a3c392aafde2777cc704b67379cde89db054989"
+        },
+        {
+          "name": "JUDITH-resumo-simples-nacional-v2.md",
+          "sha256": "7954d454ebe769429996316a3f03e7e35ae772511bf28bda239d692933317183"
+        },
+        {
+          "name": "JUDITH-resumo-tributario-v1.md",
+          "sha256": "ee67ea242dce40dd297cfe7e47e3c95a419b3a6b7cde27436d01a335e025ee95"
+        }
+      ]
+    }
+  ]
+}

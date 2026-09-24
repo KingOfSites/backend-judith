@@ -1,0 +1,132 @@
+[
+  {
+    "name": "JUDITH-base-guias-v1.md",
+    "metadataAreaForProbe": "civil",
+    "issues": [
+      {
+        "origem": "markdown",
+        "campo": "area",
+        "linha": 5,
+        "capitulo": "",
+        "valor": "empresarial *(TAGUEADO POR MÓDULO em 06/07 — cada MÓDULO abaixo tem sua própria área; este guia não usa mais tag \"geral\" única. A tag válida por chunk é o cabeçalho Área do módulo.)*",
+        "mensagem": "Área inválida: empresarial *(TAGUEADO POR MÓDULO em 06/07 — cada MÓDULO abaixo tem sua própria área; este guia não usa mais tag \"geral\" única. A tag válida por chunk é o cabeçalho Área do módulo.)*"
+      },
+      {
+        "origem": "markdown",
+        "campo": "area",
+        "linha": 105,
+        "capitulo": "MÓDULO 4 — FRENTE ADMINISTRATIVA",
+        "valor": "tributário",
+        "mensagem": "Área inválida: tributário"
+      }
+    ]
+  },
+  {
+    "name": "JUDITH-base-propaganda-v1.md",
+    "metadataAreaForProbe": "civil",
+    "issues": [
+      {
+        "origem": "markdown",
+        "campo": "area",
+        "linha": 89,
+        "capitulo": "MÓDULO 4 — SORTEIOS, RIFAS E PROMOÇÕES COM PREMIAÇÃO",
+        "valor": "penal",
+        "mensagem": "Área inválida: penal"
+      }
+    ]
+  },
+  {
+    "name": "JUDITH-resumo-administrativo-v2.md",
+    "chunks": 22,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-ambiental-v2.md",
+    "chunks": 64,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-civil-contratos-v2.md",
+    "chunks": 26,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-civil-obrigacoes-v1.md",
+    "chunks": 18,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-civil-parte-geral-v1.md",
+    "chunks": 25,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-consumidor-v1.md",
+    "chunks": 69,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-direito-autoral-v1.md",
+    "metadataAreaForProbe": "civil",
+    "issues": [
+      {
+        "origem": "markdown",
+        "campo": "area",
+        "linha": 7,
+        "capitulo": "",
+        "valor": "direito-autoral",
+        "mensagem": "Área inválida: direito-autoral"
+      }
+    ]
+  },
+  {
+    "name": "JUDITH-resumo-eca-v2.md",
+    "chunks": 16,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-empresarial-v1.md",
+    "chunks": 41,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-familia-sucessoes-v2.md",
+    "chunks": 21,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-lgpd-marco-civil-v3.md",
+    "chunks": 12,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-locacao-comercial-v1.md",
+    "chunks": 10,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-penal-tributario-v2.md",
+    "chunks": 11,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-previdenciario-mei-v1.md",
+    "chunks": 18,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-processo-civil-v1.md",
+    "chunks": 42,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-simples-nacional-v2.md",
+    "chunks": 27,
+    "metadataAreaForProbe": "civil"
+  },
+  {
+    "name": "JUDITH-resumo-tributario-v1.md",
+    "chunks": 59,
+    "metadataAreaForProbe": "civil"
+  }
+]

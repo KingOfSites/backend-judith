@@ -30,6 +30,10 @@ test('Admin HTTP: autenticação, payload, validação, idempotência, progresso
       assert.equal((await app.inject({ method, url, payload, headers: { 'x-internal-key': 'wrong' } })).statusCode, 401);
     }
     assert.equal((await app.inject({ method: 'POST', url: validate, headers, payload: {} })).statusCode, 400);
+    for (const conteudo of ['', '# Capa\nSomente apresentação', '## Vazio\n**Área:** civil', '### Sem capítulo\nTexto']) {
+      const invalid = await app.inject({ method: 'POST', url: validate, headers, payload: { area: 'civil', conteudo } });
+      assert.equal(invalid.statusCode, 422); assert.match(invalid.json().errors[0].mensagem, /capítulo iniciado por ##/);
+    }
     let r = await app.inject({ method: 'POST', url: validate, headers, payload: { area: 'civil', conteudo: '## Contratos\n**Área:** financeiro\nErro' } });
     assert.equal(r.statusCode, 422); assert.equal(r.json().errors[0].linha, 2); assert.equal(r.json().errors[0].capitulo, 'Contratos');
     r = await app.inject({ method: 'POST', url: validate, headers, payload: { area: 'civil, consumidor', conteudo: '## Caderno\n' + 'á'.repeat(169000) } });

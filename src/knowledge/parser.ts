@@ -1,6 +1,6 @@
 import { Area, KnowledgeValidationError, ValidationIssue, validateAreas } from "./areas.js";
 
-export const PARSER_VERSION = "markdown-v2";
+export const PARSER_VERSION = "markdown-v3";
 export type Chunk = { content: string; semanticText: string; areas: Area[]; chapter: string; subchapter: string | null; line: number };
 
 const HEADING = /^ {0,3}#{1,6}(?:\s|$)/;
@@ -24,6 +24,7 @@ export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
   };
   let running = areas(area, { origem: "metadados", campo: "area" }, []), currentAreas = running;
   let chapter = "", subchapter: string | null = null, level = 0;
+  let started = false;
   let raw: string[] = [], semantic: string[] = [], useful = false, line = 1;
   let fence: { char: string; size: number } | null = null;
   const result: Chunk[] = [];
@@ -31,7 +32,7 @@ export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
   const flush = () => {
     // Blocks made only of headings, separators and markers carry no searchable content. Their titles
     // remain in the chapter/subchapter context of the blocks that follow.
-    if (useful) result.push({ content: raw.join(""), semanticText: semantic.join(""), areas: [...currentAreas], chapter, subchapter, line });
+    if (started && useful) result.push({ content: raw.join(""), semanticText: semantic.join(""), areas: [...currentAreas], chapter, subchapter, line });
     raw = []; semantic = []; useful = false;
   };
   let frontmatter = lines[0]?.trim() === "---";
@@ -56,7 +57,9 @@ export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
     }
     const heading = /^ {0,3}(#{2,3})\s+(.+?)\s*#*\s*$/.exec(text);
     if (heading) {
+      if (!started && heading[1]!.length === 3) continue;
       flush(); line = i + 1; level = heading[1]!.length;
+      started = true;
       if (level === 2) { chapter = heading[2]!; subchapter = null; }
       else subchapter = heading[2]!;
       currentAreas = running;
@@ -76,6 +79,7 @@ export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
   }
   if (frontmatter) issues.push({ origem: "frontmatter", campo: "conteudo", valor: "---", linha: 1, mensagem: "Frontmatter sem fechamento" });
   flush();
+  if (!result.length) issues.push({ origem: "markdown", campo: "conteudo", valor: "SEM_BLOCOS", mensagem: "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis." });
   if (issues.length) throw new KnowledgeValidationError(issues);
   return result;
 }

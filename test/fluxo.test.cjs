@@ -51,7 +51,7 @@ async function main() {
     planCatalog: { findUnique: async () => ({ duvidasMes: state.limit, analisesMes: state.limit, redacoesMes: state.limit }) },
     usageEvent: { count: async () => state.used + state.usages.length, create: async ({ data }) => { state.usages.push(data); return data; } },
     session: { findFirst: async () => null, create: async () => ({ id: 'smoke-session' }), update: async () => ({}) },
-    message: { findMany: async () => [], create: async ({ data }) => { if (state.historyFail) throw new Error('mock history failure'); state.messages.push(data); return data; } },
+    message: { findMany: async ({ take, orderBy }) => { assert.deepEqual(orderBy, { createdAt: 'desc' }); return state.messages.slice(-take).reverse(); }, create: async ({ data }) => { if (state.historyFail) throw new Error('mock history failure'); if (data.id && state.messages.some(m => m.id === data.id)) throw Object.assign(new Error('duplicate'), { code: 'P2002' }); state.messages.push(data); return data; } },
     $queryRaw: async (strings, id) => { assert.match(strings.join('?'), /FOR UPDATE/); assert.equal(id, state.user.id); state.locked = true; return [{ id }]; },
     $transaction: async (fn, options) => {
       assert.equal(options.isolationLevel, 'ReadCommitted');
@@ -72,15 +72,19 @@ async function main() {
   replace(base + 'evolution/client.js', { sendTyping: async () => {}, sendText: async (number, text) => { state.sends.push({ number, text }); } });
   replace(base + 'evolution/media.js', { downloadMediaBase64: deny });
   replace(base + 'judith/whisper.js', { transcreverAudio: deny });
-  replace(base + 'judith/conhecimento.js', { getBaseConhecimento: async () => 'PUBLISHED_KNOWLEDGE_TEST' });
+  replace(base + 'judith/conhecimento.js', { getBaseConhecimento: async () => {
+    if (state.knowledgeFailure) throw new (require(base + 'knowledge/errors.js').KnowledgeSearchError)(state.knowledgeFailure);
+    return 'PUBLISHED_KNOWLEDGE_TEST';
+  } });
   replace(base + 'bot/handler.js', { processarMensagemBot: deny });
   const Fastify = require('fastify');
   let app;
   replace('fastify', (opts) => { app = Fastify(opts); app.listen = async () => {}; return app; });
   require(base + 'server.js');
   await app.ready();
+  let transportId = 0;
   async function webhook(text, extra = {}) {
-    const payload = { event: 'messages.upsert', instance: 'judith', data: { key: { remoteJid: '0000000000000@s.whatsapp.net', fromMe: false, id: 'synthetic-smoke' }, message: { conversation: text } }, ...extra };
+    const payload = { event: 'messages.upsert', instance: 'judith', data: { key: { remoteJid: '0000000000000@s.whatsapp.net', fromMe: false, id: 'synthetic-smoke-' + transportId++ }, message: { conversation: text } }, ...extra };
     const response = await app.inject({ method: 'POST', url: '/webhook/evolution', payload });
     assert.equal(response.statusCode, 200);
     for (let i = 0; i < 20; i++) await new Promise(resolve => setImmediate(resolve));
@@ -126,8 +130,19 @@ async function main() {
   assert.equal(state.calls.length, 0); assert.equal(state.sends.length, 0);
   passed.push('Other events, self-messages and groups are ignored');
   reset({ aiFail: true }); await webhook('Qual o prazo?');
-  assert.equal(state.calls.length, 1); assert.equal(state.messages.length, 0); assert.equal(state.usages.length, 0); assert.equal(state.sends.length, 1);
+  assert.equal(state.calls.length, 1); assert.equal(state.messages.length, 1); assert.equal(state.usages.length, 0); assert.equal(state.sends.length, 1);
   passed.push('AI failure returns fallback without successful usage/history');
+
+  for (const code of ['CLASSIFICATION_INVALID', 'KNOWLEDGE_UNAVAILABLE', 'KNOWLEDGE_NO_CONTEXT', 'KNOWLEDGE_OUT_OF_SCOPE']) {
+    reset({ knowledgeFailure: code, subscription: null, credit: { id: 'credit-test' } });
+    await webhook('Tenho uma dúvida sobre meu contrato');
+    assert.equal(state.calls.length, 0); assert.equal(state.consumed, 0);
+    assert.equal(state.usages.length, 0); assert.equal(state.messages.length, 1);
+    assert.equal(state.messages[0].content, 'Tenho uma dúvida sobre meu contrato');
+    assert.equal(state.sends.length, 1); assert.match(state.sends[0].text, /Nenhum crédito/);
+    assert.equal(/Tente novamente/.test(state.sends[0].text), ['CLASSIFICATION_INVALID', 'KNOWLEDGE_UNAVAILABLE'].includes(code));
+    passed.push('Knowledge failure is explicit and preserves credit: ' + code);
+  }
   reset({ used: 2, paymentFail: true }); await webhook('Qual o prazo?');
   assert.equal(state.calls.length, 0); assert.equal(state.consumed, 0); assert.match(state.sends[0].text, /Tente novamente/);
   passed.push('Checkout failure keeps exhausted quota blocked');
@@ -139,7 +154,7 @@ async function main() {
   passed.push('AI failure preserves one-off credit');
   for (const flag of ['aiEmpty', 'historyFail', 'race']) {
     reset({ used: 2, credit: { id: 'synthetic-credit' }, [flag]: true }); await webhook('Qual o prazo?');
-    assert.equal(state.consumed, 0); assert.equal(state.usages.length, 0); assert.equal(state.messages.length, 0);
+    assert.equal(state.consumed, 0); assert.equal(state.usages.length, 0); assert.equal(state.messages.length, flag === 'historyFail' ? 0 : 1);
     assert.notEqual(state.sends[0].text, 'SIMULATED RESPONSE');
     passed.push('No consumption/history on ' + flag);
   }
@@ -148,12 +163,12 @@ async function main() {
   passed.push('Approved one-off credit works without active subscription');
   reset({ used: 2, credit: { id: 'synthetic-credit' } });
   await Promise.all([webhook('Qual o prazo?'), webhook('Qual o prazo?')]);
-  assert.equal(state.consumed, 1); assert.equal(state.usages.length, 1); assert.equal(state.messages.length, 2);
+  assert.equal(state.consumed, 1); assert.equal(state.usages.length, 1); assert.ok([2, 3].includes(state.messages.length));
   assert.equal(state.sends.filter(x => x.text === 'SIMULATED RESPONSE').length, 1);
   passed.push('Concurrent replies cannot spend the same one-off credit twice');
   reset({ used: 1 });
   await Promise.all([webhook('Qual o prazo?'), webhook('Qual o prazo?')]);
-  assert.equal(state.usages.length, 1); assert.equal(state.messages.length, 2);
+  assert.equal(state.usages.length, 1); assert.ok([2, 3].includes(state.messages.length));
   passed.push('Concurrent replies cannot confirm beyond remaining plan quota');
   reset({ subscription: { status: 'CANCELED' }, courtesy: 2 }); await webhook('Qual o prazo?');
   assert.equal(state.courtesy, 1); assert.equal(state.usages.length, 1); assert.equal(state.payments.length, 0);
@@ -169,7 +184,7 @@ async function main() {
   passed.push('Courtesy is specific to the granted service');
   for (const flag of ['aiFail', 'aiEmpty', 'historyFail', 'race']) {
     reset({ used: 2, courtesy: 2, [flag]: true }); await webhook('Qual o prazo?');
-    assert.equal(state.courtesy, 2); assert.equal(state.usages.length, 0); assert.equal(state.messages.length, 0);
+    assert.equal(state.courtesy, 2); assert.equal(state.usages.length, 0); assert.equal(state.messages.length, flag === 'historyFail' ? 0 : 1);
     passed.push('Courtesy preserved on ' + flag);
   }
   reset({ used: 2, courtesy: 1 });
@@ -177,6 +192,53 @@ async function main() {
   assert.equal(state.courtesy, 0); assert.equal(state.usages.length, 1);
   assert.equal(state.sends.filter(x => x.text === 'SIMULATED RESPONSE').length, 1);
   passed.push('Concurrent responses cannot spend the same courtesy twice');
+  for (const text of ['Oi', 'obrigado', 'qual seu nome?']) {
+    reset({ subscription: null, used: 2, knowledgeFailure: 'KNOWLEDGE_UNAVAILABLE' }); await webhook(text);
+    assert.equal(state.calls.length, 0); assert.equal(state.payments.length, 0); assert.equal(state.usages.length, 0);
+    assert.equal(state.sends.length, 1); assert.ok(!/Tente novamente|crédito|base/.test(state.sends[0].text));
+    passed.push('Smalltalk without search or credit: ' + text);
+  }
+  reset({ knowledgeFailure: 'KNOWLEDGE_UNAVAILABLE' });
+  const duplicate = { data: { key: { remoteJid: '0000000000000@s.whatsapp.net', fromMe: false, id: 'same-delivery' }, message: { conversation: 'Minha pergunta jurídica' } } };
+  await webhook('', duplicate); await webhook('', duplicate);
+  assert.equal(state.messages.length, 1); assert.equal(state.messages[0].content, 'Minha pergunta jurídica');
+  assert.equal(state.sends.length, 1); assert.equal(state.usages.length, 0);
+  state.knowledgeFailure = null; await webhook('Minha pergunta jurídica');
+  assert.equal(state.messages.length, 3); assert.equal(state.usages.length, 1);
+  passed.push('Failed inbound preserved once; redelivery deduplicated; new message can retry');
+  reset({ limit: 50 });
+  await webhook('Dúvida respondida inicial');
+  state.knowledgeFailure = 'KNOWLEDGE_UNAVAILABLE';
+  await webhook('Dúvida preservada após falha');
+  state.knowledgeFailure = null;
+  for (let i = 1; i <= 7; i++) await webhook('Dúvida respondida seguinte ' + i);
+  assert.equal(state.messages.length, 17); assert.equal(state.usages.length, 8);
+  const saved = structuredClone(state.messages);
+  assert.equal(saved.slice(-16)[0].role, 'ASSISTANT');
+  const lastEvent = { data: { key: { remoteJid: '0000000000000@s.whatsapp.net', fromMe: false, id: 'history-window-current' }, message: { conversation: 'Pergunta atual da janela' } } };
+  await webhook('', lastEvent);
+  const sent = state.calls.at(-1).messages;
+  assert.equal(sent[0].role, 'user'); assert.equal(sent[0].content, 'Dúvida preservada após falha');
+  assert.equal(sent.length, 16);
+  assert.equal(sent.filter(m => m.content === 'Pergunta atual da janela').length, 1);
+  assert.deepEqual(state.messages.slice(0, 17), saved);
+  assert.equal(state.usages.length, 9);
+  await webhook('', lastEvent);
+  assert.equal(state.messages.length, 19); assert.equal(state.usages.length, 9);
+  passed.push('16-message window drops orphan answer after one answered, one failed and seven answered questions');
+
+  reset({ limit: 50 });
+  await webhook('Primeira pergunta sem histórico');
+  assert.deepEqual(state.calls[0].messages, [{ role: 'user', content: 'Primeira pergunta sem histórico' }]);
+  passed.push('Empty history sends current question once');
+  reset({ limit: 50, knowledgeFailure: 'KNOWLEDGE_UNAVAILABLE' });
+  for (let i = 1; i <= 3; i++) await webhook('Pergunta sem resposta ' + i);
+  assert.equal(state.usages.length, 0);
+  state.knowledgeFailure = null; await webhook('Nova pergunta após falhas');
+  assert.deepEqual(state.calls[0].messages.map(m => m.role), ['user', 'user', 'user', 'user']);
+  assert.deepEqual(state.calls[0].messages.map(m => m.content), ['Pergunta sem resposta 1', 'Pergunta sem resposta 2', 'Pergunta sem resposta 3', 'Nova pergunta após falhas']);
+  assert.equal(state.messages.length, 5); assert.equal(state.usages.length, 1);
+  passed.push('Consecutive unanswered questions preserved without fabricated assistant turns');
   await app.close();
   console.log(JSON.stringify({ passed, findings, isolation: process.env.JUDITH_TEST_READ_DB === '1' ? 'Optional initial read-only prompt SELECT; all writes and APIs mocked' : 'All database access, AI, checkout and WhatsApp mocked; network blocked' }, null, 2));
 }

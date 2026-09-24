@@ -8,6 +8,31 @@ const { prepareDocument, retrieve, fingerprint, cosine, vector } = require('../d
 const fixture = name => fs.readFileSync(path.join(__dirname, 'fixtures', name + '.md'), 'utf8');
 const source = (overrides = {}) => ({ id: 'one', slug: 'civil-contratos', titulo: 'Contrato', area: 'civil', status: 'PUBLICADA', fontes: [], ordem: 0, conteudo: '## Contratos\nAção com acentuação.', ...overrides });
 
+test('parser: ignora capa até o primeiro ## real, preservando validação e área inicial', () => {
+  const cover = '# Capa\nVersão interna, não indexar.\n### Cabeçalho de capa\n**Área:** lgpd\n```md\n## Falso\n**Área:** penal\n```\n';
+  const body = '## Direitos\nTexto integral.\n### Acesso\nOutro bloco.\n';
+  const chunks = parseNotebook(cover + body, 'civil');
+  assert.equal(chunks.length, 2);
+  assert.equal(chunks.map(c => c.content).join(''), body);
+  assert.ok(chunks.every(c => c.areas.join() === 'lgpd'));
+  assert.equal(chunks[0].line, cover.split('\n').length);
+  assert.throws(() => parseNotebook(cover, 'civil'), /capítulo iniciado por ##/);
+  assert.throws(() => parseNotebook('Capa\n**Área:** penal\n## A\nTexto', 'civil'), /penal/);
+});
+
+test('busca: continuação envia histórico ao classificador e ao embedding, mantendo filtro', async () => {
+  const history = [{ role: 'user', content: 'Quero excluir meus dados pessoais pela LGPD.' }, { role: 'assistant', content: 'Qual foi o pedido enviado?' }];
+  const question = 'E se recusarem?';
+  const events = [];
+  const result = await retrieve(question, {
+    model: 'test',
+    contextualize: async (q, h) => { assert.equal(q, question); assert.deepEqual(h, [history[0]]); return q + '\nContexto informado pelo usuário: ' + h[0].content; },
+    classify: async q => { assert.ok(q.startsWith(question)); events.push('classify'); return 'lgpd'; },
+    embed: async (q, kind) => { assert.ok(q.startsWith(question)); assert.ok(!q.includes(history[1].content)); assert.equal(kind, 'query'); events.push('embed'); return [1, 0]; },
+  }, async area => { assert.equal(area, 'lgpd'); events.push('filter'); return [{ id: 'a', areas: ['lgpd'], published: true, vector: [1, 0], content: 'Bloco integral' }]; }, history);
+  assert.deepEqual(events, ['classify', 'filter', 'embed']); assert.equal(result.chunks[0].content, 'Bloco integral');
+});
+
 test('áreas: lista exata, vírgulas, desconhecidos, vazios e slug separado', () => {
   assert.equal(AREAS.length, 12);
   for (const area of AREAS) assert.deepEqual(validateAreas(area), [area]);

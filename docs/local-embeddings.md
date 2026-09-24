@@ -1,5 +1,7 @@
 # Embeddings locais na VPS
 
+> Aceitação adicional de 24/09 na imagem 5d0f2cc: [editar uma frase, reindexar e recuperar o texto novo, preservando cinco vetores](knowledge-review-2026-09-24.md). Banco descartável e conteúdo sintético; não equivale à validação da resposta final pelo WhatsApp.
+
 O backend usa um serviço de vetores semânticos na própria VPS. A classificação de área e as respostas continuam na Anthropic, usando a integração existente. O caminho de embeddings não instancia OpenAI e não tem fallback pago nem busca por palavras-chave. Indisponibilidade local falha explicitamente, preservando o índice anterior.
 
 ## Modelo escolhido

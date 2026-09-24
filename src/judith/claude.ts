@@ -50,6 +50,11 @@ function userProfileBlock(user: User | null): string {
 
 export async function askJudith(input: AskInput): Promise<AskOutput> {
   const model = modelIdFor(input.tier);
+  // A bounded DB window can begin in the middle of a turn. Drop only leading
+  // orphan answers, without changing stored messages or removing unanswered users.
+  // Anthropic accepts consecutive user turns; do not fabricate assistant replies.
+  const firstUser = input.history.findIndex(turn => turn.role === "user");
+  const history = firstUser < 0 ? [] : input.history.slice(firstUser);
 
   // System em blocos, na ordem estático → dinâmico (spec §1/§7):
   //   1. Seção A (sempre, cacheada)
@@ -68,14 +73,14 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   } else if (input.funcao === "analise") {
     system.push({ type: "text", text: await getPromptAnalise(), cache_control: { type: "ephemeral" } });
   }
-  const conhecimento = input.funcao === "duvida" ? await getBaseConhecimento(input.userMessage) : "";
+  const conhecimento = input.funcao === "duvida" ? await getBaseConhecimento(input.userMessage, history) : "";
   if (conhecimento) {
     system.push({ type: "text", text: conhecimento, cache_control: { type: "ephemeral" } });
   }
   system.push({ type: "text", text: userProfileBlock(input.user) });
 
   const messages: Anthropic.MessageParam[] = [
-    ...input.history.map((t) => ({ role: t.role, content: t.content })),
+    ...history.map((t) => ({ role: t.role, content: t.content })),
     { role: "user" as const, content: input.userMessage },
   ];
 

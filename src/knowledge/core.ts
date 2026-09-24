@@ -5,7 +5,8 @@ import { Chunk, PARSER_VERSION, parseNotebook } from "./parser.js";
 export const hash = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
 export type Source = { id: string; slug: string; titulo: string; area: string; status: string; fontes: unknown; conteudo: string; ordem: number };
 export const fingerprint = (s: Source) => hash(JSON.stringify([PARSER_VERSION, s.id, s.slug, s.titulo, s.area, s.status, s.fontes, s.conteudo, s.ordem]));
-export type SemanticProvider = { model: string; embed(text: string, kind?: "query" | "passage"): Promise<number[]>; classify(question: string): Promise<Area | null> };
+export type SearchTurn = { role: "user" | "assistant"; content: string };
+export type SemanticProvider = { model: string; embed(text: string, kind?: "query" | "passage"): Promise<number[]>; classify(question: string, history?: SearchTurn[]): Promise<Area | null>; contextualize?(question: string, history: SearchTurn[]): Promise<string> };
 export type PreparedDocument = { sourceId: string; fingerprint: string; model: string; published: boolean; chunks: (Chunk & { embeddingId: string })[] };
 /** `known` lists ids already referenced by the indexed document: they exist (FK) and need no reload. */
 export type EmbeddingStore = { get(id: string): Promise<number[] | null>; put(id: string, model: string, vector: number[]): Promise<void>; known?: Set<string> };
@@ -118,13 +119,15 @@ export function planChunks(stored: StoredChunk[], next: NextChunk[]): ChunkPlan 
 }
 
 export type Candidate ={ id: string; content: string; areas: Area[]; published: boolean; vector: number[]; titulo: string; fontes: unknown; chapter: string; subchapter: string | null };
-export async function retrieve(question: string, provider: SemanticProvider, load: (area: Area, model: string) => Promise<Candidate[]>) {
-  const area = await provider.classify(question);
+export async function retrieve(question: string, provider: SemanticProvider, load: (area: Area, model: string) => Promise<Candidate[]>, history: SearchTurn[] = []) {
+  const recent = history.filter(t => t.role === "user").slice(-8);
+  const searchText = recent.length && provider.contextualize ? await provider.contextualize(question, recent) : question;
+  const area = await provider.classify(searchText);
   if (!area) return { area, chunks: [] };
   // Loader MUST constrain area/publication in the DB, before embeddings/similarity.
   const candidates = (await load(area, provider.model)).filter(c => c.published && c.areas.includes(area));
   if (!candidates.length) return { area, chunks: [] };
-  const query = vector(await provider.embed(question, "query"));
+  const query = vector(await provider.embed(searchText, "query"));
   const chunks = candidates.map(c => ({ ...c, score: cosine(query, c.vector) }))
     .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id)).slice(0, 5);
   return { area, chunks };
