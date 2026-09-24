@@ -1,0 +1,219 @@
+{
+  "at": "2026-09-24T15:11:34.855Z",
+  "validation": [
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "empty",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "no-chapters",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "subchapter-only",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "empty-chapter",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "http://127.0.0.1:3000",
+      "name": "valid",
+      "http": 200,
+      "body": {
+        "valid": true,
+        "chunks": 1,
+        "areas": [
+          "civil"
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "empty",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "no-chapters",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "subchapter-only",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "empty-chapter",
+      "http": 422,
+      "body": {
+        "valid": false,
+        "errors": [
+          {
+            "origem": "markdown",
+            "campo": "conteudo",
+            "valor": "SEM_BLOCOS",
+            "mensagem": "O caderno precisa de ao menos um capítulo iniciado por ## seguido de conteúdo. Capa, títulos vazios e marcações de área não formam blocos indexáveis."
+          }
+        ]
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "name": "valid",
+      "http": 200,
+      "body": {
+        "valid": true,
+        "chunks": 1,
+        "areas": [
+          "civil"
+        ]
+      }
+    }
+  ],
+  "health": [
+    {
+      "base": "http://127.0.0.1:3000",
+      "http": 200,
+      "body": {
+        "status": "ok",
+        "versao": "v22072026"
+      }
+    },
+    {
+      "base": "https://judith-72-60-2-210.sslip.io",
+      "http": 200,
+      "body": {
+        "status": "ok",
+        "versao": "v22072026"
+      }
+    }
+  ],
+  "publishedBefore": [],
+  "sourceCount": 17,
+  "embeddings": {
+    "model": "local:multilingual-e5-large:3d7cfbdacd47fdda877c5cd8a79fbcc4f2a574f3:onnx-qint8-avx512-vnni:1024:tokens480:mean-v1",
+    "dimensions": 1024,
+    "norm": 1
+  },
+  "reindexRequest": {
+    "http": 202,
+    "jobId": "cmufo6pfa0000jq80xf40lxkl",
+    "status": "pending",
+    "statusUrl": "/internal/knowledge/jobs/cmufo6pfa0000jq80xf40lxkl"
+  },
+  "job": {
+    "jobId": "cmufo6pfa0000jq80xf40lxkl",
+    "status": "completed",
+    "total": 0,
+    "processed": 0,
+    "result": {
+      "changed": 0,
+      "unchanged": 0,
+      "removed": 0,
+      "embeddingsCreated": 0,
+      "embeddingsReused": 0,
+      "chunks": 0,
+      "chunksCreated": 0,
+      "chunksUpdated": 0,
+      "chunksRepositioned": 0,
+      "chunksUnchanged": 0,
+      "chunksRemoved": 0,
+      "areaLinksAdded": 0,
+      "areaLinksRemoved": 0
+    },
+    "errors": null,
+    "createdAt": "2026-09-24T15:11:36.503Z",
+    "updatedAt": "2026-09-24T15:11:40.004Z"
+  },
+  "sourceHash": "9f59935593b94475c67d96f9f5903dc7a5b728a7d52ee0f6e58e9d566ae89546",
+  "promptHash": "1e57c34b004ab4fe8c827931ec15df93af7d39f39086b6c8fca4dfdaf115328f",
+  "sourcesAndPromptsUnchanged": true,
+  "documents": 0,
+  "chunks": 0,
+  "parser": "markdown-v3",
+  "ok": true
+}

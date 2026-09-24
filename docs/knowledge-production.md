@@ -1,6 +1,6 @@
 # Publicação da base de conhecimento — 23/09/2026
 
-> **24/09 — release e330465 preparada, não ativada:** [imagem, backup, testes e procedimento de troca](knowledge-release-e330465.md). Aguardar confirmação explícita do usuário sobre conclusão do deploy do Admin. Backend ativo ainda em 5d0f2cc.
+> **24/09 — release e330465 ATIVADA**, após confirmação do Admin `ed89a7c` pelo usuário. Saúde 200; embeddings locais 1024 dimensões; validação pública/local 422 para zero blocos e 200 para conteúdo válido. Reindexação `cmufo6pfa0000jq80xf40lxkl` completed com zero publicados. [Resultados, backup, rollback e pendências](knowledge-release-e330465.md). As seções de 23/09 abaixo são históricas.
 
 > Retomada conferida em 24/09: [evidências, aceitação real e pendências do Admin](knowledge-review-2026-09-24.md). Produção permanece em 5d0f2cc; edição/reindexação/busca nova e reutilização de cinco vetores comprovadas em banco isolado. Todos os 19 cadernos da entrega foram localizados nos Downloads; dois trabalhistas posteriores seguem não localizados. Referências abaixo à falta dos arquivos e a saldo OpenAI são históricas.
 

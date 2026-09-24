@@ -1,6 +1,6 @@
 # Retomada da base — 24/09/2026
 
-> Publicação preparada: código revisado commitado/enviado como `e330465`; testes repetidos na imagem final e backup verificado. [Estado operacional e troca pendente](knowledge-release-e330465.md). Nenhuma ativação antes da confirmação do Admin pelo usuário.
+> **Publicação concluída:** `e330465` ativo na VPS após autorização do usuário e confirmação do Admin `ed89a7c`. Saúde/embeddings/validação conferidos; reindexação completed sem cadernos publicados; fichas e prompts preservados. [Resultados e pendências hospedadas/WhatsApp](knowledge-release-e330465.md). Os estados locais/sem deploy descritos nas rodadas abaixo são históricos.
 
 ## Revisão integrada — normalização da janela de histórico
 

@@ -1,0 +1,2 @@
+/judith-backend revision=e330465bd29a4a7bc88cdc5f067fa0747b89d70d image=sha256:f6745983c868a181d921d84022c56fa0d74a6c38d82ce3bb4c82d4939d8a4227 state=running restarts=0 oom=false
+/judith-backend-embeddings-1 revision= image=sha256:75ac08ff63f56c2c614046c73a8af81c839149c2495193f223cf3496729c86ee state=running restarts=0 oom=false

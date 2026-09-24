@@ -1,6 +1,26 @@
 # Release revisada preparada — 24/09/2026
 
-**Estado: pronta para troca, NÃO ATIVADA. Aguardar confirmação explícita do usuário de que o deploy do Admin concluiu.** Não inferir autorização pela saúde do Admin ou pelo tempo decorrido.
+**Estado atualizado: ATIVADA em 24/09/2026, verificação pós-deploy às 15:11 UTC.** Usuário confirmou Admin `ed89a7c`, deploy Ready, login e acesso à base verificados, e autorizou expressamente a troca e a reindexação dos publicados. O registro de preparação abaixo é histórico.
+
+## Resultado da ativação
+
+- Revisão efetivamente em execução: `e330465bd29a4a7bc88cdc5f067fa0747b89d70d`; digest `sha256:f6745983c868a181d921d84022c56fa0d74a6c38d82ce3bb4c82d4939d8a4227`; parser `markdown-v3`. Checkout `app` na mesma revisão, detached conforme script.
+- Saúde local e pública: HTTP 200, `status=ok`, versão de prompt `v22072026`. Backend running, zero reinícios e OOM.
+- Embeddings preservados na imagem `sha256:75ac08ff63f56c2c614046c73a8af81c839149c2495193f223cf3496729c86ee`, healthy, sem porta publicada, zero reinícios/OOM. Chamada real pelo provider do backend ativo produziu vetor local E5 de 1024 dimensões, norma 1.
+- Validação autenticada local **e pública**: vazio, capa com prosa sem capítulos, apenas `###` e `##` sem conteúdo retornaram 422, `SEM_BLOCOS`, com instrução de capítulo `##` e conteúdo. Texto sintético válido retornou 200, `valid=true`, um chunk civil. Essas chamadas não persistiram cadernos.
+- Reindexação solicitada com `requestKey=release-e330465-published-20260924`, HTTP 202. Job `cmufo6pfa0000jq80xf40lxkl`: **completed**, criado às 15:11:36.503Z e concluído às 15:11:40.004Z; total/processados/chunks/embeddings criados = **0**, sem erros. Não havia cadernos PUBLICADA; as 17 fichas continuam EM_REVISAO. Índice permanece vazio. Esse sucesso operacional não significa que exista conteúdo jurídico disponível.
+- SHA-256 de todas as fichas e prompts idênticos ao snapshot imediatamente anterior à troca: `9f59935593b94475c67d96f9f5903dc7a5b728a7d52ee0f6e58e9d566ae89546` e `1e57c34b004ab4fe8c827931ec15df93af7d39f39086b6c8fca4dfdaf115328f`.
+- Backup recente de 27 tabelas e prompts revalidado por gzip antes da ativação. Rollback não foi necessário. Script autônomo disponível e validado por sintaxe: `/opt/judith-backend/backups/review-e330465/rollback.sh --rollback-image-only`, usando a imagem anterior preservada. Não restaura o banco nem desfaz escritas editoriais posteriores automaticamente.
+
+[Recibo integral de validação, embeddings e job](evidence/2026-09-24/post-activation-e330465.json). [Revisão, digest e estado dos contêineres](evidence/2026-09-24/runtime-e330465.txt). Evidências remotas: `activation.log`, `post-activation.json`, `runtime.txt`, `pre-switch.json` na pasta de backup. Sem migration, alteração de área/prompt, publicação adicional ou mensagens a usuários reais.
+
+### Pendências após deploy
+
+1. Admin hospedado: confirmação de Ready/login/acesso à base foi fornecida pelo usuário. Ainda não foi executado nesta rodada o fluxo completo pela interface hospedada após a troca (exibição do 422, criação/edição/reabertura de conteúdo válido e acompanhamento visual do job). A API pública do backend foi verificada diretamente; isso não substitui a conferência do proxy/interface do Admin.
+2. Corpus: responsáveis precisam decidir importação/revisão/publicação dos cadernos; não foram publicados automaticamente. Permanecem as pendências editoriais de áreas e escopo de `###` registradas na revisão. Nova operação editorial exige nova requestKey para reindexação.
+3. WhatsApp: não houve envio de mensagens reais nem teste de resposta final hospedada. A aceitação semântica em banco isolado e o health da produção não comprovam esse percurso. Com zero publicados, não há contexto jurídico disponível para geração; o caminho de ausência de conteúdo deve avisar explicitamente, como coberto nos testes locais.
+
+## Histórico da preparação (antes da autorização)
 
 - Repositório: `https://github.com/KingOfSites/backend-judith.git`, branch `main`.
 - Commit de código enviado: `e330465bd29a4a7bc88cdc5f067fa0747b89d70d`.
