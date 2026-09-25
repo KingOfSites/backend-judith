@@ -56,12 +56,14 @@ export type ParsedInbound = {
 
 export type ParsedReaction = { whatsappNumber: string; reactedMessageId: string; emoji: string };
 
-// Reação do usuário (não de grupo) a uma mensagem enviada pela própria JUDITH.
+// Reação do usuário (não de grupo) a uma mensagem. O fromMe da chave reagida depende do ponto de
+// vista de quem reagiu, então não é usado: só conta reação a uma resposta registrada da JUDITH para
+// esse mesmo usuário (recordReaction).
 export function parseReaction(body: EvolutionWebhookBody): ParsedReaction | null {
   if (body.event !== "messages.upsert") return null;
   const d = body.data;
   const r = d.message?.reactionMessage;
-  if (!d.key || d.key.fromMe || !r?.key?.id || r.key.fromMe !== true) return null;
+  if (!d.key || d.key.fromMe || !r?.key?.id) return null;
   if (d.key.remoteJid.endsWith("@g.us")) return null;
   return { whatsappNumber: d.key.remoteJid.split("@")[0] ?? d.key.remoteJid, reactedMessageId: r.key.id, emoji: r.text ?? "" };
 }

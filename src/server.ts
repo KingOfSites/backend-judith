@@ -44,7 +44,7 @@ app.post("/webhook/evolution", async (req, reply) => {
 
   if (reaction) {
     // "Isso te ajudou?": 👍/👎 na resposta da JUDITH. Não gera resposta nem consome crédito.
-    try { await recordReaction(reaction.reactedMessageId, reaction.whatsappNumber, reaction.emoji); }
+    try { app.log.info({ recorded: await recordReaction(reaction.reactedMessageId, reaction.whatsappNumber, reaction.emoji), removed: !reaction.emoji }, "judith.reaction"); }
     catch (err) { app.log.error({ err }, "judith.reaction.fail"); }
     return;
   }

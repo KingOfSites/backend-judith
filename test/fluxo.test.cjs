@@ -271,8 +271,9 @@ async function main() {
   await react('👍', '5511999999999');
   assert.equal(state.feedback[replyId].helpful, false, 'another number cannot rate this answer');
   await react('👍', '0000000000000', 'unknown-reply');
-  await react('👍', '0000000000000', replyId, false);
-  assert.equal(state.feedback[replyId].helpful, false, 'reaction to own message is ignored');
+  // The reacted key's fromMe is from the reactor's point of view; it must not block the rating.
+  await react('😡', '0000000000000', replyId, false);
+  assert.equal(state.feedback[replyId].helpful, false); assert.equal(state.feedback[replyId].reaction, '😡');
   await react('👍');
   assert.equal(state.feedback[replyId].helpful, true);
   await react('');
