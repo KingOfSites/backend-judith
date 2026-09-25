@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { Area } from "./areas.js";
 import { Chunk, PARSER_VERSION, parseNotebook } from "./parser.js";
 import { AreaKeywords, keywordAreas } from "./keywords.js";
+import { KnowledgeSearchError } from "./errors.js";
 
 export const hash = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
 export type Source = { id: string; slug: string; titulo: string; area: string; status: string; fontes: unknown; conteudo: string; ordem: number };
@@ -132,7 +133,17 @@ export type RetrieveOptions = { previousArea?: Area | null; keywords?: AreaKeywo
  */
 export async function retrieve(question: string, provider: SemanticProvider, load: (area: Area, model: string) => Promise<Candidate[]>, history: SearchTurn[] = [], options: RetrieveOptions = {}) {
   const recent = history.filter(t => t.role === "user").slice(-8);
-  const prepared = recent.length && provider.contextualize ? await provider.contextualize(question, recent) : question;
+  let prepared: Awaited<ReturnType<NonNullable<SemanticProvider["contextualize"]>>> = question;
+  if (recent.length && provider.contextualize) {
+    try { prepared = await provider.contextualize(question, recent); }
+    catch (error) {
+      if (!(error instanceof KnowledgeSearchError && error.code === "CLASSIFICATION_INVALID")) throw error;
+      // The extractive selection was rejected (common for very short continuations such as "e aí?").
+      // Fall back to the literal previous user message: still user text only, never assistant text.
+      const previous = recent[recent.length - 1]!.content.slice(0, 300);
+      prepared = { resolvedQuestion: `${question}\nContexto informado pelo usuário: ${previous}`, searchText: `${question} ${previous}` };
+    }
+  }
   const { searchText, resolvedQuestion } = typeof prepared === "string" ? { searchText: prepared, resolvedQuestion: prepared } : prepared;
   const classified = await provider.classify(resolvedQuestion);
   const base = classified ?? (prepared !== question ? options.previousArea ?? null : null);

@@ -259,3 +259,18 @@ test('busca: palavras-chave somam área ao classificador e cobrem quando ele nã
   result = await retrieve('previsão do tempo', { ...provider, classify: async () => null }, async () => assert.fail('load'), [], { keywords });
   assert.equal(result.area, null); assert.deepEqual(result.areas, []);
 });
+
+test('busca: continuação curta com seleção rejeitada usa a mensagem anterior literal e a área anterior', async () => {
+  const { KnowledgeSearchError } = require('../dist/knowledge/errors.js');
+  const history = [{ role: 'user', content: 'Emiti uma duplicata e o cliente não pagou.' }, { role: 'assistant', content: 'Resposta que não pode virar contexto.' }];
+  const seen = [];
+  const provider = { model: 'test', contextualize: async () => { throw new KnowledgeSearchError('CLASSIFICATION_INVALID'); },
+    classify: async q => { seen.push(q); return null; }, embed: async q => { seen.push(q); return [1, 0]; } };
+  const load = async area => [{ id: 'x', areas: [area], published: true, vector: [1, 0], content: 'bloco' }];
+  const result = await retrieve('E aí?', provider, load, history, { previousArea: 'empresarial' });
+  assert.equal(result.resolvedQuestion, 'E aí?\nContexto informado pelo usuário: Emiti uma duplicata e o cliente não pagou.');
+  assert.equal(result.area, 'empresarial'); assert.equal(result.areaSource, 'previous'); assert.equal(result.chunks.length, 1);
+  assert.ok(seen.every(q => !q.includes('Resposta que não pode')));
+  // Other failures still propagate.
+  await assert.rejects(retrieve('E aí?', { ...provider, contextualize: async () => { throw new Error('rede'); } }, load, history), /rede/);
+});
