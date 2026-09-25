@@ -119,6 +119,12 @@ test('parser: marcação após prosa só afeta os blocos seguintes', () => {
   const chunks = parseNotebook('## A\nantes\n**Área:** autoral\ndepois\n### B\nsub\n', 'civil');
   assert.deepEqual(chunks.map(c => c.areas), [['civil'], ['autoral'], ['autoral']]);
 });
+test('parser: aceita marcação no estilo WhatsApp (*Área:* e *Área*:)', () => {
+  const chunks = parseNotebook('## A\n*Área:* consumidor\ntexto\n## B\n*Area*: lgpd\ntexto\n## C\n**Área:** autoral\ntexto\n', 'civil');
+  assert.deepEqual(chunks.map(c => c.areas), [['consumidor'], ['lgpd'], ['autoral']]);
+  assert.ok(!chunks[0].semanticText.includes('Área'));
+  assert.throws(() => parseNotebook('## A\n*Área:* civil-imobiliario\ntexto', 'civil'), e => e.issues[0].valor === 'civil-imobiliario' && e.issues[0].linha === 2);
+});
 test('parser: metadados/frontmatter, vírgulas e erros localizados', () => {
   assert.deepEqual(parseNotebook('---\narea: civil, consumidor\n---\n## A\ntexto', 'lgpd')[0].areas, ['civil', 'consumidor']);
   assert.throws(() => parseNotebook('## Contratos\n**Área:** civil, financeiro\ntexto', 'civil'), e => e.issues[0].linha === 2 && e.issues[0].capitulo === 'Contratos' && e.issues[0].valor === 'financeiro' && e.issues[0].origem === 'markdown');

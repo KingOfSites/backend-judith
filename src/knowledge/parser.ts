@@ -1,6 +1,6 @@
 import { Area, KnowledgeValidationError, ValidationIssue, validateAreas } from "./areas.js";
 
-export const PARSER_VERSION = "markdown-v3";
+export const PARSER_VERSION = "markdown-v4";
 export type Chunk = { content: string; semanticText: string; areas: Area[]; chapter: string; subchapter: string | null; line: number };
 
 const HEADING = /^ {0,3}#{1,6}(?:\s|$)/;
@@ -64,9 +64,10 @@ export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
       else subchapter = heading[2]!;
       currentAreas = running;
     }
-    const marker = /^ {0,3}(?:\*\*(?:Área|Area):\*\*|\*\*(?:Área|Area)\*\*:|(?:Área|Area):)\s*(.*)$/i.exec(text);
+    // **Área:**, **Área**:, WhatsApp-style *Área:* / *Área*: and plain Área:.
+    const marker = /^ {0,3}(?:(\*{1,2})(?:Área|Area):\1|(\*{1,2})(?:Área|Area)\2:|(?:Área|Area):)\s*(.*)$/i.exec(text);
     if (marker) {
-      const next = areas(marker[1], { origem: "markdown", campo: "area", linha: i + 1, capitulo: chapter }, currentAreas);
+      const next = areas(marker[3], { origem: "markdown", campo: "area", linha: i + 1, capitulo: chapter }, currentAreas);
       // A marker after content affects only following blocks; right after a heading it applies to that heading.
       if (useful) { flush(); line = i + 1; }
       currentAreas = next;
