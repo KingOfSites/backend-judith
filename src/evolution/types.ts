@@ -32,6 +32,11 @@ export type EvolutionWebhookBody = {
         mimetype: string;
         url?: string;
       };
+      // Reação (emoji) a uma mensagem; text vazio = reação removida.
+      reactionMessage?: {
+        key?: { remoteJid?: string; fromMe?: boolean; id?: string };
+        text?: string;
+      };
     };
     messageType?: string;
     messageTimestamp?: number;
@@ -48,6 +53,18 @@ export type ParsedInbound = {
   isFromMe: boolean;
   messageId: string;
 };
+
+export type ParsedReaction = { whatsappNumber: string; reactedMessageId: string; emoji: string };
+
+// Reação do usuário (não de grupo) a uma mensagem enviada pela própria JUDITH.
+export function parseReaction(body: EvolutionWebhookBody): ParsedReaction | null {
+  if (body.event !== "messages.upsert") return null;
+  const d = body.data;
+  const r = d.message?.reactionMessage;
+  if (!d.key || d.key.fromMe || !r?.key?.id || r.key.fromMe !== true) return null;
+  if (d.key.remoteJid.endsWith("@g.us")) return null;
+  return { whatsappNumber: d.key.remoteJid.split("@")[0] ?? d.key.remoteJid, reactedMessageId: r.key.id, emoji: r.text ?? "" };
+}
 
 export function parseInbound(body: EvolutionWebhookBody): ParsedInbound | null {
   if (body.event !== "messages.upsert") return null;

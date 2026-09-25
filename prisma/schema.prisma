@@ -504,6 +504,22 @@ model KnowledgeSetting {
   updatedAt DateTime @updatedAt
 }
 
+// "Isso te ajudou?": reação do usuário (👍/👎) na resposta da base enviada pelo WhatsApp.
+// replyId é o id da mensagem da JUDITH no WhatsApp; interactionId é o id da pergunta
+// (mesmo id do rastro KnowledgeInteraction).
+model KnowledgeFeedback {
+  replyId       String   @id @db.VarChar(191)
+  interactionId String   @db.VarChar(191)
+  userId        String   @db.VarChar(191)
+  helpful       Boolean?
+  reaction      String?  @db.VarChar(32)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([interactionId])
+  @@index([helpful, updatedAt])
+}
+
 model KnowledgeDocument {
   sourceId    String @id
   fingerprint String @db.Char(64)

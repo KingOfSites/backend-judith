@@ -58,6 +58,9 @@ const PEDIR_PERFIL_DE_NOVO = [
 // Primeiro contato: informa a data da última revisão da base (editada no Admin), antes do
 // parágrafo dos termos. Sem data informada, a mensagem fica como está.
 const PARAGRAFO = "\n\n";
+
+// "Isso te ajudou?" pelo WhatsApp: a reação na resposta é registrada (src/knowledge/feedback.ts).
+const DICA_REACAO = "Depois de cada resposta, reaja com 👍 ou 👎 pra me dizer se ajudou. Isso me ajuda a melhorar.";
 export async function comRevisaoDaBase(mensagens: string[]): Promise<string[]> {
   const data = await loadBaseRevisadaEm();
   if (!data) return mensagens;
@@ -172,7 +175,9 @@ export async function processarOnboarding(input: {
 
 ${dica}
 
-Pode mandar sua dúvida — estou aqui. 😊 Pode ser texto ou áudio.`;
+Pode mandar sua dúvida — estou aqui. 😊 Pode ser texto ou áudio.
+
+${DICA_REACAO}`;
       return {
         user: userAtualizado,
         resultado: { tipo: "responder", mensagens: [confirmacao] },
@@ -191,7 +196,7 @@ Pode mandar sua dúvida — estou aqui. 😊 Pode ser texto ou áudio.`;
       resultado: {
         tipo: "seguir_com_duvida",
         mensagemParaIA: duvidaOriginal,
-        mensagensExtras: [`Entendido! Aqui vai uma coisa que vale saber primeiro:\n\n${dica}\n\nAgora, sobre sua pergunta:`],
+        mensagensExtras: [`Entendido! Aqui vai uma coisa que vale saber primeiro:\n\n${dica}\n\n${DICA_REACAO}\n\nAgora, sobre sua pergunta:`],
       },
     };
   }

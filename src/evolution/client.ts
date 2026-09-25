@@ -9,7 +9,8 @@ const http: AxiosInstance = axios.create({
 });
 
 // Doc: POST /message/sendText/{instance}
-export async function sendText(toNumber: string, text: string, inboundMessageId?: string): Promise<void> {
+// Retorna o id da mensagem enviada no WhatsApp (usado para associar reações), ou null.
+export async function sendText(toNumber: string, text: string, inboundMessageId?: string): Promise<string | null> {
   const fingerprint = (value: string) => createHash("sha256").update(value).digest("hex");
   const metadata = {
     instance: env.EVOLUTION_INSTANCE, inboundMessageId,
@@ -21,16 +22,18 @@ export async function sendText(toNumber: string, text: string, inboundMessageId?
       number: toNumber, text, linkPreview: false,
     });
     const data = response.data;
+    const messageId = typeof data?.key?.id === "string" ? data.key.id : null;
     console.info(JSON.stringify({
       event: "evolution.send.receipt", time: new Date().toISOString(), ...metadata,
       httpStatus: response.status,
-      messageId: typeof data?.key?.id === "string" ? data.key.id : null,
+      messageId,
       instanceId: typeof data?.instanceId === "string" ? data.instanceId : null,
       providerStatus: typeof data?.status === "string" || typeof data?.status === "number" ? data.status : null,
       fromMe: data?.key?.fromMe === true,
       recipientMatches: data?.key?.remoteJid === `${toNumber}@s.whatsapp.net`,
       providerRecipientHash: typeof data?.key?.remoteJid === "string" ? fingerprint(data.key.remoteJid) : null,
     }));
+    return messageId;
   } catch (error) {
     // Never propagate Axios config/headers or response bodies into webhook logs.
     const httpStatus = axios.isAxiosError(error) ? error.response?.status ?? null : null;

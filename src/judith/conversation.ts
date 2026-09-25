@@ -71,6 +71,8 @@ export type HandleOutput = {
   userId: string;
   modelUsed?: string;
   knowledgeFailure?: string;
+  // Resposta da base (função dúvida): a última mensagem de replies pode receber 👍/👎.
+  feedbackInteractionId?: string;
 };
 
 export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
@@ -178,5 +180,6 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     sessionId: session.id,
     userId: user.id,
     modelUsed: result.model,
+    ...(route.funcao === "duvida" && persistedIncomingId ? { feedbackInteractionId: persistedIncomingId } : {}),
   };
 }

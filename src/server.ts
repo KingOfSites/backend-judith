@@ -1,8 +1,9 @@
 import Fastify from "fastify";
 import sensible from "@fastify/sensible";
 import { env } from "./config/env.js";
-import { parseInbound, EvolutionWebhookBody } from "./evolution/types.js";
+import { parseInbound, parseReaction, EvolutionWebhookBody } from "./evolution/types.js";
 import { sendText, sendTyping } from "./evolution/client.js";
+import { recordReaction, registerAnswer } from "./knowledge/feedback.js";
 import { downloadMediaBase64 } from "./evolution/media.js";
 import { handleInbound } from "./judith/conversation.js";
 import { transcreverAudio } from "./judith/whisper.js";
@@ -35,11 +36,18 @@ app.get("/health", async () => ({ status: "ok", versao: await getPromptVersao() 
 // com o evento "messages.upsert" habilitado.
 app.post("/webhook/evolution", async (req, reply) => {
   const body = req.body as EvolutionWebhookBody;
+  const reaction = body.instance === env.EVOLUTION_INSTANCE ? parseReaction(body) : null;
   const parsed = parseInbound(body);
 
   // 200 imediato para o Evolution não reenviar — processa em background.
   reply.code(200).send({ received: true });
 
+  if (reaction) {
+    // "Isso te ajudou?": 👍/👎 na resposta da JUDITH. Não gera resposta nem consome crédito.
+    try { await recordReaction(reaction.reactedMessageId, reaction.whatsappNumber, reaction.emoji); }
+    catch (err) { app.log.error({ err }, "judith.reaction.fail"); }
+    return;
+  }
   if (!parsed) return;
 
   // Áudio: baixa do Evolution e transcreve com Whisper.
@@ -97,7 +105,10 @@ app.post("/webhook/evolution", async (req, reply) => {
       );
       for (let i = 0; i < result.replies.length; i++) {
         if (i > 0) await sendTyping(parsed.whatsappNumber, 800);
-        await sendText(parsed.whatsappNumber, result.replies[i]!, parsed.messageId);
+        const sentId = await sendText(parsed.whatsappNumber, result.replies[i]!, parsed.messageId);
+        if (sentId && result.feedbackInteractionId && i === result.replies.length - 1) {
+          await registerAnswer(sentId, result.feedbackInteractionId, result.userId);
+        }
       }
     } else {
       // Bot multi-tenant: roteia pela instância → busca Bot → responde com persona do cliente

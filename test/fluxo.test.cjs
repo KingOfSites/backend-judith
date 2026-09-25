@@ -29,7 +29,7 @@ async function main() {
   const prisma = {
     promptConfig: { findUnique: async () => row },
     fichaConhecimento: { findMany: async (q) => { assert.equal(q.where.status, 'PUBLICADA'); return [{ titulo: 'Synthetic published reference', area: 'test', fontes: [], conteudo: 'PUBLISHED_KNOWLEDGE_TEST' }]; } },
-    user: { findUnique: async () => state.user, findUniqueOrThrow: async () => state.user, update: async ({ data }) => Object.assign(state.user, data) },
+    user: { findUnique: async ({ where } = {}) => where?.whatsappNumber && where.whatsappNumber !== state.user.whatsappNumber ? null : state.user, findUniqueOrThrow: async () => state.user, update: async ({ data }) => Object.assign(state.user, data) },
     subscription: { findFirst: async () => state.subscription },
     creditoCortesia: {
       findFirst: async ({ where }) => {
@@ -53,6 +53,11 @@ async function main() {
     session: { findFirst: async () => null, create: async () => ({ id: 'smoke-session' }), update: async () => ({}) },
     message: { findMany: async ({ take, orderBy }) => { assert.deepEqual(orderBy, { createdAt: 'desc' }); return state.messages.slice(-take).reverse(); }, create: async ({ data }) => { if (state.historyFail) throw new Error('mock history failure'); if (data.id && state.messages.some(m => m.id === data.id)) throw Object.assign(new Error('duplicate'), { code: 'P2002' }); state.messages.push(data); return data; } },
     knowledgeInteraction: { findMany: async () => state.traces ?? [] },
+    knowledgeFeedback: {
+      create: async ({ data }) => { state.feedback = { ...(state.feedback || {}), [data.replyId]: { ...data, helpful: null, reaction: null } }; return data; },
+      findUnique: async ({ where }) => state.feedback?.[where.replyId] ?? null,
+      update: async ({ where, data }) => Object.assign(state.feedback[where.replyId], data),
+    },
     knowledgeSetting: { findUnique: async ({ where }) => state.settings && where.chave in state.settings ? { valor: state.settings[where.chave] } : null },
     $queryRaw: async (strings, id) => { assert.match(strings.join('?'), /FOR UPDATE/); assert.equal(id, state.user.id); state.locked = true; return [{ id }]; },
     $transaction: async (fn, options) => {
@@ -71,7 +76,7 @@ async function main() {
   replace(base + 'config/env.js', { env: { NODE_ENV: 'test', LOG_LEVEL: 'silent', PORT: 0, EVOLUTION_INSTANCE: 'judith', ANTHROPIC_API_KEY: 'fake', JUDITH_MODEL_HAIKU: 'mock-haiku', JUDITH_MODEL_SONNET: 'mock-sonnet', WEB_JUDITH_URL: 'https://checkout.invalid', INTERNAL_API_KEY: 'fake', URL_TERMOS: 'https://judith.invalid/termos' } });
   replace('axios', { post: async (url, data) => { state.payments.push({ url, data }); if (state.paymentFail) throw new Error('mock checkout unavailable'); return { data: { url: 'https://checkout.invalid/synthetic' } }; } });
   replace('@anthropic-ai/sdk', class { messages = { create: async (req) => { assert.equal(state.consumed, 0); state.calls.push(req); if (state.aiFail || state.generationSecondFail && state.calls.length === 2) throw new Error('mock AI unavailable'); return { content: req.tools ? [{type:'tool_use',name:'grounded_answer',input:{scopeAnalysis:'mock scope',unsupported:false,answer:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}}] : [{type:'text',text:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}], usage: { input_tokens: 1, output_tokens: 1 } }; } }; });
-  replace(base + 'evolution/client.js', { sendTyping: async () => {}, sendText: async (number, text) => { state.sends.push({ number, text }); } });
+  replace(base + 'evolution/client.js', { sendTyping: async () => {}, sendText: async (number, text) => { state.sends.push({ number, text }); return 'sent-' + state.sends.length; } });
   replace(base + 'evolution/media.js', { downloadMediaBase64: deny });
   replace(base + 'judith/whisper.js', { transcreverAudio: deny });
   replace(base + 'knowledge/audit.js', {writeAudit:async(id,payload)=>{ if(state.traceFail || state.traceLateFail && payload.stage==='support_passed') throw new (require(base+'knowledge/errors.js').KnowledgeSearchError)('TRACE_UNAVAILABLE'); }});
@@ -253,6 +258,27 @@ async function main() {
   await webhook('E se ele não pagar?');
   assert.deepEqual(state.previousAreas, [null, 'empresarial']);
   passed.push('Follow-up question receives the area of the previous question in the session');
+
+  reset({ limit: 50 });
+  await webhook('Pergunta respondida pela base');
+  const replyId = 'sent-' + state.sends.length;
+  assert.deepEqual(Object.keys(state.feedback), [replyId]);
+  assert.equal(state.feedback[replyId].interactionId, state.messages[0].id);
+  const react = (emoji, from = '0000000000000', target = replyId, fromMe = true) => webhook('', { data: { key: { remoteJid: from + '@s.whatsapp.net', fromMe: false, id: 'reaction-' + transportId++ }, message: { reactionMessage: { key: { remoteJid: '0000000000000@s.whatsapp.net', fromMe, id: target }, text: emoji } } } });
+  const before = { sends: state.sends.length, usages: state.usages.length, messages: state.messages.length };
+  await react('👎🏽');
+  assert.equal(state.feedback[replyId].helpful, false); assert.equal(state.feedback[replyId].reaction, '👎🏽');
+  await react('👍', '5511999999999');
+  assert.equal(state.feedback[replyId].helpful, false, 'another number cannot rate this answer');
+  await react('👍', '0000000000000', 'unknown-reply');
+  await react('👍', '0000000000000', replyId, false);
+  assert.equal(state.feedback[replyId].helpful, false, 'reaction to own message is ignored');
+  await react('👍');
+  assert.equal(state.feedback[replyId].helpful, true);
+  await react('');
+  assert.equal(state.feedback[replyId].helpful, null); assert.equal(state.feedback[replyId].reaction, null);
+  assert.deepEqual({ sends: state.sends.length, usages: state.usages.length, messages: state.messages.length }, before);
+  passed.push('Reaction 👍/👎 on a base answer is recorded for its question, without reply or credit');
 
   const { comRevisaoDaBase } = require(base + 'judith/onboarding/flow.js');
   const welcome = ['Oi!\n\nApresentação.\n\nLeia os termos: https://judith.invalid/termos\n\nAceita?'];

@@ -274,3 +274,10 @@ test('busca: continuação curta com seleção rejeitada usa a mensagem anterior
   // Other failures still propagate.
   await assert.rejects(retrieve('E aí?', { ...provider, contextualize: async () => { throw new Error('rede'); } }, load, history), /rede/);
 });
+
+test('feedback: significado das reações, com tom de pele e variação', () => {
+  const { reactionMeaning } = require('../dist/knowledge/feedback.js');
+  for (const e of ['👍', '👍🏾', '❤️', '🙏', '✅']) assert.equal(reactionMeaning(e), true, e);
+  for (const e of ['👎', '👎🏻', '😡', '❌']) assert.equal(reactionMeaning(e), false, e);
+  for (const e of ['😂', '🤔', 'x']) assert.equal(reactionMeaning(e), null, e);
+});
