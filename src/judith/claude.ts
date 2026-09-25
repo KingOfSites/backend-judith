@@ -91,10 +91,11 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   if (input.funcao === "duvida") {
     try { context = await getKnowledgeContext(input.userMessage, history, input.previousArea ?? null); }
     catch (error) {
-      await writeAudit(traceId, { ...audit, stage: "retrieval_failed", code: error instanceof KnowledgeSearchError ? error.code : "KNOWLEDGE_UNAVAILABLE" });
+      const areas = error && typeof error === "object" && "areas" in error && Array.isArray(error.areas) ? error.areas : undefined;
+      await writeAudit(traceId, { ...audit, stage: "retrieval_failed", code: error instanceof KnowledgeSearchError ? error.code : "KNOWLEDGE_UNAVAILABLE", ...(areas?.length ? { area: areas[0], areas } : {}) });
       throw error;
     }
-    Object.assign(audit, { stage: "retrieved", area: context.area, areaSource: context.areaSource, searchQuery: context.searchText, excludedFromGeneration: context.excludedFromGeneration,
+    Object.assign(audit, { stage: "retrieved", area: context.area, areas: context.areas, areaSource: context.areaSource, addedByKeywords: context.addedByKeywords, searchQuery: context.searchText, excludedFromGeneration: context.excludedFromGeneration,
       chunks: context.chunks.map(c => ({ id: c.id, sourceId: c.sourceId, version: c.version, contentHash: hash(c.content), score: c.score, content: c.content, chapter: c.chapter, fontes: c.fontes })) });
     await writeAudit(traceId, audit);
   }

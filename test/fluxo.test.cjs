@@ -53,6 +53,7 @@ async function main() {
     session: { findFirst: async () => null, create: async () => ({ id: 'smoke-session' }), update: async () => ({}) },
     message: { findMany: async ({ take, orderBy }) => { assert.deepEqual(orderBy, { createdAt: 'desc' }); return state.messages.slice(-take).reverse(); }, create: async ({ data }) => { if (state.historyFail) throw new Error('mock history failure'); if (data.id && state.messages.some(m => m.id === data.id)) throw Object.assign(new Error('duplicate'), { code: 'P2002' }); state.messages.push(data); return data; } },
     knowledgeInteraction: { findMany: async () => state.traces ?? [] },
+    knowledgeSetting: { findUnique: async ({ where }) => state.settings && where.chave in state.settings ? { valor: state.settings[where.chave] } : null },
     $queryRaw: async (strings, id) => { assert.match(strings.join('?'), /FOR UPDATE/); assert.equal(id, state.user.id); state.locked = true; return [{ id }]; },
     $transaction: async (fn, options) => {
       assert.equal(options.isolationLevel, 'ReadCommitted');
@@ -67,7 +68,7 @@ async function main() {
     },
   };
   replace(base + 'db/client.js', { prisma });
-  replace(base + 'config/env.js', { env: { NODE_ENV: 'test', LOG_LEVEL: 'silent', PORT: 0, EVOLUTION_INSTANCE: 'judith', ANTHROPIC_API_KEY: 'fake', JUDITH_MODEL_HAIKU: 'mock-haiku', JUDITH_MODEL_SONNET: 'mock-sonnet', WEB_JUDITH_URL: 'https://checkout.invalid', INTERNAL_API_KEY: 'fake' } });
+  replace(base + 'config/env.js', { env: { NODE_ENV: 'test', LOG_LEVEL: 'silent', PORT: 0, EVOLUTION_INSTANCE: 'judith', ANTHROPIC_API_KEY: 'fake', JUDITH_MODEL_HAIKU: 'mock-haiku', JUDITH_MODEL_SONNET: 'mock-sonnet', WEB_JUDITH_URL: 'https://checkout.invalid', INTERNAL_API_KEY: 'fake', URL_TERMOS: 'https://judith.invalid/termos' } });
   replace('axios', { post: async (url, data) => { state.payments.push({ url, data }); if (state.paymentFail) throw new Error('mock checkout unavailable'); return { data: { url: 'https://checkout.invalid/synthetic' } }; } });
   replace('@anthropic-ai/sdk', class { messages = { create: async (req) => { assert.equal(state.consumed, 0); state.calls.push(req); if (state.aiFail || state.generationSecondFail && state.calls.length === 2) throw new Error('mock AI unavailable'); return { content: req.tools ? [{type:'tool_use',name:'grounded_answer',input:{scopeAnalysis:'mock scope',unsupported:false,answer:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}}] : [{type:'text',text:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}], usage: { input_tokens: 1, output_tokens: 1 } }; } }; });
   replace(base + 'evolution/client.js', { sendTyping: async () => {}, sendText: async (number, text) => { state.sends.push({ number, text }); } });
@@ -252,6 +253,17 @@ async function main() {
   await webhook('E se ele não pagar?');
   assert.deepEqual(state.previousAreas, [null, 'empresarial']);
   passed.push('Follow-up question receives the area of the previous question in the session');
+
+  const { comRevisaoDaBase } = require(base + 'judith/onboarding/flow.js');
+  const welcome = ['Oi!\n\nApresentação.\n\nLeia os termos: https://judith.invalid/termos\n\nAceita?'];
+  reset({ settings: { baseRevisadaEm: '2026-09-25' } });
+  assert.deepEqual(await comRevisaoDaBase(welcome), ['Oi!\n\nApresentação.\n\n📚 Base jurídica revisada em 25/09.\n\nLeia os termos: https://judith.invalid/termos\n\nAceita?']);
+  passed.push('Onboarding shows the base revision date before the terms paragraph');
+  reset({ settings: {} });
+  assert.deepEqual(await comRevisaoDaBase(welcome), welcome);
+  reset({ settings: { baseRevisadaEm: 'invalida' } });
+  assert.deepEqual(await comRevisaoDaBase(welcome), welcome);
+  passed.push('Onboarding unchanged without a valid base revision date');
 
   reset({ limit: 50 });
   await webhook('Primeira pergunta sem histórico');

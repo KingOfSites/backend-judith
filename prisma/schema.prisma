@@ -496,6 +496,14 @@ model KnowledgeInteraction {
   updatedAt DateTime @updatedAt
 }
 
+// Ajustes da base editados no Admin: listas de palavras por área (areaKeywords)
+// e data da última revisão (baseRevisadaEm, "AAAA-MM-DD").
+model KnowledgeSetting {
+  chave     String   @id @db.VarChar(64)
+  valor     Json
+  updatedAt DateTime @updatedAt
+}
+
 model KnowledgeDocument {
   sourceId    String @id
   fingerprint String @db.Char(64)

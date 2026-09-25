@@ -6,6 +6,7 @@ const { AREAS, validateAreas } = require('../dist/knowledge/areas.js');
 const { parseNotebook } = require('../dist/knowledge/parser.js');
 const { prepareDocument, retrieve, fingerprint, cosine, vector } = require('../dist/knowledge/core.js');
 const { accidentSourceForDefect } = require('../dist/knowledge/scope.js');
+const { keywordAreas, parseAreaKeywords } = require('../dist/knowledge/keywords.js');
 const fixture = name => fs.readFileSync(path.join(__dirname, 'fixtures', name + '.md'), 'utf8');
 const source = (overrides = {}) => ({ id: 'one', slug: 'civil-contratos', titulo: 'Contrato', area: 'civil', status: 'PUBLICADA', fontes: [], ordem: 0, conteudo: '## Contratos\nAção com acentuação.', ...overrides });
 
@@ -212,15 +213,49 @@ test('busca: continuação vaga sem área classificada usa a área da pergunta a
   const base = { model: 'test', classify: async () => null, embed: async () => [1, 0] };
   const history = [{ role: 'user', content: 'Meu cliente não pagou a duplicata.' }];
   // Depends on history (contextualized) -> previous area.
-  let result = await retrieve('E se ele não pagar?', { ...base, contextualize: async q => q + '\nContexto informado pelo usuário: duplicata' }, load, history, 'empresarial');
+  let result = await retrieve('E se ele não pagar?', { ...base, contextualize: async q => q + '\nContexto informado pelo usuário: duplicata' }, load, history, { previousArea: 'empresarial' });
   assert.equal(result.area, 'empresarial'); assert.equal(result.areaSource, 'previous'); assert.equal(result.chunks.length, 1);
   // Self-contained question keeps "no area".
-  result = await retrieve('Qual a previsão do tempo?', { ...base, contextualize: async q => q }, load, history, 'empresarial');
+  result = await retrieve('Qual a previsão do tempo?', { ...base, contextualize: async q => q }, load, history, { previousArea: 'empresarial' });
   assert.equal(result.area, null); assert.equal(result.chunks.length, 0);
   // Classifier result wins over the previous area.
-  result = await retrieve('E sobre dados pessoais?', { ...base, classify: async () => 'lgpd', contextualize: async q => q + '\nContexto' }, load, history, 'empresarial');
+  result = await retrieve('E sobre dados pessoais?', { ...base, classify: async () => 'lgpd', contextualize: async q => q + '\nContexto' }, load, history, { previousArea: 'empresarial' });
   assert.equal(result.area, 'lgpd'); assert.equal(result.areaSource, 'classifier');
   // No previous area -> nothing to reuse.
-  result = await retrieve('E se ele não pagar?', { ...base, contextualize: async q => q + '\nContexto' }, load, history, null);
+  result = await retrieve('E se ele não pagar?', { ...base, contextualize: async q => q + '\nContexto' }, load, history, { previousArea: null });
   assert.equal(result.area, null);
+});
+
+test('palavras-chave: sem acento, sem caixa, início de palavra; lista inválida é ignorada', () => {
+  const kw = parseAreaKeywords({ empresarial: ['duplicata', 'título de crédito', ''], trabalhista: ['CLT', 'rescisão'], financeiro: ['x'], consumidor: 'nao-lista' });
+  assert.deepEqual(kw, { empresarial: ['duplicata', 'título de crédito'], trabalhista: ['CLT', 'rescisão'] });
+  assert.deepEqual(keywordAreas('Emiti DUPLICATAS e o cliente não pagou', kw), ['empresarial']);
+  assert.deepEqual(keywordAreas('É um titulo de credito?', kw), ['empresarial']);
+  assert.deepEqual(keywordAreas('Rescisao pela clt e duplicata', kw), ['empresarial', 'trabalhista']);
+  // Must start a word: "clt" inside another word does not match.
+  assert.deepEqual(keywordAreas('ecltico', kw), []);
+  assert.deepEqual(parseAreaKeywords(null), {}); assert.deepEqual(parseAreaKeywords(['empresarial']), {});
+});
+
+test('busca: palavras-chave somam área ao classificador e cobrem quando ele não acha', async () => {
+  const loads = [];
+  const load = async area => { loads.push(area); return [
+    { id: area + '-1', areas: [area], published: true, vector: [1, area === 'empresarial' ? 0 : 1], content: area },
+    { id: 'shared', areas: [area], published: true, vector: [1, 0.5], content: 'mesmo bloco em duas áreas' },
+  ]; };
+  const provider = { model: 'test', classify: async () => 'civil', embed: async () => [1, 0] };
+  const keywords = { empresarial: ['duplicata'] };
+  let result = await retrieve('O cliente não pagou a duplicata', provider, load, [], { keywords });
+  assert.deepEqual(result.areas, ['civil', 'empresarial']); assert.equal(result.area, 'civil'); assert.equal(result.areaSource, 'classifier');
+  assert.deepEqual(result.addedByKeywords, ['empresarial']); assert.deepEqual(loads, ['civil', 'empresarial']);
+  assert.deepEqual(result.chunks.map(c => c.id).sort(), ['civil-1', 'empresarial-1', 'shared']);
+  // Classifier already returned the keyword area: no duplicate.
+  result = await retrieve('duplicata', { ...provider, classify: async () => 'empresarial' }, load, [], { keywords });
+  assert.deepEqual(result.areas, ['empresarial']); assert.deepEqual(result.addedByKeywords, []);
+  // Classifier finds nothing: keywords supply the area.
+  result = await retrieve('duplicata vencida', { ...provider, classify: async () => null }, load, [], { keywords });
+  assert.deepEqual(result.areas, ['empresarial']); assert.equal(result.areaSource, 'keywords');
+  // No match, no area.
+  result = await retrieve('previsão do tempo', { ...provider, classify: async () => null }, async () => assert.fail('load'), [], { keywords });
+  assert.equal(result.area, null); assert.deepEqual(result.areas, []);
 });

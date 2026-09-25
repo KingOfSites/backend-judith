@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { Area } from "./areas.js";
 import { Chunk, PARSER_VERSION, parseNotebook } from "./parser.js";
+import { AreaKeywords, keywordAreas } from "./keywords.js";
 
 export const hash = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
 export type Source = { id: string; slug: string; titulo: string; area: string; status: string; fontes: unknown; conteudo: string; ordem: number };
@@ -119,24 +120,35 @@ export function planChunks(stored: StoredChunk[], next: NextChunk[]): ChunkPlan 
 }
 
 export type Candidate ={ id: string; sourceId?: string; version?: string; content: string; areas: Area[]; published: boolean; vector: number[]; titulo: string; fontes: unknown; chapter: string; subchapter: string | null };
+export type RetrieveOptions = { previousArea?: Area | null; keywords?: AreaKeywords };
 /**
- * `previousArea` is the area of the previous question in the same session. It is used only when the
- * classifier finds no area AND contextualization resolved the question against that history (a vague
- * continuation such as "e se ele não pagar?"); a self-contained question keeps the classifier result.
+ * Area resolution, in order:
+ * 1. the classifier;
+ * 2. `previousArea` (area of the previous question in the same session), only when the classifier finds
+ *    none AND contextualization resolved the question against that history — a vague continuation such as
+ *    "e se ele não pagar?"; a self-contained question keeps "no area";
+ * 3. fixed keyword lists (no AI) ADD their areas to the one above, or supply them when there is none.
+ * Candidates of all resulting areas compete in one similarity ranking.
  */
-export async function retrieve(question: string, provider: SemanticProvider, load: (area: Area, model: string) => Promise<Candidate[]>, history: SearchTurn[] = [], previousArea: Area | null = null) {
+export async function retrieve(question: string, provider: SemanticProvider, load: (area: Area, model: string) => Promise<Candidate[]>, history: SearchTurn[] = [], options: RetrieveOptions = {}) {
   const recent = history.filter(t => t.role === "user").slice(-8);
   const prepared = recent.length && provider.contextualize ? await provider.contextualize(question, recent) : question;
   const { searchText, resolvedQuestion } = typeof prepared === "string" ? { searchText: prepared, resolvedQuestion: prepared } : prepared;
   const classified = await provider.classify(resolvedQuestion);
-  const area = classified ?? (prepared !== question ? previousArea : null);
-  const areaSource = classified ? "classifier" as const : area ? "previous" as const : null;
-  if (!area) return { area, areaSource, chunks: [], searchText, resolvedQuestion };
+  const base = classified ?? (prepared !== question ? options.previousArea ?? null : null);
+  const addedByKeywords = keywordAreas(resolvedQuestion, options.keywords ?? {}).filter(a => a !== base);
+  const areas = [...(base ? [base] : []), ...addedByKeywords];
+  const area = areas[0] ?? null;
+  const areaSource = classified ? "classifier" as const : base ? "previous" as const : area ? "keywords" as const : null;
+  const meta = { area, areas, areaSource, addedByKeywords, searchText, resolvedQuestion };
+  if (!area) return { ...meta, chunks: [] };
   // Loader MUST constrain area/publication in the DB, before embeddings/similarity.
-  const candidates = (await load(area, provider.model)).filter(c => c.published && c.areas.includes(area));
-  if (!candidates.length) return { area, areaSource, chunks: [], searchText, resolvedQuestion };
+  const seen = new Set<string>();
+  const candidates = (await Promise.all(areas.map(a => load(a, provider.model)))).flat()
+    .filter(c => c.published && c.areas.some(a => areas.includes(a)) && !seen.has(c.id) && seen.add(c.id));
+  if (!candidates.length) return { ...meta, chunks: [] };
   const query = vector(await provider.embed(searchText, "query"));
   const chunks = candidates.map(c => ({ ...c, score: cosine(query, c.vector) }))
     .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id)).slice(0, 5);
-  return { area, areaSource, chunks, searchText, resolvedQuestion };
+  return { ...meta, chunks };
 }

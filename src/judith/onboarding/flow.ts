@@ -2,6 +2,7 @@ import { OnboardingEstado, User } from "@prisma/client";
 import { prisma } from "../../db/client.js";
 import { env } from "../../config/env.js";
 import { pegarDicaParaUsuario } from "./dicaPicker.js";
+import { loadBaseRevisadaEm } from "../../knowledge/settings.js";
 import { isAceiteTermos, isRecusaTermos, isSaudacao, parseTipoEmpresa } from "./intent.js";
 
 const URL_TERMOS = env.URL_TERMOS ?? `https://${env.JUDITH_DOMAIN}/termos`;
@@ -53,6 +54,21 @@ Estarei aqui. 😊`,
 const PEDIR_PERFIL_DE_NOVO = [
   `Quase! Preciso saber qual dos três: MEI, empresa no Simples (ME ou EPP) ou autônomo sem CNPJ?`,
 ];
+
+// Primeiro contato: informa a data da última revisão da base (editada no Admin), antes do
+// parágrafo dos termos. Sem data informada, a mensagem fica como está.
+const PARAGRAFO = "\n\n";
+export async function comRevisaoDaBase(mensagens: string[]): Promise<string[]> {
+  const data = await loadBaseRevisadaEm();
+  if (!data) return mensagens;
+  return mensagens.map(m => {
+    const paragrafos = m.split(PARAGRAFO);
+    const termos = paragrafos.findIndex(p => p.includes(URL_TERMOS));
+    if (termos < 1) return m;
+    paragrafos.splice(termos, 0, `📚 Base jurídica revisada em ${data}.`);
+    return paragrafos.join(PARAGRAFO);
+  });
+}
 
 async function ensureUser(whatsappNumber: string, pushName?: string): Promise<User> {
   const existing = await prisma.user.findUnique({ where: { whatsappNumber } });
@@ -122,14 +138,14 @@ export async function processarOnboarding(input: {
     // Primeira mensagem — Cenário A (saudação) ou B (dúvida direta)
     if (novoUsuario) {
       if (isSaudacao(texto)) {
-        return { user, resultado: { tipo: "responder", mensagens: SAUDACAO_BOAS_VINDAS } };
+        return { user, resultado: { tipo: "responder", mensagens: await comRevisaoDaBase(SAUDACAO_BOAS_VINDAS) } };
       }
       // Cenário B — guarda a dúvida pra responder depois
       await prisma.user.update({
         where: { id: user.id },
         data: { duvidaPendente: texto },
       });
-      return { user, resultado: { tipo: "responder", mensagens: RECEBI_DUVIDA_TERMOS } };
+      return { user, resultado: { tipo: "responder", mensagens: await comRevisaoDaBase(RECEBI_DUVIDA_TERMOS) } };
     }
 
     // Reenvia o pedido de aceite (qualquer outra mensagem nesse estado)
