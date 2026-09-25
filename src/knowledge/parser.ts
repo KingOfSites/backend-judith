@@ -10,7 +10,8 @@ const THEMATIC_BREAK = /^ {0,3}([-*_])(?: *\1){2,} *$/;
  * ATX ##/###; fenced/indented code is opaque.
  * A marker at the top or in a ## chapter applies from there down, across following chapters, until
  * another such marker. A marker inside a ### subchapter applies only to that subchapter; its siblings
- * and the next chapter return to the chapter's area. All invalid areas are reported together.
+ * and the next chapter return to the chapter's area. "Área do bloco:" applies only to the block that
+ * contains it, without changing the area of the blocks after it. All invalid areas are reported together.
  */
 export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
   const issues: ValidationIssue[] = [];
@@ -26,14 +27,15 @@ export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
   let chapter = "", subchapter: string | null = null, level = 0;
   let started = false;
   let raw: string[] = [], semantic: string[] = [], useful = false, line = 1;
+  let blockAreas: Area[] | null = null;
   let fence: { char: string; size: number } | null = null;
   const result: Chunk[] = [];
   const lines = conteudo.match(/[^\n]*\n|[^\n]+$/g) ?? [];
   const flush = () => {
     // Blocks made only of headings, separators and markers carry no searchable content. Their titles
     // remain in the chapter/subchapter context of the blocks that follow.
-    if (started && useful) result.push({ content: raw.join(""), semanticText: semantic.join(""), areas: [...currentAreas], chapter, subchapter, line });
-    raw = []; semantic = []; useful = false;
+    if (started && useful) result.push({ content: raw.join(""), semanticText: semantic.join(""), areas: [...(blockAreas ?? currentAreas)], chapter, subchapter, line });
+    raw = []; semantic = []; useful = false; blockAreas = null;
   };
   let frontmatter = lines[0]?.trim() === "---";
   for (let i = 0; i < lines.length; i++) {
@@ -63,6 +65,15 @@ export function parseNotebook(conteudo: string, area: unknown): Chunk[] {
       if (level === 2) { chapter = heading[2]!; subchapter = null; }
       else subchapter = heading[2]!;
       currentAreas = running;
+    }
+    // Same styles as the marker below, for a single block: **Área do bloco:**, *Área do bloco:*, Área do bloco:.
+    const block = /^ {0,3}(?:(\*{1,2})(?:Área|Area) do bloco:\1|(\*{1,2})(?:Área|Area) do bloco\2:|(?:Área|Area) do bloco:)\s*(.*)$/i.exec(text);
+    if (block) {
+      const context = { origem: "markdown", campo: "area", linha: i + 1, capitulo: chapter };
+      if (!started) issues.push({ ...context, valor: text.trim(), mensagem: "Área do bloco precisa ficar dentro de um bloco, depois de um título ## ou ###" });
+      else blockAreas = areas(block[3], context, currentAreas);
+      raw.push(original);
+      continue;
     }
     // **Área:**, **Área**:, WhatsApp-style *Área:* / *Área*: and plain Área:.
     const marker = /^ {0,3}(?:(\*{1,2})(?:Área|Area):\1|(\*{1,2})(?:Área|Area)\2:|(?:Área|Area):)\s*(.*)$/i.exec(text);

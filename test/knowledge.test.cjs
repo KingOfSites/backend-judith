@@ -191,3 +191,36 @@ test('embeddings: reutilização em área/metadados/publicação; conteúdo/mode
   await run({ ...marked, conteudo: marked.conteudo.replace('civil', 'consumidor') }); assert.equal(calls, previous);
   assert.notEqual(fingerprint(source()), fingerprint(source({ status: 'RASCUNHO' })));
 });
+
+test('parser: Área do bloco vale só para o bloco onde está, sem mudar os seguintes', () => {
+  const text = '## A\nTexto A\n## B\n*Área do bloco:* administrativo, ambiental\nTexto B\n## C\nTexto C\n### C1\n**Área do bloco:** eca\nSub C1\n### C2\nSub C2\n## D\n**Área:** lgpd\nTexto D\n## E\nÁrea do bloco: civil\nTexto E\n## F\nTexto F\n';
+  const chunks = parseNotebook(text, 'administrativo');
+  assert.deepEqual(chunks.map(c => [c.chapter, c.subchapter, c.areas.join(',')]), [
+    ['A', null, 'administrativo'], ['B', null, 'administrativo,ambiental'], ['C', null, 'administrativo'],
+    ['C', 'C1', 'eca'], ['C', 'C2', 'administrativo'], ['D', null, 'lgpd'], ['E', null, 'civil'], ['F', null, 'lgpd'],
+  ]);
+  assert.equal(chunks.map(c => c.content).join(''), text);
+  assert.ok(!chunks[1].semanticText.includes('Área do bloco'));
+  // Marker placed after the block text still belongs to that block only.
+  assert.deepEqual(parseNotebook('## A\ntexto\n**Área do bloco:** eca\n## B\nmais\n', 'civil').map(c => c.areas.join()), ['eca', 'civil']);
+  assert.throws(() => parseNotebook('## A\n**Área do bloco:** penal\ntexto', 'civil'), e => e.issues[0].valor === 'penal' && e.issues[0].linha === 2);
+  assert.throws(() => parseNotebook('Capa\n**Área do bloco:** civil\n## A\ntexto', 'civil'), /dentro de um bloco/);
+});
+
+test('busca: continuação vaga sem área classificada usa a área da pergunta anterior', async () => {
+  const load = async area => [{ id: 'x', areas: [area], published: true, vector: [1, 0], content: 'Bloco ' + area }];
+  const base = { model: 'test', classify: async () => null, embed: async () => [1, 0] };
+  const history = [{ role: 'user', content: 'Meu cliente não pagou a duplicata.' }];
+  // Depends on history (contextualized) -> previous area.
+  let result = await retrieve('E se ele não pagar?', { ...base, contextualize: async q => q + '\nContexto informado pelo usuário: duplicata' }, load, history, 'empresarial');
+  assert.equal(result.area, 'empresarial'); assert.equal(result.areaSource, 'previous'); assert.equal(result.chunks.length, 1);
+  // Self-contained question keeps "no area".
+  result = await retrieve('Qual a previsão do tempo?', { ...base, contextualize: async q => q }, load, history, 'empresarial');
+  assert.equal(result.area, null); assert.equal(result.chunks.length, 0);
+  // Classifier result wins over the previous area.
+  result = await retrieve('E sobre dados pessoais?', { ...base, classify: async () => 'lgpd', contextualize: async q => q + '\nContexto' }, load, history, 'empresarial');
+  assert.equal(result.area, 'lgpd'); assert.equal(result.areaSource, 'classifier');
+  // No previous area -> nothing to reuse.
+  result = await retrieve('E se ele não pagar?', { ...base, contextualize: async q => q + '\nContexto' }, load, history, null);
+  assert.equal(result.area, null);
+});

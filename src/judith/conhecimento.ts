@@ -1,12 +1,13 @@
 import { createProvider } from "../knowledge/provider.js";
 import { retrieve, SearchTurn } from "../knowledge/core.js";
+import { Area } from "../knowledge/areas.js";
 import { KnowledgeSearchError } from "../knowledge/errors.js";
 import { loadCandidates } from "../knowledge/repository.js";
 import { accidentSourceForDefect } from "../knowledge/scope.js";
 
-export async function getKnowledgeContext(question: string, history: SearchTurn[] = []) {
+export async function getKnowledgeContext(question: string, history: SearchTurn[] = [], previousArea: Area | null = null) {
   let result;
-  try { result = await retrieve(question, createProvider(), loadCandidates, history); }
+  try { result = await retrieve(question, createProvider(), loadCandidates, history, previousArea); }
   catch (error) {
     if (error instanceof KnowledgeSearchError) throw error;
     throw new KnowledgeSearchError("KNOWLEDGE_UNAVAILABLE");

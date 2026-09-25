@@ -7,6 +7,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { writeAudit } from "../knowledge/audit.js";
 import { verifySupport, SUPPORT_POLICY_VERSION } from "../knowledge/support.js";
 import { KnowledgeSearchError } from "../knowledge/errors.js";
+import type { Area } from "../knowledge/areas.js";
 import { GROUNDED_GENERATION_POLICY, GROUNDED_GENERATION_VERSION } from "../knowledge/generation.js";
 
 const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
@@ -26,6 +27,8 @@ export type AskInput = {
   history: ChatTurn[];
   userMessage: string;
   interactionId?: string;
+  // Área da pergunta anterior desta sessão, para continuações vagas.
+  previousArea?: Area | null;
 };
 
 export type AskOutput = {
@@ -86,12 +89,12 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   }
   let context: Awaited<ReturnType<typeof getKnowledgeContext>> | undefined;
   if (input.funcao === "duvida") {
-    try { context = await getKnowledgeContext(input.userMessage, history); }
+    try { context = await getKnowledgeContext(input.userMessage, history, input.previousArea ?? null); }
     catch (error) {
       await writeAudit(traceId, { ...audit, stage: "retrieval_failed", code: error instanceof KnowledgeSearchError ? error.code : "KNOWLEDGE_UNAVAILABLE" });
       throw error;
     }
-    Object.assign(audit, { stage: "retrieved", area: context.area, searchQuery: context.searchText, excludedFromGeneration: context.excludedFromGeneration,
+    Object.assign(audit, { stage: "retrieved", area: context.area, areaSource: context.areaSource, searchQuery: context.searchText, excludedFromGeneration: context.excludedFromGeneration,
       chunks: context.chunks.map(c => ({ id: c.id, sourceId: c.sourceId, version: c.version, contentHash: hash(c.content), score: c.score, content: c.content, chapter: c.chapter, fontes: c.fontes })) });
     await writeAudit(traceId, audit);
   }

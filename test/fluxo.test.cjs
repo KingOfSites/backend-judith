@@ -52,6 +52,7 @@ async function main() {
     usageEvent: { count: async () => state.used + state.usages.length, create: async ({ data }) => { state.usages.push(data); return data; } },
     session: { findFirst: async () => null, create: async () => ({ id: 'smoke-session' }), update: async () => ({}) },
     message: { findMany: async ({ take, orderBy }) => { assert.deepEqual(orderBy, { createdAt: 'desc' }); return state.messages.slice(-take).reverse(); }, create: async ({ data }) => { if (state.historyFail) throw new Error('mock history failure'); if (data.id && state.messages.some(m => m.id === data.id)) throw Object.assign(new Error('duplicate'), { code: 'P2002' }); state.messages.push(data); return data; } },
+    knowledgeInteraction: { findMany: async () => state.traces ?? [] },
     $queryRaw: async (strings, id) => { assert.match(strings.join('?'), /FOR UPDATE/); assert.equal(id, state.user.id); state.locked = true; return [{ id }]; },
     $transaction: async (fn, options) => {
       assert.equal(options.isolationLevel, 'ReadCommitted');
@@ -78,7 +79,8 @@ async function main() {
     if(state.supportFail || state.supportSecondFail && state.verifications === 2) throw new (require(base+'knowledge/errors.js').KnowledgeSearchError)('SUPPORT_UNAVAILABLE');
     return {supported:!state.supportRejected && !(state.supportRejectedOnce && state.verifications === 1)};
   }});
-  replace(base + 'judith/conhecimento.js', { getKnowledgeContext: async () => {
+  replace(base + 'judith/conhecimento.js', { getKnowledgeContext: async (question, history, previousArea) => {
+    state.previousAreas = [...(state.previousAreas || []), previousArea];
     if (state.knowledgeFailure) throw new (require(base + 'knowledge/errors.js').KnowledgeSearchError)(state.knowledgeFailure);
     return {text:'PUBLISHED_KNOWLEDGE_TEST',area:'lgpd',searchText:'synthetic query',chunks:[]};
   } });
@@ -243,6 +245,13 @@ async function main() {
   await webhook('', lastEvent);
   assert.equal(state.messages.length, 19); assert.equal(state.usages.length, 9);
   passed.push('16-message window drops orphan answer after one answered, one failed and seven answered questions');
+
+  reset({ limit: 50 });
+  await webhook('Meu cliente não pagou a duplicata');
+  state.traces = [{ id: state.messages[0].id, payload: { area: 'empresarial' } }];
+  await webhook('E se ele não pagar?');
+  assert.deepEqual(state.previousAreas, [null, 'empresarial']);
+  passed.push('Follow-up question receives the area of the previous question in the session');
 
   reset({ limit: 50 });
   await webhook('Primeira pergunta sem histórico');

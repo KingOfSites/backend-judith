@@ -7,6 +7,7 @@ import { routeIntent } from "./router.js";
 import { KnowledgeSearchError, knowledgeMessage } from "../knowledge/errors.js";
 import { smalltalk } from "./smalltalk.js";
 import { createHash } from "node:crypto";
+import { AREAS, Area } from "../knowledge/areas.js";
 
 // Limite de histórico de sessão (Seção 4.5 do briefing v6): 8 turnos cheios.
 const TURN_WINDOW = 8;
@@ -35,6 +36,24 @@ async function loadHistory(sessionId: string): Promise<ChatTurn[]> {
       role: m.role === MessageRole.USER ? ("user" as const) : ("assistant" as const),
       content: m.content,
     }));
+}
+
+// Área usada na pergunta anterior mais recente desta sessão (dentro da mesma janela de
+// histórico). O rastro de cada pergunta é gravado com o id da mensagem do usuário.
+async function loadPreviousArea(sessionId: string): Promise<Area | null> {
+  const questions = await prisma.message.findMany({
+    where: { sessionId, role: MessageRole.USER },
+    orderBy: { createdAt: "desc" },
+    take: TURN_WINDOW,
+    select: { id: true },
+  });
+  if (!questions.length) return null;
+  const traces = await prisma.knowledgeInteraction.findMany({ where: { id: { in: questions.map(q => q.id) } } });
+  for (const q of questions) {
+    const area = (traces.find(t => t.id === q.id)?.payload as { area?: unknown } | undefined)?.area;
+    if (typeof area === "string" && AREAS.includes(area as Area)) return area as Area;
+  }
+  return null;
 }
 
 export type HandleInput = {
@@ -99,6 +118,9 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
 
   const session = await getOrCreateActiveSession(user.id);
   const history = await loadHistory(session.id);
+  // Lida antes de gravar a mensagem atual, para não pegar a própria pergunta.
+  // Só ajuda a busca: se a leitura falhar, segue como pergunta sem área anterior.
+  const previousArea = route.funcao === "duvida" && history.length ? await loadPreviousArea(session.id).catch(() => null) : null;
 
   // Persist incoming text before any fallible search/generation. Stable transport ID prevents
   // duplicate history and charging on webhook redelivery; a new user message has a new ID.
@@ -122,6 +144,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
       history,
       userMessage: resultado.mensagemParaIA,
       interactionId: persistedIncomingId,
+      previousArea,
     });
   } catch (error) {
     if (!(error instanceof KnowledgeSearchError)) throw error;

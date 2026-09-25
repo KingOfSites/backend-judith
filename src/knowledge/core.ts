@@ -119,17 +119,24 @@ export function planChunks(stored: StoredChunk[], next: NextChunk[]): ChunkPlan 
 }
 
 export type Candidate ={ id: string; sourceId?: string; version?: string; content: string; areas: Area[]; published: boolean; vector: number[]; titulo: string; fontes: unknown; chapter: string; subchapter: string | null };
-export async function retrieve(question: string, provider: SemanticProvider, load: (area: Area, model: string) => Promise<Candidate[]>, history: SearchTurn[] = []) {
+/**
+ * `previousArea` is the area of the previous question in the same session. It is used only when the
+ * classifier finds no area AND contextualization resolved the question against that history (a vague
+ * continuation such as "e se ele não pagar?"); a self-contained question keeps the classifier result.
+ */
+export async function retrieve(question: string, provider: SemanticProvider, load: (area: Area, model: string) => Promise<Candidate[]>, history: SearchTurn[] = [], previousArea: Area | null = null) {
   const recent = history.filter(t => t.role === "user").slice(-8);
   const prepared = recent.length && provider.contextualize ? await provider.contextualize(question, recent) : question;
   const { searchText, resolvedQuestion } = typeof prepared === "string" ? { searchText: prepared, resolvedQuestion: prepared } : prepared;
-  const area = await provider.classify(resolvedQuestion);
-  if (!area) return { area, chunks: [], searchText, resolvedQuestion };
+  const classified = await provider.classify(resolvedQuestion);
+  const area = classified ?? (prepared !== question ? previousArea : null);
+  const areaSource = classified ? "classifier" as const : area ? "previous" as const : null;
+  if (!area) return { area, areaSource, chunks: [], searchText, resolvedQuestion };
   // Loader MUST constrain area/publication in the DB, before embeddings/similarity.
   const candidates = (await load(area, provider.model)).filter(c => c.published && c.areas.includes(area));
-  if (!candidates.length) return { area, chunks: [], searchText, resolvedQuestion };
+  if (!candidates.length) return { area, areaSource, chunks: [], searchText, resolvedQuestion };
   const query = vector(await provider.embed(searchText, "query"));
   const chunks = candidates.map(c => ({ ...c, score: cosine(query, c.vector) }))
     .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id)).slice(0, 5);
-  return { area, chunks, searchText, resolvedQuestion };
+  return { area, areaSource, chunks, searchText, resolvedQuestion };
 }
