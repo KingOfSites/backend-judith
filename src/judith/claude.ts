@@ -29,6 +29,8 @@ export type AskInput = {
   interactionId?: string;
   // Área da pergunta anterior desta sessão, para continuações vagas.
   previousArea?: Area | null;
+  // Regras de Composição (redação) ou de Análise, já montadas por tipo. Nunca na dúvida.
+  regras?: { sempre: string; doTipo: string };
 };
 
 export type AskOutput = {
@@ -86,6 +88,13 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
     system.push({ type: "text", text: await getPromptRedacao(), cache_control: { type: "ephemeral" } });
   } else if (input.funcao === "analise") {
     system.push({ type: "text", text: await getPromptAnalise(), cache_control: { type: "ephemeral" } });
+  }
+  // Regras entram depois da seção e antes do perfil (estático → dinâmico). O bloco
+  // "sempre" é igual entre tipos e fecha um ponto de cache; o do tipo fecha outro.
+  // São no máximo 4 pontos de cache por chamada: A, B/C, sempre e tipo.
+  if (input.funcao !== "duvida" && input.regras) {
+    if (input.regras.sempre) system.push({ type: "text", text: input.regras.sempre, cache_control: { type: "ephemeral" } });
+    if (input.regras.doTipo) system.push({ type: "text", text: input.regras.doTipo, cache_control: { type: "ephemeral" } });
   }
   let context: Awaited<ReturnType<typeof getKnowledgeContext>> | undefined;
   if (input.funcao === "duvida") {

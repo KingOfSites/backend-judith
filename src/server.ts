@@ -100,6 +100,8 @@ app.post("/webhook/evolution", async (req, reply) => {
           knowledgeFailure: result.knowledgeFailure,
           sessionId: result.sessionId,
           n: result.replies.length,
+          // Quais regras subiram neste turno (checklist de aceite: "conferir no log quais subiram").
+          regras: result.regras,
         },
         "judith.reply"
       );

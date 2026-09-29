@@ -59,6 +59,10 @@ async function main() {
       update: async ({ where, data }) => Object.assign(state.feedback[where.replyId], data),
     },
     knowledgeSetting: { findUnique: async ({ where }) => state.settings && where.chave in state.settings ? { valor: state.settings[where.chave] } : null },
+    // Regras de Composição/Análise sem cadastro: o fluxo deve ser idêntico ao anterior.
+    regraDocumento: { findMany: async () => [] },
+    tipoDocumento: { findMany: async () => [] },
+    regraConfig: { findMany: async () => [] },
     $queryRaw: async (strings, id) => { assert.match(strings.join('?'), /FOR UPDATE/); assert.equal(id, state.user.id); state.locked = true; return [{ id }]; },
     $transaction: async (fn, options) => {
       assert.equal(options.isolationLevel, 'ReadCommitted');

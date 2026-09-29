@@ -1,5 +1,7 @@
-import { MessageRole, User } from "@prisma/client";
+import { MessageRole, ModelTier, User } from "@prisma/client";
 import { prisma } from "../db/client.js";
+import { carregarRegras } from "../regras/repository.js";
+import { planejarTurno, PlanoTurno } from "../regras/fluxo.js";
 import { askJudith, ChatTurn } from "./claude.js";
 import { processarOnboarding } from "./onboarding/flow.js";
 import { checarCota, registrarUso } from "./quota.js";
@@ -73,6 +75,18 @@ export type HandleOutput = {
   knowledgeFailure?: string;
   // Resposta da base (função dúvida): a última mensagem de replies pode receber 👍/👎.
   feedbackInteractionId?: string;
+  // Rastro das Regras de Composição/Análise: o que subiu neste turno (vai pro log).
+  regras?: {
+    funcao: string;
+    tipo: string | null;
+    desvio: boolean;
+    cobrou: boolean;
+    motivo: string;
+    trocouDeFluxo?: boolean;
+    usadas: string[];
+    ausentes?: string[];
+    cortadas?: string[];
+  };
 };
 
 export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
@@ -91,12 +105,55 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     };
   }
 
-  // 2. Onboarding deixou seguir — checa assinatura/cota antes de chamar IA
-  const commonReply = !input.hasAttachment ? smalltalk(resultado.mensagemParaIA) : null;
-  if (commonReply) return { replies: [commonReply], userId: user.id };
-  const route = routeIntent({ text: resultado.mensagemParaIA, hasAttachment: input.hasAttachment });
+  // 2. Regras de Composição/Análise: só entram em cena quando há tipos cadastrados no Admin.
+  //    Sem cadastro, o fluxo é exatamente o de antes.
+  const regras = await carregarRegras();
+  const sessaoDoFluxo = regras.habilitadas ? await getOrCreateActiveSession(user.id) : null;
+  const historicoDoFluxo = sessaoDoFluxo ? await loadHistory(sessaoDoFluxo.id) : null;
+  const fluxoAberto = Boolean(sessaoDoFluxo?.fluxo);
 
-  const cota = await checarCota(user, route.funcao);
+  // 3. Onboarding deixou seguir — checa assinatura/cota antes de chamar IA.
+  //    Com documento em andamento, um "ok" é resposta da coleta, não conversa fiada.
+  const commonReply = !input.hasAttachment && !fluxoAberto ? smalltalk(resultado.mensagemParaIA) : null;
+  if (commonReply) return { replies: [commonReply], userId: user.id };
+  let route = routeIntent({ text: resultado.mensagemParaIA, hasAttachment: input.hasAttachment });
+
+  let plano: PlanoTurno | null = null;
+  if (sessaoDoFluxo && historicoDoFluxo) {
+    plano = await planejarTurno({
+      snapshot: regras,
+      estado: { fluxo: sessaoDoFluxo.fluxo, fluxoTipo: sessaoDoFluxo.fluxoTipo, fluxoOcioso: sessaoDoFluxo.fluxoOcioso, fluxoCobrado: sessaoDoFluxo.fluxoCobrado },
+      funcaoRoteada: route.funcao,
+      texto: resultado.mensagemParaIA,
+      anteriores: historicoDoFluxo,
+    });
+    if (plano.funcao !== route.funcao) {
+      route = { ...route, funcao: plano.funcao, tier: plano.funcao === "duvida" ? route.tier : ModelTier.SONNET, reason: plano.motivo };
+    }
+
+    if (plano.desvio) {
+      // Desvio antes do modelo caro: mensagem fixa, sem chamada ao modelo e sem consumir cota.
+      const desvioId = input.messageId ? createHash("sha256").update(JSON.stringify([user.id, input.messageId])).digest("hex") : undefined;
+      try {
+        await prisma.message.create({ data: { ...(desvioId ? { id: desvioId } : {}), sessionId: sessaoDoFluxo.id, role: MessageRole.USER, content: resultado.mensagemParaIA } });
+      } catch (error) {
+        if (desvioId && typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return { replies: [], userId: user.id, sessionId: sessaoDoFluxo.id };
+        throw error;
+      }
+      await prisma.message.create({ data: { sessionId: sessaoDoFluxo.id, role: MessageRole.ASSISTANT, content: plano.desvio.mensagem } });
+      await prisma.session.update({ where: { id: sessaoDoFluxo.id }, data: { lastSeenAt: new Date(), ...plano.proximoEstado } });
+      return {
+        replies: [plano.desvio.mensagem],
+        sessionId: sessaoDoFluxo.id,
+        userId: user.id,
+        regras: { funcao: plano.funcao, tipo: plano.tipo, desvio: true, cobrou: false, usadas: [], motivo: plano.motivo },
+      };
+    }
+  }
+
+  // Cota é por documento: turnos seguintes do mesmo fluxo não consomem de novo.
+  const cobrar = plano ? plano.cobrar : true;
+  const cota = cobrar ? await checarCota(user, route.funcao) : { allowed: true as const };
   if (!cota.allowed) {
     if (cota.motivo === "pagamento_indisponivel") {
       return {
@@ -118,8 +175,8 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     };
   }
 
-  const session = await getOrCreateActiveSession(user.id);
-  const history = await loadHistory(session.id);
+  const session = sessaoDoFluxo ?? await getOrCreateActiveSession(user.id);
+  const history = historicoDoFluxo ?? await loadHistory(session.id);
   // Lida antes de gravar a mensagem atual, para não pegar a própria pergunta.
   // Só ajuda a busca: se a leitura falhar, segue como pergunta sem área anterior.
   const previousArea = route.funcao === "duvida" && history.length ? await loadPreviousArea(session.id).catch(() => null) : null;
@@ -147,6 +204,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
       userMessage: resultado.mensagemParaIA,
       interactionId: persistedIncomingId,
       previousArea,
+      regras: plano?.pacote ? { sempre: plano.pacote.sempre, doTipo: plano.pacote.doTipo } : undefined,
     });
   } catch (error) {
     if (!(error instanceof KnowledgeSearchError)) throw error;
@@ -156,7 +214,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   if (!result.text.trim()) throw new Error("A IA retornou uma resposta vazia");
 
   await prisma.$transaction(async (db) => {
-    await registrarUso(db, user.id, route.funcao);
+    if (cobrar) await registrarUso(db, user.id, route.funcao);
     await db.message.create({
       data: {
         sessionId: session.id,
@@ -171,7 +229,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     });
     await db.session.update({
       where: { id: session.id },
-      data: { lastSeenAt: new Date() },
+      data: { lastSeenAt: new Date(), ...(plano ? plano.proximoEstado : {}) },
     });
   }, { isolationLevel: "ReadCommitted" });
 
@@ -181,5 +239,15 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     userId: user.id,
     modelUsed: result.model,
     ...(route.funcao === "duvida" && persistedIncomingId ? { feedbackInteractionId: persistedIncomingId } : {}),
+    ...(plano && plano.funcao !== "duvida"
+      ? {
+          regras: {
+            funcao: plano.funcao, tipo: plano.tipo, desvio: false, cobrou: cobrar, motivo: plano.motivo,
+            trocouDeFluxo: plano.trocouDeFluxo,
+            usadas: plano.pacote?.usadas.map(u => `${u.papel}:${u.codigo}`) ?? [],
+            ausentes: plano.pacote?.ausentes, cortadas: plano.pacote?.cortadas,
+          },
+        }
+      : {}),
   };
 }

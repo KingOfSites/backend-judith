@@ -86,6 +86,11 @@ model Session {
   lastSeenAt  DateTime  @default(now())
   summary     String?
   closed      Boolean   @default(false)
+  // Fluxo aberto de redação/análise nesta sessão (troca de fluxo sem perder o fio).
+  fluxo        String?  @db.VarChar(16)
+  fluxoTipo    String?  @db.VarChar(64)
+  fluxoOcioso  Int      @default(0)
+  fluxoCobrado Boolean  @default(false)
   messages    Message[]
 
   @@index([userId, lastSeenAt])
@@ -607,4 +612,68 @@ model CreditoCortesia {
   updatedAt  DateTime  @updatedAt
 
   @@index([userId, servico, saldo])
+}
+
+// ============================================================
+// REGRAS DE COMPOSIÇÃO (andam com a Seção B) e DE ANÁLISE (andam com a Seção C).
+// Aqui não tem área nem busca: o classificador devolve o TIPO do documento e a
+// tabela TipoDocumento diz quais regras entram. É endereço, não busca.
+// Conteúdo é do fundador, editado pelo Admin. O Backend só lê.
+// ============================================================
+
+enum RegraConjunto {
+  COMPOSICAO // receitas de redação (Seção B)
+  ANALISE    // fichas de análise (Seção C)
+}
+
+model RegraDocumento {
+  id            String        @id @default(cuid())
+  conjunto      RegraConjunto
+  // Endereço usado na tabela de tipos: "4", "15", "regras-gerais", "garantia-pessoal".
+  codigo        String        @db.VarChar(64)
+  titulo        String
+  // Rótulo de organização: "Regras Gerais", "Grupo 1", "Transversais", "Contratos complexos"...
+  grupo         String        @db.VarChar(64)
+  // Entra em TODA chamada do conjunto (Regras Gerais; transversais). É campo, não código.
+  entraSempre   Boolean       @default(false)
+  ativo         Boolean       @default(true)
+  conteudo      String        @db.LongText
+  ordem         Int           @default(0)
+  atualizadoPor String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([conjunto, codigo])
+  @@index([conjunto, ativo, entraSempre])
+}
+
+// A tabelinha tipo → ficha. Sem a linha aqui, a regra existe e ninguém acha.
+model TipoDocumento {
+  // Etiqueta devolvida pelo classificador de tipo: "locacao_comercial".
+  etiqueta         String   @id @db.VarChar(64)
+  nome             String
+  // Códigos de RegraDocumento. Teto de 2 por lista é limite, validado no Admin e no Backend.
+  composicao       Json     @default("[]")
+  analise          Json     @default("[]")
+  // Blocos que entram "se o tipo pedir" (Grupo 2 na redação; complexos na análise). Fora do teto.
+  composicaoExtras Json     @default("[]")
+  analiseExtras    Json     @default("[]")
+  // Desvio antes do modelo caro, SÓ na redação: não chama o modelo, não consome cota.
+  desviaRedacao    Boolean  @default(false)
+  mensagemDesvio   String?  @db.Text
+  ativo            Boolean  @default(true)
+  ordem            Int      @default(0)
+  atualizadoPor    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([ativo])
+}
+
+// Prompts dos classificadores (tipo e turno), editáveis pelo Admin.
+model RegraConfig {
+  chave         String   @id @db.VarChar(64)
+  valor         String   @db.LongText
+  atualizadoPor String?
+  updatedAt     DateTime @updatedAt
 }
