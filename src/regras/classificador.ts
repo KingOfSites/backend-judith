@@ -7,12 +7,12 @@
 // Regras de chamada (spec §2): temperatura 0 e parse com remoção de cercas ```json.
 // Os prompts são conteúdo editável pelo Admin (RegraConfig), nunca chumbados aqui.
 
-import Anthropic from "@anthropic-ai/sdk";
+import { Llm } from "../llm/client.js";
 import { env } from "../config/env.js";
 import { TIPO_OUTRO } from "./pacote.js";
 import type { RegrasSnapshot } from "./repository.js";
 
-const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+const client = new Llm();
 
 export type TurnoAnterior = { role: "user" | "assistant"; content: string };
 export type Turno = "continua" | "redacao" | "analise" | "nova_duvida" | "abandona";

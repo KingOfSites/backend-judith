@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { Llm } from "../llm/client.js";
 import { env } from "../config/env.js";
 import { Candidate } from "./core.js";
 import { KnowledgeSearchError } from "./errors.js";
@@ -69,7 +69,7 @@ export async function verifySupport(question: string, userHistory: string[], ans
   // source. The same scope exclusion is used by generation and remains audited.
   const sources = chunks.filter(c => !accidentSourceForDefect(question, c.chapter));
   const excludedSourceIds = chunks.filter(c => !sources.includes(c)).map(c => c.id);
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, timeout: 30000, maxRetries: 0 });
+  const client = new Llm({ timeout: 30000, maxRetries: 0 });
   const started = Date.now();
   let metrics: Record<string, unknown> = { model: env.JUDITH_MODEL_HAIKU };
   try {

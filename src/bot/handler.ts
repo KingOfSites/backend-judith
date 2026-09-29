@@ -2,19 +2,22 @@
 // resolvemos qual Bot é, carregamos a config (persona) do cliente
 // e respondemos com essa persona.
 
-import Anthropic from "@anthropic-ai/sdk";
+import { Llm } from "../llm/client.js";
 import axios from "axios";
 import { Bot, BotConfig, MensagemDirecao, ModelTier } from "@prisma/client";
 import { env } from "../config/env.js";
 import { prisma } from "../db/client.js";
 
-const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+const anthropic = new Llm();
 
 const SESSION_IDLE_MIN = 60;
 const TURN_WINDOW = 8;
 
 function modelIdFor(tier: ModelTier): string {
-  return tier === "SONNET" ? env.JUDITH_MODEL_SONNET : env.JUDITH_MODEL_HAIKU;
+  // Bots dos clientes podem ter modelos próprios; sem configuração seguem os da JUDITH.
+  return tier === "SONNET"
+    ? (env.BOT_MODEL_SONNET ?? env.JUDITH_MODEL_SONNET)
+    : (env.BOT_MODEL_HAIKU ?? env.JUDITH_MODEL_HAIKU);
 }
 
 function montarSystem(bot: Bot, config: BotConfig | null): string {

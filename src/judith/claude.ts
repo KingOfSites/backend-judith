@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { Llm, LlmMessage, LlmTextBlock } from "../llm/client.js";
 import { ModelTier, User } from "@prisma/client";
 import { env } from "../config/env.js";
 import { getPromptAnalise, getPrincipalSnapshot, getPromptRedacao } from "./prompts/principal.js";
@@ -10,7 +10,7 @@ import { KnowledgeSearchError } from "../knowledge/errors.js";
 import type { Area } from "../knowledge/areas.js";
 import { GROUNDED_GENERATION_POLICY, GROUNDED_GENERATION_VERSION } from "../knowledge/generation.js";
 
-const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+const client = new Llm();
 
 export type ChatTurn = {
   role: "user" | "assistant";
@@ -63,7 +63,7 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   const model = modelIdFor(input.tier);
   // A bounded DB window can begin in the middle of a turn. Drop only leading
   // orphan answers, without changing stored messages or removing unanswered users.
-  // Anthropic accepts consecutive user turns; do not fabricate assistant replies.
+  // Consecutive user turns are merged by the provider layer; do not fabricate assistant replies.
   const firstUser = input.history.findIndex(turn => turn.role === "user");
   const history = firstUser < 0 ? [] : input.history.slice(firstUser);
 
@@ -77,7 +77,7 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   const traceId = input.interactionId ?? randomUUID();
   const audit: Record<string, unknown> = { schemaVersion: 1, stage: "started", model, prompt: { version: prompt.version, hash: hash(prompt.text) }, supportPolicy: SUPPORT_POLICY_VERSION };
   if (input.funcao === "duvida") await writeAudit(traceId, audit, true);
-  const system: Anthropic.TextBlockParam[] = [
+  const system: LlmTextBlock[] = [
     {
       type: "text",
       text: prompt.text,
@@ -121,7 +121,7 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   // Saved history remains intact and is used by retrieval. The generator receives
   // only the current question and the extractive context already used for search.
   const currentQuestion = context?.resolvedQuestion ?? (context?.searchText.includes("\nContexto informado pelo usuário:") ? context.searchText : input.userMessage);
-  const messages: Anthropic.MessageParam[] = [
+  const messages: LlmMessage[] = [
     ...(context ? [] : history.map(t => ({ role: t.role, content: t.content }))),
     { role: "user", content: currentQuestion },
   ];

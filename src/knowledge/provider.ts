@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { Llm } from "../llm/client.js";
 import { env } from "../config/env.js";
 import { AREAS, Area } from "./areas.js";
 import { SemanticProvider, vector } from "./core.js";
@@ -8,7 +8,7 @@ export const LOCAL_EMBEDDING_MODEL = "local:multilingual-e5-large:3d7cfbdacd47fd
 
 // Separate classifier instruction; does not edit approved response prompts.
 export function createProvider(): SemanticProvider {
-  const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, timeout: 60_000, maxRetries: 2 });
+  const anthropic = new Llm({ timeout: 60_000, maxRetries: 2 });
   return {
     model: LOCAL_EMBEDDING_MODEL,
     async contextualize(question, history) {
