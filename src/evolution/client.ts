@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { env } from "../config/env.js";
 import { createHash } from "node:crypto";
+import { paraWhatsApp } from "./format.js";
 
 const http: AxiosInstance = axios.create({
   baseURL: env.EVOLUTION_API_URL,
@@ -10,7 +11,9 @@ const http: AxiosInstance = axios.create({
 
 // Doc: POST /message/sendText/{instance}
 // Retorna o id da mensagem enviada no WhatsApp (usado para associar reações), ou null.
-export async function sendText(toNumber: string, text: string, inboundMessageId?: string): Promise<string | null> {
+export async function sendText(toNumber: string, textoOriginal: string, inboundMessageId?: string): Promise<string | null> {
+  // Markdown do modelo → marcação do WhatsApp (** vira *). O histórico guarda o original.
+  const text = paraWhatsApp(textoOriginal);
   const fingerprint = (value: string) => createHash("sha256").update(value).digest("hex");
   const metadata = {
     instance: env.EVOLUTION_INSTANCE, inboundMessageId,

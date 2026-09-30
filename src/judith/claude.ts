@@ -30,7 +30,8 @@ export type AskInput = {
   // Área da pergunta anterior desta sessão, para continuações vagas.
   previousArea?: Area | null;
   // Regras de Composição (redação) ou de Análise, já montadas por tipo. Nunca na dúvida.
-  regras?: { sempre: string; doTipo: string };
+  // contextoBase: blocos da base para a redação que consulta a base (fim do pacote).
+  regras?: { sempre: string; doTipo: string; contextoBase?: string };
 };
 
 export type AskOutput = {
@@ -40,6 +41,8 @@ export type AskOutput = {
   outputTokens: number;
   cacheReadTokens: number;
   cacheWriteTokens: number;
+  // Preenchido quando a resposta veio do modelo de fallback.
+  fallback?: { from: string; reason: string };
 };
 
 function modelIdFor(tier: ModelTier): string {
@@ -95,6 +98,8 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   if (input.funcao !== "duvida" && input.regras) {
     if (input.regras.sempre) system.push({ type: "text", text: input.regras.sempre, cache_control: { type: "ephemeral" } });
     if (input.regras.doTipo) system.push({ type: "text", text: input.regras.doTipo, cache_control: { type: "ephemeral" } });
+    // Blocos da base no fim do pacote, depois das regras, pra não estragar o cache do que é fixo.
+    if (input.regras.contextoBase) system.push({ type: "text", text: input.regras.contextoBase });
   }
   let context: Awaited<ReturnType<typeof getKnowledgeContext>> | undefined;
   if (input.funcao === "duvida") {
@@ -175,7 +180,7 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
         throw error;
       }
     }
-    return { text, model, ...totals };
+    return { text, model: response.model || model, ...totals, ...(response.fallback ? { fallback: response.fallback } : {}) };
   }
   throw new KnowledgeSearchError("SUPPORT_INSUFFICIENT");
 }

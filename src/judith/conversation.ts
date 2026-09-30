@@ -2,6 +2,12 @@ import { MessageRole, ModelTier, User } from "@prisma/client";
 import { prisma } from "../db/client.js";
 import { carregarRegras } from "../regras/repository.js";
 import { planejarTurno, PlanoTurno } from "../regras/fluxo.js";
+import { isPedidoHumano, registrarPedidoHumano } from "./humano.js";
+import { getKnowledgeContext } from "./conhecimento.js";
+
+// Só usada se o fundador não tiver definido a mensagem no Admin (Classificadores e desvio).
+export const MENSAGEM_ANEXO_RESERVA =
+  "Ainda não consigo ler fotos nem arquivos por aqui. Pode copiar e colar o texto do documento na conversa? Se for uma cláusula específica, cola só ela, que isso não conta como análise. 🙂";
 import { askJudith, ChatTurn } from "./claude.js";
 import { processarOnboarding } from "./onboarding/flow.js";
 import { checarCota, registrarUso } from "./quota.js";
@@ -75,6 +81,9 @@ export type HandleOutput = {
   knowledgeFailure?: string;
   // Resposta da base (função dúvida): a última mensagem de replies pode receber 👍/👎.
   feedbackInteractionId?: string;
+  // Turno resolvido sem modelo: arquivo que ainda não é lido ou pedido de atendimento humano.
+  anexoNaoLido?: boolean;
+  pedidoHumano?: boolean;
   // Rastro das Regras de Composição/Análise: o que subiu neste turno (vai pro log).
   regras?: {
     funcao: string;
@@ -108,15 +117,42 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   // 2. Regras de Composição/Análise: só entram em cena quando há tipos cadastrados no Admin.
   //    Sem cadastro, o fluxo é exatamente o de antes.
   const regras = await carregarRegras();
+
+  // Foto ou arquivo: ainda não há leitura de imagem nem de PDF. Avisa, sem chamar o modelo e
+  // sem consumir cota. Antes, o "(anexo)" entrava como análise e cobrava por nada.
+  if (input.hasAttachment) {
+    return {
+      replies: [regras.config.mensagemAnexoNaoLido?.trim() || MENSAGEM_ANEXO_RESERVA],
+      userId: user.id,
+      anexoNaoLido: true,
+    };
+  }
+
   const sessaoDoFluxo = regras.habilitadas ? await getOrCreateActiveSession(user.id) : null;
   const historicoDoFluxo = sessaoDoFluxo ? await loadHistory(sessaoDoFluxo.id) : null;
   const fluxoAberto = Boolean(sessaoDoFluxo?.fluxo);
 
   // 3. Onboarding deixou seguir — checa assinatura/cota antes de chamar IA.
   //    Com documento em andamento, um "ok" é resposta da coleta, não conversa fiada.
-  const commonReply = !input.hasAttachment && !fluxoAberto ? smalltalk(resultado.mensagemParaIA) : null;
+  const commonReply = !fluxoAberto ? smalltalk(resultado.mensagemParaIA) : null;
   if (commonReply) return { replies: [commonReply], userId: user.id };
-  let route = routeIntent({ text: resultado.mensagemParaIA, hasAttachment: input.hasAttachment });
+
+  // Pedido de atendimento humano: mensagem fixa com o canal, alerta no painel, sem modelo e sem cota.
+  if (!fluxoAberto && isPedidoHumano(resultado.mensagemParaIA)) {
+    const sessao = sessaoDoFluxo ?? await getOrCreateActiveSession(user.id);
+    const mensagem = await registrarPedidoHumano({ userId: user.id, whatsappNumber: user.whatsappNumber, nome: user.nome, texto: resultado.mensagemParaIA, mensagemConfigurada: regras.config.mensagemAtendimentoHumano });
+    const humanoId = input.messageId ? createHash("sha256").update(JSON.stringify([user.id, input.messageId])).digest("hex") : undefined;
+    try {
+      await prisma.message.create({ data: { ...(humanoId ? { id: humanoId } : {}), sessionId: sessao.id, role: MessageRole.USER, content: resultado.mensagemParaIA } });
+      await prisma.message.create({ data: { sessionId: sessao.id, role: MessageRole.ASSISTANT, content: mensagem, meta: { funcao: "humano" } } });
+      await prisma.session.update({ where: { id: sessao.id }, data: { lastSeenAt: new Date() } });
+    } catch (error) {
+      if (!(humanoId && typeof error === "object" && error !== null && "code" in error && error.code === "P2002")) throw error;
+    }
+    return { replies: [mensagem], userId: user.id, sessionId: sessao.id, pedidoHumano: true };
+  }
+
+  let route = routeIntent({ text: resultado.mensagemParaIA, hasAttachment: false });
 
   let plano: PlanoTurno | null = null;
   if (sessaoDoFluxo && historicoDoFluxo) {
@@ -194,6 +230,21 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   }
   await prisma.session.update({ where: { id: session.id }, data: { lastSeenAt: new Date() } });
 
+  // Redação que consulta a base (ex.: petição de Juizado): mesma busca da dúvida com o relato
+  // do cliente, sempre puxando processual. Se a busca falhar, a redação segue só com as regras.
+  let contextoBase: string | undefined;
+  let blocosBase: string[] | undefined;
+  if (plano?.consultaBase) {
+    try {
+      const ctx = await getKnowledgeContext(resultado.mensagemParaIA, history, null, ["processual"]);
+      contextoBase = ctx.text;
+      blocosBase = ctx.chunks.map(c => `${c.areas.join("/")} · ${c.chapter}`);
+    } catch (error) {
+      blocosBase = [];
+      console.warn(JSON.stringify({ msg: "redacao.consultaBase.falhou", code: error instanceof KnowledgeSearchError ? error.code : String(error).slice(0, 120) }));
+    }
+  }
+
   let result;
   try {
     result = await askJudith({
@@ -204,7 +255,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
       userMessage: resultado.mensagemParaIA,
       interactionId: persistedIncomingId,
       previousArea,
-      regras: plano?.pacote ? { sempre: plano.pacote.sempre, doTipo: plano.pacote.doTipo } : undefined,
+      regras: plano?.pacote ? { sempre: plano.pacote.sempre, doTipo: plano.pacote.doTipo, contextoBase } : undefined,
     });
   } catch (error) {
     if (!(error instanceof KnowledgeSearchError)) throw error;
@@ -225,6 +276,15 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
         outputTokens: result.outputTokens,
         cacheReadTokens: result.cacheReadTokens,
         cacheWriteTokens: result.cacheWriteTokens,
+        // Dados técnicos do turno, visíveis no painel sem abrir o conteúdo.
+        meta: {
+          funcao: route.funcao,
+          modelo: result.model,
+          ...(result.fallback ? { fallback: result.fallback } : {}),
+          ...(plano && plano.funcao !== "duvida"
+            ? { tipo: plano.tipo, regras: plano.pacote?.usadas.map(u => `${u.papel}:${u.codigo} · ${u.titulo}`) ?? [], cobrou: cobrar, trocouDeFluxo: plano.trocouDeFluxo, ...(blocosBase ? { blocosBase } : {}) }
+            : {}),
+        },
       },
     });
     await db.session.update({

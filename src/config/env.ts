@@ -20,6 +20,8 @@ const schema = z.object({
 
   GEMINI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
+  // WhatsApp (só dígitos, com DDI) que recebe aviso quando um cliente pede atendimento humano.
+  ALERTA_WHATSAPP: z.string().regex(/^\d{10,15}$/).optional(),
 
   DATABASE_URL: z.string().min(1),
 

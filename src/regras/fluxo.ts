@@ -7,7 +7,7 @@
 // A cláusula pronta só vem da Composição, nunca duplicada na Análise.
 
 import { classificarTipo, classificarTurno, TurnoAnterior } from "./classificador.js";
-import { desvioDaRedacao, FuncaoDocumento, montarPacote, Pacote, TIPO_OUTRO } from "./pacote.js";
+import { acharTipo, desvioDaRedacao, FuncaoDocumento, montarPacote, Pacote, TIPO_OUTRO } from "./pacote.js";
 import type { RegrasSnapshot } from "./repository.js";
 
 // Turnos seguidos fora do fluxo antes de ele expirar sozinho (spec §5).
@@ -32,6 +32,8 @@ export type PlanoTurno = {
   proximoEstado: EstadoFluxo;
   motivo: string;
   trocouDeFluxo: boolean;
+  // Redação que consulta a base com o relato do cliente (ex.: petição de Juizado).
+  consultaBase: boolean;
 };
 
 const FECHADO: EstadoFluxo = { fluxo: null, fluxoTipo: null, fluxoOcioso: 0, fluxoCobrado: false };
@@ -73,7 +75,7 @@ export async function planejarTurno(input: {
     // Dúvida no meio de um fluxo não o derruba; ele expira após alguns turnos sem retomar.
     const ocioso = aberto ? estado.fluxoOcioso + 1 : 0;
     const proximoEstado = aberto && ocioso < LIMITE_OCIOSO ? { ...estado, fluxoOcioso: ocioso } : FECHADO;
-    return { funcao, tipo: null, pacote: null, desvio: null, cobrar: true, proximoEstado, motivo, trocouDeFluxo: false };
+    return { funcao, tipo: null, pacote: null, desvio: null, cobrar: true, proximoEstado, motivo, trocouDeFluxo: false, consultaBase: false };
   }
 
   const mesmoFluxo = aberto === funcao;
@@ -92,7 +94,7 @@ export async function planejarTurno(input: {
 
   const desvio = desvioDaRedacao(snapshot, funcao, tipo);
   if (desvio) {
-    return { funcao, tipo, pacote: null, desvio, cobrar: false, proximoEstado: FECHADO, motivo: `${motivo}; tipo ${tipo} desvia antes do modelo`, trocouDeFluxo };
+    return { funcao, tipo, pacote: null, desvio, cobrar: false, proximoEstado: FECHADO, motivo: `${motivo}; tipo ${tipo} desvia antes do modelo`, trocouDeFluxo, consultaBase: false };
   }
 
   const cobrar = novoDocumento || !(mesmoFluxo && estado.fluxoCobrado);
@@ -100,5 +102,6 @@ export async function planejarTurno(input: {
     ? FECHADO
     : { fluxo: funcao, fluxoTipo: tipo, fluxoOcioso: 0, fluxoCobrado: true };
 
-  return { funcao, tipo, pacote: montarPacote(snapshot, funcao, tipo), desvio: null, cobrar, proximoEstado, motivo, trocouDeFluxo };
+  const consultaBase = funcao === "redacao" && Boolean(acharTipo(snapshot, tipo)?.consultaBase);
+  return { funcao, tipo, pacote: montarPacote(snapshot, funcao, tipo), desvio: null, cobrar, proximoEstado, motivo, trocouDeFluxo, consultaBase };
 }

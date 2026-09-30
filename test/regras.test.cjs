@@ -254,6 +254,36 @@ test('sem tipos cadastrados: comportamento antigo, sem classificador e sem regra
   assert.equal(state.session.fluxo, null);
 });
 
+test('redação que consulta a base: busca com processual e blocos no fim do pacote; falha da busca não trava', async () => {
+  state.tipos = [...TIPOS, tipo('juizado_1inst', { composicao: ['4'], consultaBase: true })];
+  reset({ tipos: state.tipos, classificaTipo: ['juizado_1inst', 'juizado_1inst'] });
+  limparCacheRegras();
+  const chamadas = [];
+  replace(base + 'judith/conhecimento.js', { getKnowledgeContext: async (pergunta, historico, previousArea, extraAreas) => {
+    chamadas.push({ pergunta, previousArea, extraAreas });
+    if (state.buscaFalha) throw new Error('busca indisponível');
+    return { text: 'BLOCOS_DA_BASE', chunks: [{ areas: ['consumidor'], chapter: 'Arrependimento' }, { areas: ['processual'], chapter: 'Juizado: valor da causa' }] };
+  } });
+  delete require.cache[require.resolve(base + 'judith/conversation.js')];
+  const { handleInbound: handle } = require(base + 'judith/conversation.js');
+  await handle({ whatsappNumber: '5500000000000', text: 'quero redigir uma petição no juizado contra a loja que não devolveu meu dinheiro', hasAttachment: false, messageId: 'jz1' });
+  assert.deepEqual(chamadas[0].extraAreas, ['processual']);
+  assert.equal(state.asks[0].funcao, 'redacao');
+  assert.equal(state.asks[0].regras.contextoBase, 'BLOCOS_DA_BASE');
+  assert.match(state.asks[0].regras.doTipo, /CONTEUDO_COMPOSICAO_4/);
+  const meta = state.messages.find(m => m.role === 'ASSISTANT').meta;
+  assert.deepEqual(meta.blocosBase, ['consumidor · Arrependimento', 'processual · Juizado: valor da causa']);
+  assert.match(meta.regras.join(' '), /tipo:4/);
+
+  reset({ tipos: state.tipos, classificaTipo: ['juizado_1inst'], buscaFalha: true });
+  limparCacheRegras();
+  await handle({ whatsappNumber: '5500000000000', text: 'quero redigir uma petição no juizado', hasAttachment: false, messageId: 'jz2' });
+  assert.equal(state.asks[0].regras.contextoBase, undefined, 'segue só com as regras');
+  assert.deepEqual(state.messages.find(m => m.role === 'ASSISTANT').meta.blocosBase, []);
+  replace(base + 'judith/conhecimento.js', { getKnowledgeContext: async () => { throw new Error('nao usado'); } });
+  delete require.cache[require.resolve(base + 'judith/conversation.js')];
+});
+
 test('reentrega do mesmo webhook no desvio não duplica a resposta', async () => {
   reset({ classificaTipo: ['franquia', 'franquia'] });
   limparCacheRegras();

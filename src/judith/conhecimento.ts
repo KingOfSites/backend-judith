@@ -6,9 +6,9 @@ import { loadCandidates } from "../knowledge/repository.js";
 import { accidentSourceForDefect } from "../knowledge/scope.js";
 import { loadAreaKeywords } from "../knowledge/settings.js";
 
-export async function getKnowledgeContext(question: string, history: SearchTurn[] = [], previousArea: Area | null = null) {
+export async function getKnowledgeContext(question: string, history: SearchTurn[] = [], previousArea: Area | null = null, extraAreas: Area[] = []) {
   let result;
-  try { result = await retrieve(question, createProvider(), loadCandidates, history, { previousArea, keywords: await loadAreaKeywords() }); }
+  try { result = await retrieve(question, createProvider(), loadCandidates, history, { previousArea, keywords: await loadAreaKeywords(), extraAreas }); }
   catch (error) {
     if (error instanceof KnowledgeSearchError) throw error;
     throw new KnowledgeSearchError("KNOWLEDGE_UNAVAILABLE");

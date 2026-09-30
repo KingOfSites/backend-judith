@@ -22,7 +22,8 @@ async function main() {
   global.fetch = deny;
   let state;
   function reset(extra = {}) {
-    state = { user: { id: 'smoke-user', whatsappNumber: '0000000000000', nome: 'Synthetic Test', plano: 'TEST', onboarding: 'CONCLUIDO', trialFimEm: null }, subscription: { status: 'ACTIVE' }, credit: null, courtesy: 0, courtesyKind: 'DUVIDA', limit: 2, used: 0, messages: [], calls: [], sends: [], consumed: 0, usages: [], payments: [], paymentFail: false, aiFail: false, ...extra };
+    // tipoEmpresa preenchido: quem chega CONCLUIDO sem perfil agora recebe a pergunta de perfil primeiro.
+    state = { user: { id: 'smoke-user', whatsappNumber: '0000000000000', nome: 'Synthetic Test', plano: 'TEST', onboarding: 'CONCLUIDO', tipoEmpresa: 'MEI', trialFimEm: null }, subscription: { status: 'ACTIVE' }, credit: null, courtesy: 0, courtesyKind: 'DUVIDA', limit: 2, used: 0, messages: [], calls: [], sends: [], consumed: 0, usages: [], payments: [], paymentFail: false, aiFail: false, ...extra };
   }
   reset();
   let transactionTail = Promise.resolve();

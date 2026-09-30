@@ -92,6 +92,16 @@ export async function processarOnboarding(input: {
 
   // --- Usuário já passou pelo onboarding ---
   if (user.onboarding === "CONCLUIDO") {
+    // Quem entrou por cortesia (cadastro pelo painel) chega CONCLUIDO sem perfil.
+    // A resposta muda bastante entre MEI, ME e autônomo: pergunta uma vez, na primeira conversa.
+    if (!user.tipoEmpresa) {
+      const saudacao = isSaudacao(texto);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { onboarding: "AGUARDANDO_PERFIL", duvidaPendente: saudacao ? null : texto },
+      });
+      return { user, resultado: { tipo: "responder", mensagens: saudacao ? PERGUNTAR_PERFIL_CENARIO_A : PERGUNTAR_PERFIL_CENARIO_B } };
+    }
     return {
       user,
       resultado: { tipo: "seguir_com_duvida", mensagemParaIA: texto },

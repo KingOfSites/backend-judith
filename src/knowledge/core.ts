@@ -121,7 +121,9 @@ export function planChunks(stored: StoredChunk[], next: NextChunk[]): ChunkPlan 
 }
 
 export type Candidate ={ id: string; sourceId?: string; version?: string; content: string; areas: Area[]; published: boolean; vector: number[]; titulo: string; fontes: unknown; chapter: string; subchapter: string | null };
-export type RetrieveOptions = { previousArea?: Area | null; keywords?: AreaKeywords };
+// extraAreas: áreas que entram sempre na busca, além das resolvidas (ex.: processual na
+// petição de Juizado). Não substituem a área principal; só ampliam os candidatos.
+export type RetrieveOptions = { previousArea?: Area | null; keywords?: AreaKeywords; extraAreas?: Area[] };
 /**
  * Area resolution, in order:
  * 1. the classifier;
@@ -148,7 +150,8 @@ export async function retrieve(question: string, provider: SemanticProvider, loa
   const classified = await provider.classify(resolvedQuestion);
   const base = classified ?? (prepared !== question ? options.previousArea ?? null : null);
   const addedByKeywords = keywordAreas(resolvedQuestion, options.keywords ?? {}).filter(a => a !== base);
-  const areas = [...(base ? [base] : []), ...addedByKeywords];
+  const extras = (options.extraAreas ?? []).filter(a => a !== base && !addedByKeywords.includes(a));
+  const areas = [...(base ? [base] : []), ...addedByKeywords, ...extras];
   const area = areas[0] ?? null;
   const areaSource = classified ? "classifier" as const : base ? "previous" as const : area ? "keywords" as const : null;
   const meta = { area, areas, areaSource, addedByKeywords, searchText, resolvedQuestion };

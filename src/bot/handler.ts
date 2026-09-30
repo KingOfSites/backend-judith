@@ -3,6 +3,7 @@
 // e respondemos com essa persona.
 
 import { Llm } from "../llm/client.js";
+import { paraWhatsApp } from "../evolution/format.js";
 import axios from "axios";
 import { Bot, BotConfig, MensagemDirecao, ModelTier } from "@prisma/client";
 import { env } from "../config/env.js";
@@ -81,7 +82,7 @@ async function getOrCreateConversa(botId: string, leadId: string) {
 async function enviarTexto(instanceName: string, numero: string, texto: string) {
   await axios.post(
     `${env.EVOLUTION_API_URL}/message/sendText/${instanceName}`,
-    { number: numero, text: texto },
+    { number: numero, text: paraWhatsApp(texto) },
     { headers: { apikey: env.EVOLUTION_API_KEY }, timeout: 15_000 }
   );
 }

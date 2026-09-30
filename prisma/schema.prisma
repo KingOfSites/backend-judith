@@ -108,9 +108,27 @@ model Message {
   outputTokens    Int?
   cacheReadTokens Int?
   cacheWriteTokens Int?
+  // Dados técnicos do turno (função, tipo, regras que subiram, fallback): o painel mostra
+  // isso sem abrir o conteúdo da conversa.
+  meta       Json?
   createdAt  DateTime    @default(now())
 
   @@index([sessionId, createdAt])
+}
+
+// Registro de cada abertura do CONTEÚDO de uma conversa pelo painel (política de
+// privacidade: acesso só com senha própria, motivo e base legal, sempre registrado).
+model ConversaAcesso {
+  id         String   @id @default(cuid())
+  // "judith" = Session da JUDITH; "bot" = Conversa de bot de cliente do site
+  origem     String   @db.VarChar(16)
+  conversaId String   @db.VarChar(191)
+  motivo     String   @db.Text
+  baseLegal  String   @db.VarChar(64)
+  adminEmail String?
+  createdAt  DateTime @default(now())
+
+  @@index([origem, conversaId, createdAt])
 }
 
 // Cache semântico (Seção 4.3 do briefing v6): TTL 24h, hash da pergunta.
@@ -274,6 +292,7 @@ enum AdminAlertKind {
   PAYMENT_FAILURE  // dunning em curso
   TRIAL_EXPIRING   // trial acaba em 24h
   WEBHOOK_FAILURE  // webhook caiu
+  HUMAN_REQUEST    // cliente pediu atendimento humano no WhatsApp
 }
 
 enum AdminAlertStatus {
@@ -661,6 +680,9 @@ model TipoDocumento {
   // Desvio antes do modelo caro, SÓ na redação: não chama o modelo, não consome cota.
   desviaRedacao    Boolean  @default(false)
   mensagemDesvio   String?  @db.Text
+  // Na redação, roda a busca da dúvida com o relato do cliente (sempre puxando processual)
+  // e coloca os blocos no fim do pacote. Pensado para a petição de Juizado.
+  consultaBase     Boolean  @default(false)
   ativo            Boolean  @default(true)
   ordem            Int      @default(0)
   atualizadoPor    String?

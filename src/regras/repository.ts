@@ -29,6 +29,8 @@ export type TipoDoc = {
   analiseExtras: string[];
   desviaRedacao: boolean;
   mensagemDesvio: string | null;
+  // Redação consulta a base com o relato do cliente (sempre com processual). Ex.: petição de Juizado.
+  consultaBase: boolean;
 };
 
 export type RegrasSnapshot = {
@@ -64,7 +66,7 @@ export async function carregarRegras(): Promise<RegrasSnapshot> {
       etiqueta: t.etiqueta, nome: t.nome,
       composicao: lista(t.composicao), analise: lista(t.analise),
       composicaoExtras: lista(t.composicaoExtras), analiseExtras: lista(t.analiseExtras),
-      desviaRedacao: t.desviaRedacao, mensagemDesvio: t.mensagemDesvio,
+      desviaRedacao: t.desviaRedacao, mensagemDesvio: t.mensagemDesvio, consultaBase: t.consultaBase,
     })),
     config: Object.fromEntries(config.map(c => [c.chave, c.valor])),
     habilitadas: tipos.length > 0,
@@ -80,3 +82,5 @@ export function limparCacheRegras(): void {
 export const CONFIG_CLASSIFICADOR_TIPO = "classificadorTipo";
 export const CONFIG_CLASSIFICADOR_TURNO = "classificadorTurno";
 export const CONFIG_MENSAGEM_DESVIO = "mensagemDesvioPadrao";
+export const CONFIG_MENSAGEM_HUMANO = "mensagemAtendimentoHumano";
+export const CONFIG_MENSAGEM_ANEXO = "mensagemAnexoNaoLido";
