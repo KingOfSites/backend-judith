@@ -71,7 +71,9 @@ async function disponibilidade(user: User, funcao: Funcao, db: Prisma.Transactio
   const kind = FUNCAO_TO_KIND[funcao];
   const ativa = await assinaturaAtiva(user, db);
   if (ativa) {
-    const plano = await db.planCatalog.findUnique({ where: { codigo: user.plano } });
+    // Trial sem linha própria no catálogo usa as cotas do Essencial ("30 dias do Essencial completo").
+    const plano = (await db.planCatalog.findUnique({ where: { codigo: user.plano } }))
+      ?? (user.plano === "TRIAL" ? await db.planCatalog.findUnique({ where: { codigo: "ESSENCIAL" } }) : null);
     if (plano) {
       const limite = plano[KIND_TO_PLAN_FIELD[kind]] as number | null;
       if (limite === null) return { allowed: true } as const;
@@ -92,6 +94,11 @@ async function disponibilidade(user: User, funcao: Funcao, db: Prisma.Transactio
   });
   if (credito) return { allowed: true, creditoId: credito.id } as const;
   return { allowed: false, motivo: ativa ? "cota_estourada" : "sem_assinatura_ativa" } as const;
+}
+
+// Acesso vigente (assinatura ativa ou trial dentro do prazo), sem olhar cota. Usado pelos lembretes.
+export async function temAcessoAtivo(user: User): Promise<boolean> {
+  return assinaturaAtiva(user, prisma);
 }
 
 export async function checarCota(user: User, funcao: Funcao): Promise<QuotaResult> {

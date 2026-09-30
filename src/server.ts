@@ -2,10 +2,13 @@ import Fastify from "fastify";
 import sensible from "@fastify/sensible";
 import { env } from "./config/env.js";
 import { parseInbound, parseReaction, EvolutionWebhookBody } from "./evolution/types.js";
-import { sendText, sendTyping } from "./evolution/client.js";
+import { sendDocument, sendText, sendTyping } from "./evolution/client.js";
 import { recordReaction, registerAnswer } from "./knowledge/feedback.js";
 import { downloadMediaBase64 } from "./evolution/media.js";
-import { handleInbound } from "./judith/conversation.js";
+import { AnexoInput, handleInbound } from "./judith/conversation.js";
+import { lerDocumento, LeituraError } from "./judith/leitura.js";
+import { registerInternalRoutes } from "./routes/internal.js";
+import { registerJobs } from "./jobs/runner.js";
 import { transcreverAudio } from "./judith/whisper.js";
 import { registerLegalRoutes } from "./routes/legal.js";
 import { processarMensagemBot } from "./bot/handler.js";
@@ -28,6 +31,8 @@ app.register(sensible);
 registerLegalRoutes(app);
 registerKnowledgeRoutes(app);
 registerKnowledgeWorker(app);
+registerInternalRoutes(app);
+registerJobs(app);
 
 app.get("/health", async () => ({ status: "ok", versao: await getPromptVersao() }));
 
@@ -82,6 +87,24 @@ app.post("/webhook/evolution", async (req, reply) => {
   const instanceName = body.instance;
   const isJudithLegacy = instanceName === env.EVOLUTION_INSTANCE;
 
+  // PDF ou imagem (só na JUDITH): baixa e transcreve. Falha vira aviso sem cota, no pipeline.
+  let anexo: AnexoInput | undefined;
+  if (isJudithLegacy && parsed.hasAttachment && !isAudio) {
+    const fileName = body.data.message?.documentMessage?.fileName;
+    const mimetype = body.data.message?.documentMessage?.mimetype ?? body.data.message?.imageMessage?.mimetype;
+    try {
+      const media = await downloadMediaBase64({ remoteJid: parsed.fromJid, fromMe: false, id: parsed.messageId });
+      if (!media) throw new LeituraError("FALHA", "download falhou");
+      const leitura = await lerDocumento(media.base64, media.mimetype || mimetype, fileName);
+      anexo = { leitura, fileName };
+      app.log.info({ user: parsed.whatsappNumber, tipo: leitura.mimetype, paginas: leitura.paginas, caracteres: leitura.caracteres }, "judith.anexo.lido");
+    } catch (err) {
+      const code = err instanceof LeituraError ? err.code : "FALHA";
+      app.log.warn({ user: parsed.whatsappNumber, code, err: err instanceof Error ? err.message : String(err) }, "judith.anexo.naoLido");
+      anexo = { erro: code };
+    }
+  }
+
   try {
     if (isJudithLegacy) {
       // Fluxo original da JUDITH jurídica (single-tenant)
@@ -91,6 +114,7 @@ app.post("/webhook/evolution", async (req, reply) => {
         pushName: parsed.pushName,
         text: textoParaPipeline,
         hasAttachment: parsed.hasAttachment && !isAudio,
+        anexo,
         messageId: parsed.messageId,
       });
       app.log.info(
@@ -102,6 +126,10 @@ app.post("/webhook/evolution", async (req, reply) => {
           n: result.replies.length,
           // Quais regras subiram neste turno (checklist de aceite: "conferir no log quais subiram").
           regras: result.regras,
+          cota: result.cota,
+          cancelamento: result.cancelamento,
+          exclusaoDados: result.exclusaoDados,
+          documento: result.documento?.fileName,
         },
         "judith.reply"
       );
@@ -110,6 +138,18 @@ app.post("/webhook/evolution", async (req, reply) => {
         const sentId = await sendText(parsed.whatsappNumber, result.replies[i]!, parsed.messageId);
         if (sentId && result.feedbackInteractionId && i === result.replies.length - 1) {
           await registerAnswer(sentId, result.feedbackInteractionId, result.userId);
+        }
+      }
+      // Documento redigido: PDF com a mensagem de encerramento. Se o envio do arquivo falhar,
+      // o texto do documento vai como mensagem, para o cliente não ficar sem nada.
+      if (result.documento) {
+        try {
+          await sendDocument(parsed.whatsappNumber, { base64: result.documento.pdf.toString("base64"), fileName: result.documento.fileName, caption: result.documento.mensagemEntrega });
+        } catch (err) {
+          app.log.error({ err }, "judith.documento.envio.fail");
+          const texto = await getUltimaResposta(result.sessionId);
+          if (texto) await sendText(parsed.whatsappNumber, texto);
+          await sendText(parsed.whatsappNumber, result.documento.mensagemEntrega);
         }
       }
     } else {
@@ -132,6 +172,13 @@ app.post("/webhook/evolution", async (req, reply) => {
     }
   }
 });
+
+async function getUltimaResposta(sessionId?: string): Promise<string | null> {
+  if (!sessionId) return null;
+  const { prisma } = await import("./db/client.js");
+  const m = await prisma.message.findFirst({ where: { sessionId, role: "ASSISTANT" }, orderBy: { createdAt: "desc" } });
+  return m?.content ?? null;
+}
 
 const start = async () => {
   try {

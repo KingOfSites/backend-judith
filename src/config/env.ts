@@ -18,7 +18,14 @@ const schema = z.object({
   BOT_MODEL_HAIKU: z.string().optional(),
   BOT_MODEL_SONNET: z.string().optional(),
 
+  // Leitura de PDF e imagem enviados no WhatsApp (modelo multimodal; hoje só Gemini).
+  JUDITH_MODEL_LEITURA: z.string().default("gemini-3.8-flash"),
   GEMINI_API_KEY: z.string().optional(),
+  // Busca no Dizer o Direito (Google Programmable Search restrito ao site). Sem as duas, fica desligada.
+  GOOGLE_CSE_KEY: z.string().optional(),
+  GOOGLE_CSE_ID: z.string().optional(),
+  // Rotinas automáticas (lembretes, aviso de trial, retorno D+1, retenção). Desligar em ambientes de teste.
+  JOBS_ENABLED: z.enum(["true", "false"]).default("true").transform(v => v === "true"),
   ANTHROPIC_API_KEY: z.string().optional(),
   // WhatsApp (só dígitos, com DDI) que recebe aviso quando um cliente pede atendimento humano.
   ALERTA_WHATSAPP: z.string().regex(/^\d{10,15}$/).optional(),
@@ -56,7 +63,7 @@ const CHAVE_DO_FORNECEDOR: [RegExp, "GEMINI_API_KEY" | "OPENAI_API_KEY" | "ANTHR
   [/./, "ANTHROPIC_API_KEY"],
 ];
 const faltando = new Set<string>();
-for (const nome of ["JUDITH_MODEL_HAIKU", "JUDITH_MODEL_SONNET", "JUDITH_MODEL_FALLBACK", "BOT_MODEL_HAIKU", "BOT_MODEL_SONNET"] as const) {
+for (const nome of ["JUDITH_MODEL_HAIKU", "JUDITH_MODEL_SONNET", "JUDITH_MODEL_FALLBACK", "JUDITH_MODEL_LEITURA", "BOT_MODEL_HAIKU", "BOT_MODEL_SONNET"] as const) {
   const modelo = parsed.data[nome];
   if (!modelo) continue;
   const chave = CHAVE_DO_FORNECEDOR.find(([padrao]) => padrao.test(modelo))![1];

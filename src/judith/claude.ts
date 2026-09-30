@@ -9,6 +9,10 @@ import { verifySupport, SUPPORT_POLICY_VERSION } from "../knowledge/support.js";
 import { KnowledgeSearchError } from "../knowledge/errors.js";
 import type { Area } from "../knowledge/areas.js";
 import { GROUNDED_GENERATION_POLICY, GROUNDED_GENERATION_VERSION } from "../knowledge/generation.js";
+import { blocoDizerODireito, buscarDizerODireito, dizerODireitoHabilitado } from "../knowledge/dizerodireito.js";
+
+// Base própria cobrindo pouco (menos blocos que isto): a busca no Dizer o Direito entra como apoio.
+const MIN_BLOCOS_SEM_APOIO = 3;
 
 const client = new Llm();
 
@@ -116,6 +120,15 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
   const conhecimento = context?.text ?? "";
   if (conhecimento) {
     system.push({ type: "text", text: conhecimento, cache_control: { type: "ephemeral" } });
+  }
+  // Fonte pública de apoio (Dizer o Direito), só na dúvida e só quando a base própria cobre pouco.
+  // Nunca derruba a resposta: sem chave ou com falha, segue só com a base.
+  if (context && dizerODireitoHabilitado() && context.chunks.length < MIN_BLOCOS_SEM_APOIO) {
+    const apoio = await buscarDizerODireito(context.resolvedQuestion ?? input.userMessage).catch(() => []);
+    if (apoio.length) {
+      system.push({ type: "text", text: blocoDizerODireito(apoio) });
+      Object.assign(audit, { dizerODireito: apoio.map(a => a.url) });
+    }
   }
   system.push({ type: "text", text: userProfileBlock(input.user) });
   if (context) {

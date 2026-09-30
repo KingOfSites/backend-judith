@@ -4,71 +4,48 @@ import { env } from "../../config/env.js";
 import { pegarDicaParaUsuario } from "./dicaPicker.js";
 import { loadBaseRevisadaEm } from "../../knowledge/settings.js";
 import { isAceiteTermos, isRecusaTermos, isSaudacao, parseTipoEmpresa } from "./intent.js";
+import { carregarTextosOnboarding, preencher } from "./textos.js";
+import { TERMOS_VERSAO, TRIAL_DIAS } from "../termos.js";
 
 const URL_TERMOS = env.URL_TERMOS ?? `https://${env.JUDITH_DOMAIN}/termos`;
 
 // Resultado de cada turno do onboarding:
 // - "responder" → a JUDITH manda essas mensagens e termina o turno
 // - "seguir_com_duvida" → onboarding terminou; chama o pipeline normal com `mensagemParaIA`
-// - "ignorar" → não responde nada (não deveria ocorrer aqui)
 export type OnboardingResult =
   | { tipo: "responder"; mensagens: string[] }
   | { tipo: "seguir_com_duvida"; mensagemParaIA: string; mensagensExtras?: string[] };
 
-const SAUDACAO_BOAS_VINDAS = [
-  `Oi! 👋 Eu sou a JUDITH, sua assistente jurídica e executiva.
-
-Estou aqui pra te ajudar com dúvidas do dia a dia do seu negócio — contratos, notificações, obrigações, e muito mais — em linguagem simples, sem juridiquês.
-
-Antes de começar, preciso que você leia e aceite os nossos Termos de Uso e Política de Privacidade: ${URL_TERMOS}
-
-Você leu e aceita os termos? Responde com SIM para continuar. 😊`,
-];
-
-const RECEBI_DUVIDA_TERMOS = [
-  `Boa pergunta! Já já te respondo.
-
-Mas antes preciso de dois minutinhos: lê nossos Termos de Uso e Política de Privacidade e me confirma: ${URL_TERMOS}
-
-Você leu e aceita? Responde SIM para continuar. 😊`,
-];
-
-const PERGUNTAR_PERFIL_CENARIO_A = [
-  `Ótimo! Agora me conta: você tem MEI, empresa no Simples (ME ou EPP) ou é autônomo sem CNPJ?
-
-Isso muda bastante a resposta dependendo da situação. 😊`,
-];
-
-const PERGUNTAR_PERFIL_CENARIO_B = [
-  `Obrigada! Agora me conta: você tem MEI, empresa no Simples (ME ou EPP) ou é autônomo sem CNPJ?
-
-Preciso saber pra te dar a resposta certa. 😊`,
-];
-
-const RECUSA_TERMOS = [
-  `Tudo bem! Sem problema. Se quiser revisar os termos e voltar quando estiver pronta, é só me chamar de novo: ${URL_TERMOS}
-
-Estarei aqui. 😊`,
-];
-
-const PEDIR_PERFIL_DE_NOVO = [
-  `Quase! Preciso saber qual dos três: MEI, empresa no Simples (ME ou EPP) ou autônomo sem CNPJ?`,
-];
+// Os textos vivem na tabela OnboardingTexto (editável no Admin); aqui só se preenche.
+async function textos() {
+  const t = await carregarTextosOnboarding();
+  const vars = { termos: URL_TERMOS, planos: `${env.WEB_JUDITH_URL}/planos` };
+  return {
+    boasVindas: preencher(t.boasVindas, vars),
+    recebiDuvida: preencher(t.recebiDuvida, vars),
+    perfilA: preencher(t.perfilA, vars),
+    perfilB: preencher(t.perfilB, vars),
+    recusa: preencher(t.recusa, vars),
+    pedirPerfilDeNovo: preencher(t.pedirPerfilDeNovo, vars),
+    confirmacaoA: (dica: string) => preencher(t.confirmacaoA, { ...vars, dica, reacao: t.dicaReacao }),
+    confirmacaoB: (dica: string) => preencher(t.confirmacaoB, { ...vars, dica, reacao: t.dicaReacao }),
+    revisaoBase: t.revisaoBase,
+  };
+}
 
 // Primeiro contato: informa a data da última revisão da base (editada no Admin), antes do
 // parágrafo dos termos. Sem data informada, a mensagem fica como está.
 const PARAGRAFO = "\n\n";
 
-// "Isso te ajudou?" pelo WhatsApp: a reação na resposta é registrada (src/knowledge/feedback.ts).
-const DICA_REACAO = "Depois de cada resposta, reaja com 👍 ou 👎 pra me dizer se ajudou. Isso me ajuda a melhorar.";
 export async function comRevisaoDaBase(mensagens: string[]): Promise<string[]> {
   const data = await loadBaseRevisadaEm();
   if (!data) return mensagens;
+  const linha = preencher((await carregarTextosOnboarding()).revisaoBase, { revisao: data });
   return mensagens.map(m => {
     const paragrafos = m.split(PARAGRAFO);
     const termos = paragrafos.findIndex(p => p.includes(URL_TERMOS));
     if (termos < 1) return m;
-    paragrafos.splice(termos, 0, `📚 Base jurídica revisada em ${data}.`);
+    paragrafos.splice(termos, 0, linha);
     return paragrafos.join(PARAGRAFO);
   });
 }
@@ -100,13 +77,16 @@ export async function processarOnboarding(input: {
         where: { id: user.id },
         data: { onboarding: "AGUARDANDO_PERFIL", duvidaPendente: saudacao ? null : texto },
       });
-      return { user, resultado: { tipo: "responder", mensagens: saudacao ? PERGUNTAR_PERFIL_CENARIO_A : PERGUNTAR_PERFIL_CENARIO_B } };
+      const t = await textos();
+      return { user, resultado: { tipo: "responder", mensagens: [saudacao ? t.perfilA : t.perfilB] } };
     }
     return {
       user,
       resultado: { tipo: "seguir_com_duvida", mensagemParaIA: texto },
     };
   }
+
+  const t = await textos();
 
   // --- Estado RECUSADO ---
   // Se voltou a interagir, tratamos como nova chance.
@@ -125,19 +105,20 @@ export async function processarOnboarding(input: {
 
     // Se ele acabou de responder com SIM/aceite
     if (isAceiteTermos(texto)) {
+      // O aceite grava a versão dos termos vigente e abre o trial de 30 dias (só na primeira vez).
+      const abreTrial = !user.aceitouTermos && !user.trialFimEm && user.plano === "TRIAL";
       await prisma.user.update({
         where: { id: user.id },
         data: {
           aceitouTermos: true,
           aceitouTermosAt: new Date(),
+          termosVersao: TERMOS_VERSAO,
           onboarding: "AGUARDANDO_PERFIL",
+          ...(abreTrial ? { trialFimEm: new Date(Date.now() + TRIAL_DIAS * 24 * 60 * 60 * 1000) } : {}),
         },
       });
       // Diferencia Cenário A (saudação) e Cenário B (já tinha dúvida)
-      const mensagens = user.duvidaPendente
-        ? PERGUNTAR_PERFIL_CENARIO_B
-        : PERGUNTAR_PERFIL_CENARIO_A;
-      return { user, resultado: { tipo: "responder", mensagens } };
+      return { user, resultado: { tipo: "responder", mensagens: [user.duvidaPendente ? t.perfilB : t.perfilA] } };
     }
 
     if (isRecusaTermos(texto)) {
@@ -145,31 +126,31 @@ export async function processarOnboarding(input: {
         where: { id: user.id },
         data: { onboarding: "RECUSADO", duvidaPendente: null },
       });
-      return { user, resultado: { tipo: "responder", mensagens: RECUSA_TERMOS } };
+      return { user, resultado: { tipo: "responder", mensagens: [t.recusa] } };
     }
 
     // Primeira mensagem — Cenário A (saudação) ou B (dúvida direta)
     if (novoUsuario) {
       if (isSaudacao(texto)) {
-        return { user, resultado: { tipo: "responder", mensagens: await comRevisaoDaBase(SAUDACAO_BOAS_VINDAS) } };
+        return { user, resultado: { tipo: "responder", mensagens: await comRevisaoDaBase([t.boasVindas]) } };
       }
       // Cenário B — guarda a dúvida pra responder depois
       await prisma.user.update({
         where: { id: user.id },
         data: { duvidaPendente: texto },
       });
-      return { user, resultado: { tipo: "responder", mensagens: await comRevisaoDaBase(RECEBI_DUVIDA_TERMOS) } };
+      return { user, resultado: { tipo: "responder", mensagens: await comRevisaoDaBase([t.recebiDuvida]) } };
     }
 
     // Reenvia o pedido de aceite (qualquer outra mensagem nesse estado)
-    return { user, resultado: { tipo: "responder", mensagens: RECEBI_DUVIDA_TERMOS } };
+    return { user, resultado: { tipo: "responder", mensagens: [t.recebiDuvida] } };
   }
 
   // --- Estado AGUARDANDO_PERFIL ---
   if (user.onboarding === "AGUARDANDO_PERFIL") {
     const tipo = parseTipoEmpresa(texto);
     if (!tipo) {
-      return { user, resultado: { tipo: "responder", mensagens: PEDIR_PERFIL_DE_NOVO } };
+      return { user, resultado: { tipo: "responder", mensagens: [t.pedirPerfilDeNovo] } };
     }
 
     const userAtualizado = await prisma.user.update({
@@ -181,16 +162,9 @@ export async function processarOnboarding(input: {
 
     // Cenário A: dispara a confirmação + dica e fica esperando a primeira dúvida.
     if (!userAtualizado.duvidaPendente) {
-      const confirmacao = `Perfeito! Antes de você mandar sua dúvida, uma coisa que vale saber:
-
-${dica}
-
-Pode mandar sua dúvida — estou aqui. 😊 Pode ser texto ou áudio.
-
-${DICA_REACAO}`;
       return {
         user: userAtualizado,
-        resultado: { tipo: "responder", mensagens: [confirmacao] },
+        resultado: { tipo: "responder", mensagens: [t.confirmacaoA(dica)] },
       };
     }
 
@@ -206,7 +180,7 @@ ${DICA_REACAO}`;
       resultado: {
         tipo: "seguir_com_duvida",
         mensagemParaIA: duvidaOriginal,
-        mensagensExtras: [`Entendido! Aqui vai uma coisa que vale saber primeiro:\n\n${dica}\n\n${DICA_REACAO}\n\nAgora, sobre sua pergunta:`],
+        mensagensExtras: [t.confirmacaoB(dica)],
       },
     };
   }
@@ -217,3 +191,5 @@ ${DICA_REACAO}`;
     resultado: { tipo: "seguir_com_duvida", mensagemParaIA: texto },
   };
 }
+
+export { OnboardingEstado };

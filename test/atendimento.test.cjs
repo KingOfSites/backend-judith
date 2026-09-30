@@ -98,7 +98,7 @@ test('foto ou arquivo: aviso fixo, sem modelo e sem cota', async () => {
   assert.equal(state.asks.length, 0);
   reset();
   const r2 = await enviar('analisa esse contrato', { hasAttachment: true });
-  assert.match(r2.replies[0], /não consigo ler fotos nem arquivos/);
+  assert.match(r2.replies[0], /Não consegui ler esse arquivo/);
   assert.equal(state.asks.length, 0);
 });
 

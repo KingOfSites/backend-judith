@@ -16,6 +16,8 @@ COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 RUN npm install --omit=dev --legacy-peer-deps
 COPY --from=builder /app/dist ./dist
+# Logo do PDF dos documentos redigidos.
+COPY assets ./assets
 # Prompts do fundador (confidenciais) NÃO vão na imagem: montar /app/prompts como volume.
 RUN mkdir -p /app/prompts
 EXPOSE 3000

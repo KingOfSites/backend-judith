@@ -63,6 +63,15 @@ model User {
   // Mensagem original do Cenário B (usuário já mandou dúvida no primeiro contato).
   // Guardada até o perfil ser coletado, daí respondemos a dúvida original.
   duvidaPendente  String?          @db.Text
+  // Versão dos Termos/Política vigente quando o usuário respondeu SIM (política §12).
+  termosVersao    String?          @db.VarChar(32)
+  // Cancelamento pelo WhatsApp: "quero cancelar" pede confirmação; vale por 15 minutos.
+  cancelamentoPendenteEm DateTime?
+  // Exclusão de dados pedida pelo próprio usuário (LGPD): apagada em até 30 dias pelo job de retenção.
+  exclusaoSolicitadaEm   DateTime?
+  // Avisos automáticos já enviados (para não repetir).
+  trialAvisoD3Em  DateTime?
+  retornoD1Em     DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
@@ -91,6 +100,9 @@ model Session {
   fluxoTipo    String?  @db.VarChar(64)
   fluxoOcioso  Int      @default(0)
   fluxoCobrado Boolean  @default(false)
+  // Cota da dúvida é por tema, não por mensagem: a continuação da mesma dúvida não cobra.
+  duvidaTema      String?   @db.Text
+  duvidaCobradaEm DateTime?
   messages    Message[]
 
   @@index([userId, lastSeenAt])
@@ -158,10 +170,29 @@ model Reminder {
   enviadoD1   Boolean  @default(false)
   enviadoDia  Boolean  @default(false)
   cancelado   Boolean  @default(false)
+  // Preenchido quando o lembrete nasceu do calendário global (ObrigacaoCalendario).
+  obrigacaoId String?  @db.VarChar(191)
   createdAt   DateTime @default(now())
 
   @@index([userId, dataAlvo])
   @@index([dataAlvo, cancelado])
+  @@index([obrigacaoId, dataAlvo])
+}
+
+// Calendário global de obrigações por perfil (DAS do MEI dia 20, DASN-SIMEI 31/05...).
+// Editado no Admin; o job de lembretes cria um Reminder por usuário a cada ocorrência.
+model ObrigacaoCalendario {
+  id        String   @id @default(cuid())
+  titulo    String
+  descricao String?  @db.Text
+  // Perfis atingidos (lista de TipoEmpresa em JSON; MySQL não tem String[]).
+  perfis    Json     @default("[]")
+  dia       Int
+  // null = todo mês; 1..12 = uma vez por ano nesse mês.
+  mes       Int?
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Status da assinatura (fluxo-assinatura-whatsapp-v1).
@@ -218,6 +249,9 @@ model Subscription {
   currentPeriodStart DateTime?
   currentPeriodEnd   DateTime?
   canceledAt        DateTime?
+  cancelMotivo      String?            @db.Text
+  // "whatsapp" (pelo próprio cliente), "admin" (painel) ou "gateway" (Mercado Pago).
+  cancelOrigem      String?            @db.VarChar(16)
   suspendedAt       DateTime?
 
   // Referência externa Mercado Pago (subscription/preapproval/customer)
@@ -293,6 +327,9 @@ enum AdminAlertKind {
   TRIAL_EXPIRING   // trial acaba em 24h
   WEBHOOK_FAILURE  // webhook caiu
   HUMAN_REQUEST    // cliente pediu atendimento humano no WhatsApp
+  CANCELAMENTO     // cliente cancelou a assinatura pelo WhatsApp
+  ESTORNO          // cancelamento dentro dos 7 dias: estorno a fazer no Mercado Pago
+  EXCLUSAO_DADOS   // cliente pediu a exclusão dos dados pelo WhatsApp
 }
 
 enum AdminAlertStatus {
@@ -699,3 +736,70 @@ model RegraConfig {
   atualizadoPor String?
   updatedAt     DateTime @updatedAt
 }
+
+// ============================================================
+// ONBOARDING EDITÁVEL, PREÇOS AVULSOS, RETENÇÃO (LGPD)
+// ============================================================
+
+// Textos do onboarding (boas-vindas, aceite, perfil, recusa, retorno D+1) editados no Admin.
+// Chave → texto com marcadores {termos}, {dica}, {nome}. Sem linha, vale o texto reserva do código.
+model OnboardingTexto {
+  chave         String   @id @db.VarChar(64)
+  valor         String   @db.Text
+  atualizadoPor String?
+  updatedAt     DateTime @updatedAt
+}
+
+// Preço da compra avulsa por serviço (antes fixo no código do site).
+model ProdutoAvulso {
+  servico       UsageKind @id
+  nome          String
+  precoCentavos Int
+  ativo         Boolean   @default(true)
+  updatedAt     DateTime  @updatedAt
+}
+
+// Ambiente segregado da política de privacidade (§6): quando um usuário é excluído, o aceite
+// dos Termos, o log das conversas e os pagamentos ficam aqui por 5 anos, fora das tabelas
+// operacionais. Só o painel abre, com a senha de conteúdo.
+model ArquivoRetencao {
+  id            String   @id @default(cuid())
+  // SHA-256 do número de WhatsApp: permite localizar sem guardar o número em claro.
+  whatsappHash  String   @db.VarChar(64)
+  aceite        Json
+  conversas     Json
+  pagamentos    Json
+  expiraEm      DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([whatsappHash])
+  @@index([expiraEm])
+}
+
+// Comprovante de exclusão: o que foi apagado, quando, por quem e por quê.
+model ExclusaoCertificado {
+  id            String   @id @default(cuid())
+  whatsappHash  String   @db.VarChar(64)
+  whatsappFinal String   @db.VarChar(4)
+  nome          String?
+  motivo        String   @db.Text
+  // "usuario" (pediu pelo WhatsApp), "admin" (painel) ou "retencao" (prazo da política).
+  origem        String   @db.VarChar(16)
+  executadoPor  String?
+  solicitadoEm  DateTime?
+  contagens     Json
+  arquivoId     String?  @db.VarChar(191)
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// Lembrete do calendário já enviado para um usuário numa data (não repete o aviso).
+model LembreteEnvio {
+  chave     String   @id @db.VarChar(191)
+  userId    String   @db.VarChar(191)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+

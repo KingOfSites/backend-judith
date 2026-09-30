@@ -58,3 +58,31 @@ export async function sendTyping(toNumber: string, durationMs = 2_000): Promise<
     // presence é cosmético — não falha o fluxo
   }
 }
+
+// Envia um arquivo (PDF do documento redigido). Doc: POST /message/sendMedia/{instance}
+// Retorna o id da mensagem no WhatsApp, ou null.
+export async function sendDocument(
+  toNumber: string,
+  arquivo: { base64: string; fileName: string; mimetype?: string; caption?: string }
+): Promise<string | null> {
+  const metadata = { instance: env.EVOLUTION_INSTANCE, recipientLast4: toNumber.slice(-4), fileName: arquivo.fileName, bytes: Math.floor(arquivo.base64.length * 0.75) };
+  try {
+    const response = await http.post(`/message/sendMedia/${env.EVOLUTION_INSTANCE}`, {
+      number: toNumber,
+      mediatype: "document",
+      mimetype: arquivo.mimetype ?? "application/pdf",
+      fileName: arquivo.fileName,
+      media: arquivo.base64,
+      ...(arquivo.caption ? { caption: paraWhatsApp(arquivo.caption) } : {}),
+    }, { timeout: 60_000 });
+    const data = response.data;
+    const messageId = typeof data?.key?.id === "string" ? data.key.id : null;
+    console.info(JSON.stringify({ event: "evolution.sendDocument.receipt", time: new Date().toISOString(), ...metadata, httpStatus: response.status, messageId }));
+    return messageId;
+  } catch (error) {
+    const httpStatus = axios.isAxiosError(error) ? error.response?.status ?? null : null;
+    console.error(JSON.stringify({ event: "evolution.sendDocument.failure", time: new Date().toISOString(), ...metadata, httpStatus }));
+    throw new Error(`Evolution sendMedia failed (HTTP ${httpStatus ?? "unavailable"})`);
+  }
+}
+
