@@ -10,7 +10,7 @@ export const CHAVES_ONBOARDING = [
   "boasVindas", "recebiDuvida", "perfilA", "perfilB", "recusa", "pedirPerfilDeNovo",
   "perguntaFuncionarios", "pedirFuncionariosDeNovo",
   "confirmacaoA", "confirmacaoB", "dicaReacao", "retornoD1", "trialD3", "revisaoBase",
-  "saudacaoRetorno", "avulsoSemPlano", "trialEncerrado", "entregaDocumento",
+  "saudacaoRetorno", "avulsoSemPlano", "trialEncerrado", "entregaDocumento", "assinaturaAtiva",
 ] as const;
 export type ChaveOnboarding = (typeof CHAVES_ONBOARDING)[number];
 
@@ -77,6 +77,8 @@ Pra continuar, é só escolher um plano aqui: {planos}
 
 Se preferir, pode pagar só este atendimento avulso ({servico}) por este link: {avulso}`,
   entregaDocumento: `Pronto, seu documento está aqui! Ele foi preparado com auxílio de inteligência artificial, a partir do que você me contou, para você usar. Confere tudo com calma antes de assinar ou enviar — e, se o valor for superior a 20 salários mínimos ou o risco for alto, vale passar por um advogado antes.`,
+  assinaturaAtiva: `Pronto{nome}! Sua assinatura do plano {plano} está ativa. 🎉
+Pode mandar sua dúvida por texto ou áudio, ou me pedir um documento. Para ver o que ainda tem no mês, é só escrever “minha cota”.`,
 };
 
 export const DESCRICAO_TEXTO: Record<ChaveOnboarding, string> = {
@@ -98,6 +100,7 @@ export const DESCRICAO_TEXTO: Record<ChaveOnboarding, string> = {
   avulsoSemPlano: "Resposta a quem não tem plano ativo e manda uma dúvida ou pede pra comprar avulso. Usa {planos}, {avulso} (link de pagamento) e {servico}.",
   trialEncerrado: "Resposta a quem mandou uma dúvida depois que o trial terminou. Usa {planos}, {avulso} e {servico}.",
   entregaDocumento: "Mensagem de entrega do documento redigido: legenda do PDF ou mensagem depois do texto. É ela que avisa do uso de IA e quando passar por um advogado.",
+  assinaturaAtiva: "Enviada pelo site no WhatsApp quando o Mercado Pago confirma a assinatura de um plano. Usa {nome} e {plano}.",
 };
 
 const TTL_MS = 60_000;

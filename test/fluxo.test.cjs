@@ -95,6 +95,8 @@ async function main() {
     if (state.knowledgeFailure) throw new (require(base + 'knowledge/errors.js').KnowledgeSearchError)(state.knowledgeFailure);
     return {text:'PUBLISHED_KNOWLEDGE_TEST',area:'lgpd',searchText:'synthetic query',chunks:[]};
   } });
+  // Classificador de intenção sem IA: o smoke conta só as chamadas do atendimento em si.
+  replace(base + 'judith/intencao.js', { classificarIntencao: async (config, texto) => ({ intencao: /redigir|redija|redação|modelo de/i.test(texto) ? 'redacao' : /analis/i.test(texto) ? 'analise' : 'duvida', origem: 'classificador' }), MENSAGEM_FORA_DO_ESCOPO_RESERVA: 'fora do escopo', PROMPT_INTENCAO_RESERVA: 'prompt' });
   replace(base + 'bot/handler.js', { processarMensagemBot: deny });
   const Fastify = require('fastify');
   let app;
@@ -225,7 +227,7 @@ async function main() {
   for (const text of ['Oi', 'obrigado', 'qual seu nome?']) {
     reset({ subscription: null, used: 2, knowledgeFailure: 'KNOWLEDGE_UNAVAILABLE' }); await webhook(text);
     assert.equal(state.calls.length, 0); assert.equal(state.payments.length, 0); assert.equal(state.usages.length, 0);
-    assert.equal(state.sends.length, 1); assert.ok(!/Tente novamente|crédito|base/.test(state.sends[0].text));
+    assert.equal(state.sends.length, 1); assert.ok(!/Tente novamente|crédito|base de conhecimento/.test(state.sends[0].text));
     passed.push('Smalltalk without search or credit: ' + text);
   }
   reset({ knowledgeFailure: 'KNOWLEDGE_UNAVAILABLE' });
