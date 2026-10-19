@@ -44,9 +44,15 @@ const prisma = {
   tipDicaOnboarding: { count: async () => 1, findMany: async () => [{ id: 'd1', texto: 'DICA', usadoPor: [] }], update: async () => ({}) },
   knowledgeSetting: { findUnique: async () => null },
   knowledgeInteraction: { findMany: async () => [] },
-  $transaction: async (fn) => fn(prisma),
+  planCatalog: { findUnique: async ({ where }) => where.codigo === 'ESSENCIAL' ? { codigo: 'ESSENCIAL', nome: 'Essencial', duvidasMes: 30, analisesMes: 2, redacoesMes: 1, lembretesMes: 30 } : null },
+  creditoCortesia: { findMany: async () => [], findFirst: async () => null },
+  avulsoCompra: { findMany: async () => [], findFirst: async () => null },
+  reminder: { findMany: async () => state.lembretes ?? [], create: async ({ data }) => { (state.lembretes ??= []).push(data); return data; } },
+  $transaction: async (arg) => Array.isArray(arg) ? Promise.all(arg) : arg(prisma),
 };
-replace(base + 'judith/quota.js', { checarCota: async () => ({ allowed: true }), registrarUso: async (db, userId, funcao) => { state.usos.push({ userId, funcao }); }, temAcessoAtivo: async () => true });
+const quotaExtras = { linkAvulso: async () => 'https://pay.invalid/avulso', SERVICO_LABEL: { duvida: 'dúvida', analise: 'análise de documento', redacao: 'redação de documento' }, trialVencido: (u) => u.plano === 'TRIAL' && Boolean(u.trialFimEm) && u.trialFimEm <= new Date(), podeCriarLembrete: async () => state.podeLembrete !== false };
+replace(base + 'judith/quota.js', { checarCota: async () => ({ allowed: true }), registrarUso: async (db, userId, funcao) => { state.usos.push({ userId, funcao }); }, temAcessoAtivo: async () => true, ...quotaExtras });
+replace(base + 'judith/intencao.js', { classificarIntencao: async () => state.intencao ? { intencao: state.intencao, origem: 'classificador' } : { intencao: 'duvida', origem: 'falha' }, MENSAGEM_FORA_DO_ESCOPO_RESERVA: 'FORA' });
 replace(base + 'judith/claude.js', { askJudith: async (input) => { state.asks.push(input); return { text: state.reply, model: 'mock', inputTokens: 1, outputTokens: 1, cacheReadTokens: 0, cacheWriteTokens: 0 }; } });
 replace(base + 'judith/conhecimento.js', { getKnowledgeContext: async () => { throw new Error('nao usado'); } });
 replace(base + 'regras/classificador.js', { classificarTipo: async () => ({ tipo: 'outro', origem: 'classificador' }), classificarTurno: async () => 'continua' });
@@ -191,15 +197,23 @@ test('documento redigido pronto sai como PDF com a mensagem de encerramento no l
 });
 
 test('trial encerrado aponta para os planos', async () => {
-  replace(base + 'judith/quota.js', { checarCota: async () => ({ allowed: false, motivo: 'sem_assinatura_ativa' }), registrarUso: async () => {}, temAcessoAtivo: async () => false });
+  replace(base + 'judith/quota.js', { checarCota: async () => ({ allowed: false, motivo: 'sem_assinatura_ativa' }), registrarUso: async () => {}, temAcessoAtivo: async () => false, ...quotaExtras });
+  delete require.cache[require.resolve(base + 'judith/autoatendimento.js')];
   delete require.cache[require.resolve(base + 'judith/conversation.js')];
   const { handleInbound: h } = require(base + 'judith/conversation.js');
   reset();
   state.user.plano = 'TRIAL';
   state.user.trialFimEm = new Date(Date.now() - 1000);
   const r = await h({ whatsappNumber: '5541000000000', text: 'posso demitir?', hasAttachment: false, messageId: 'x1' });
-  assert.match(r.replies[0], /período de teste terminou/);
+  assert.match(r.replies[0], /período de teste da JUDITH terminou/);
   assert.match(r.replies[0], /site\.invalid\/planos/);
+  assert.match(r.replies[0], /pay\.invalid\/avulso/, 'traz o link avulso');
+  assert.equal(r.autoatendimento, 'sem_plano');
+
+  state.user.plano = 'ESSENCIAL'; state.user.trialFimEm = null;
+  const s2 = await h({ whatsappNumber: '5541000000000', text: 'posso demitir?', hasAttachment: false, messageId: 'x2' });
+  assert.match(s2.replies[0], /ainda não tem um plano ativo/);
+  assert.match(s2.replies[0], /dúvida é só pagar por este link/);
 });
 
 // ---- módulos puros ----

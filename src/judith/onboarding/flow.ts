@@ -3,7 +3,7 @@ import { prisma } from "../../db/client.js";
 import { env } from "../../config/env.js";
 import { pegarDicaParaUsuario } from "./dicaPicker.js";
 import { loadBaseRevisadaEm } from "../../knowledge/settings.js";
-import { isAceiteTermos, isRecusaTermos, isSaudacao, parseTipoEmpresa } from "./intent.js";
+import { isAceiteTermos, isRecusaTermos, isSaudacao, parseSimNao, parseTipoEmpresa } from "./intent.js";
 import { carregarTextosOnboarding, preencher } from "./textos.js";
 import { TERMOS_VERSAO, TRIAL_DIAS } from "../termos.js";
 
@@ -27,6 +27,8 @@ async function textos() {
     perfilB: preencher(t.perfilB, vars),
     recusa: preencher(t.recusa, vars),
     pedirPerfilDeNovo: preencher(t.pedirPerfilDeNovo, vars),
+    perguntaFuncionarios: preencher(t.perguntaFuncionarios, vars),
+    pedirFuncionariosDeNovo: preencher(t.pedirFuncionariosDeNovo, vars),
     confirmacaoA: (dica: string) => preencher(t.confirmacaoA, { ...vars, dica, reacao: t.dicaReacao }),
     confirmacaoB: (dica: string) => preencher(t.confirmacaoB, { ...vars, dica, reacao: t.dicaReacao }),
     revisaoBase: t.revisaoBase,
@@ -54,6 +56,21 @@ async function ensureUser(whatsappNumber: string, pushName?: string): Promise<Us
   const existing = await prisma.user.findUnique({ where: { whatsappNumber } });
   if (existing) return existing;
   return prisma.user.create({ data: { whatsappNumber, nome: pushName } });
+}
+
+// Fim do onboarding: confirmação com a dica do perfil e, no Cenário B, a dúvida guardada
+// segue para o pipeline normal.
+async function concluir(user: User, t: Awaited<ReturnType<typeof textos>>): Promise<{ user: User; resultado: OnboardingResult }> {
+  const dica = await pegarDicaParaUsuario(user.id, user.tipoEmpresa ?? "MEI");
+  if (!user.duvidaPendente) {
+    return { user, resultado: { tipo: "responder", mensagens: [t.confirmacaoA(dica)] } };
+  }
+  const duvidaOriginal = user.duvidaPendente;
+  await prisma.user.update({ where: { id: user.id }, data: { duvidaPendente: null } });
+  return {
+    user,
+    resultado: { tipo: "seguir_com_duvida", mensagemParaIA: duvidaOriginal, mensagensExtras: [t.confirmacaoB(dica)] },
+  };
 }
 
 // ------------------------------------------------------------
@@ -153,36 +170,30 @@ export async function processarOnboarding(input: {
       return { user, resultado: { tipo: "responder", mensagens: [t.pedirPerfilDeNovo] } };
     }
 
-    const userAtualizado = await prisma.user.update({
-      where: { id: user.id },
-      data: { tipoEmpresa: tipo, onboarding: "CONCLUIDO" },
-    });
-
-    const dica = await pegarDicaParaUsuario(userAtualizado.id, tipo);
-
-    // Cenário A: dispara a confirmação + dica e fica esperando a primeira dúvida.
-    if (!userAtualizado.duvidaPendente) {
-      return {
-        user: userAtualizado,
-        resultado: { tipo: "responder", mensagens: [t.confirmacaoA(dica)] },
-      };
+    // Perfil anotado. Quem já respondeu sobre funcionário (cadastro pelo painel) conclui direto;
+    // os demais respondem a pergunta de funcionário, que define os lembretes de salário/FGTS/13º.
+    if (user.temFuncionarios !== null) {
+      const concluido = await prisma.user.update({ where: { id: user.id }, data: { tipoEmpresa: tipo, onboarding: "CONCLUIDO" } });
+      return concluir(concluido, t);
     }
+    await prisma.user.update({ where: { id: user.id }, data: { tipoEmpresa: tipo, onboarding: "AGUARDANDO_FUNCIONARIOS" } });
+    return { user, resultado: { tipo: "responder", mensagens: [t.perguntaFuncionarios] } };
+  }
 
-    // Cenário B: a dúvida original entra agora no pipeline normal.
-    const duvidaOriginal = userAtualizado.duvidaPendente;
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { duvidaPendente: null },
-    });
-
-    return {
-      user: userAtualizado,
-      resultado: {
-        tipo: "seguir_com_duvida",
-        mensagemParaIA: duvidaOriginal,
-        mensagensExtras: [t.confirmacaoB(dica)],
-      },
-    };
+  // --- Estado AGUARDANDO_FUNCIONARIOS ---
+  if (user.onboarding === "AGUARDANDO_FUNCIONARIOS") {
+    const resposta = parseSimNao(texto);
+    if (resposta === null) {
+      // Mandou uma dúvida em vez de SIM/NÃO: não prende a pessoa na pergunta. Fica sem resposta
+      // (o painel pode marcar) e a dúvida segue.
+      if (texto.length > 40) {
+        const concluido = await prisma.user.update({ where: { id: user.id }, data: { onboarding: "CONCLUIDO", duvidaPendente: user.duvidaPendente ?? texto } });
+        return concluir(concluido, t);
+      }
+      return { user, resultado: { tipo: "responder", mensagens: [t.pedirFuncionariosDeNovo] } };
+    }
+    const concluido = await prisma.user.update({ where: { id: user.id }, data: { temFuncionarios: resposta, onboarding: "CONCLUIDO" } });
+    return concluir(concluido, t);
   }
 
   // Fallback: trata como concluído

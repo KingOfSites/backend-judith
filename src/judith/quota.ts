@@ -96,6 +96,28 @@ async function disponibilidade(user: User, funcao: Funcao, db: Prisma.Transactio
   return { allowed: false, motivo: ativa ? "cota_estourada" : "sem_assinatura_ativa" } as const;
 }
 
+// Link de pagamento avulso para quem não tem plano ativo (ou pediu avulso). null = site indisponível.
+export async function linkAvulso(user: Pick<User, "whatsappNumber">, funcao: Funcao): Promise<string | null> {
+  return gerarLinkAvulso(user.whatsappNumber, FUNCAO_TO_KIND[funcao]);
+}
+
+export const SERVICO_LABEL: Record<Funcao, string> = { duvida: LABEL.DUVIDA, analise: LABEL.ANALISE, redacao: LABEL.REDACAO };
+
+// Trial vencido: já aceitou os termos, abriu o trial e a data passou (sem assinatura paga).
+export function trialVencido(user: User): boolean {
+  return user.plano === "TRIAL" && Boolean(user.trialFimEm) && (user.trialFimEm as Date) <= new Date();
+}
+
+// Cota de lembretes criados pelo próprio cliente (plano.lembretesMes; null = sem limite; sem
+// catálogo = sem limite). Lembretes do calendário não contam.
+export async function podeCriarLembrete(user: User): Promise<boolean> {
+  const plano = (await prisma.planCatalog.findUnique({ where: { codigo: user.plano } }))
+    ?? (user.plano === "TRIAL" ? await prisma.planCatalog.findUnique({ where: { codigo: "ESSENCIAL" } }) : null);
+  if (!plano || plano.lembretesMes === null) return true;
+  const usados = await prisma.usageEvent.count({ where: { userId: user.id, kind: "LEMBRETE", createdAt: { gte: inicioDoMes() } } });
+  return usados < plano.lembretesMes;
+}
+
 // Acesso vigente (assinatura ativa ou trial dentro do prazo), sem olhar cota. Usado pelos lembretes.
 export async function temAcessoAtivo(user: User): Promise<boolean> {
   return assinaturaAtiva(user, prisma);

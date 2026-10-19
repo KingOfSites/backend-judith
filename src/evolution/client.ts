@@ -86,3 +86,40 @@ export async function sendDocument(
   }
 }
 
+
+// ---- Conexão da instância da JUDITH (usada pelo painel para ler o QR code e trocar o número) ----
+
+export type EstadoConexao = { state: string; numero: string | null; nome: string | null };
+
+// Doc: GET /instance/connectionState/{instance} e GET /instance/fetchInstances?instanceName=
+export async function estadoConexao(): Promise<EstadoConexao> {
+  const estado = await http.get(`/instance/connectionState/${env.EVOLUTION_INSTANCE}`);
+  const state: string = estado.data?.instance?.state ?? "unknown";
+  let numero: string | null = null;
+  let nome: string | null = null;
+  try {
+    const lista = await http.get(`/instance/fetchInstances`, { params: { instanceName: env.EVOLUTION_INSTANCE } });
+    const item = Array.isArray(lista.data) ? lista.data[0] : lista.data;
+    const owner: string | undefined = item?.ownerJid ?? item?.instance?.owner;
+    numero = typeof owner === "string" ? owner.split("@")[0] ?? null : null;
+    nome = typeof item?.profileName === "string" ? item.profileName : typeof item?.instance?.profileName === "string" ? item.instance.profileName : null;
+  } catch {
+    // Só enriquece a resposta; o estado já foi lido.
+  }
+  return { state, numero, nome };
+}
+
+// QR code (base64 data URL) e código de pareamento. Com a instância conectada, vem só o estado.
+// Doc: GET /instance/connect/{instance}
+export async function qrCodeConexao(): Promise<{ state: string; base64: string | null; pairingCode: string | null }> {
+  const r = await http.get(`/instance/connect/${env.EVOLUTION_INSTANCE}`);
+  const base64: string = r.data?.base64 ?? r.data?.qrcode?.base64 ?? "";
+  const pairingCode: string | null = r.data?.pairingCode ?? r.data?.qrcode?.pairingCode ?? null;
+  const state: string = r.data?.instance?.state ?? (base64 ? "connecting" : "unknown");
+  return { state, base64: base64 || null, pairingCode };
+}
+
+// Desconecta o número atual (logout) para parear outro. Doc: DELETE /instance/logout/{instance}
+export async function desconectarInstancia(): Promise<void> {
+  await http.delete(`/instance/logout/${env.EVOLUTION_INSTANCE}`);
+}

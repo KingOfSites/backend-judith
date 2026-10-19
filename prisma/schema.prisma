@@ -41,6 +41,7 @@ enum ModelTier {
 enum OnboardingEstado {
   AGUARDANDO_TERMOS
   AGUARDANDO_PERFIL
+  AGUARDANDO_FUNCIONARIOS
   CONCLUIDO
   RECUSADO
 }
@@ -48,38 +49,40 @@ enum OnboardingEstado {
 // Perfil enxuto do usuário (~280-300 tokens injetados por sessão).
 // Justificativa: ver Seção 4.4 do briefing v6 (memória persistente = perfil enxuto).
 model User {
-  id              String           @id @default(cuid())
+  id                     String           @id @default(cuid())
   // Número internacional sem +, formato Evolution (ex: 5511999999999)
-  whatsappNumber  String           @unique
-  nome            String?
-  tipoEmpresa     TipoEmpresa?
-  ramo            String?
-  cidade          String?
-  plano           Plano            @default(TRIAL)
-  aceitouTermos   Boolean          @default(false)
-  aceitouTermosAt DateTime?
-  trialFimEm      DateTime?
-  onboarding      OnboardingEstado @default(AGUARDANDO_TERMOS)
+  whatsappNumber         String           @unique
+  nome                   String?
+  tipoEmpresa            TipoEmpresa?
+  // Tem funcionário registrado (CLT)? null = não perguntado. Filtra lembretes de salário, FGTS e 13º.
+  temFuncionarios        Boolean?
+  ramo                   String?
+  cidade                 String?
+  plano                  Plano            @default(TRIAL)
+  aceitouTermos          Boolean          @default(false)
+  aceitouTermosAt        DateTime?
+  trialFimEm             DateTime?
+  onboarding             OnboardingEstado @default(AGUARDANDO_TERMOS)
   // Mensagem original do Cenário B (usuário já mandou dúvida no primeiro contato).
   // Guardada até o perfil ser coletado, daí respondemos a dúvida original.
-  duvidaPendente  String?          @db.Text
+  duvidaPendente         String?          @db.Text
   // Versão dos Termos/Política vigente quando o usuário respondeu SIM (política §12).
-  termosVersao    String?          @db.VarChar(32)
+  termosVersao           String?          @db.VarChar(32)
   // Cancelamento pelo WhatsApp: "quero cancelar" pede confirmação; vale por 15 minutos.
   cancelamentoPendenteEm DateTime?
   // Exclusão de dados pedida pelo próprio usuário (LGPD): apagada em até 30 dias pelo job de retenção.
   exclusaoSolicitadaEm   DateTime?
   // Avisos automáticos já enviados (para não repetir).
-  trialAvisoD3Em  DateTime?
-  retornoD1Em     DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  trialAvisoD3Em         DateTime?
+  retornoD1Em            DateTime?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
 
-  sessions       Session[]
-  reminders      Reminder[]
-  usage          UsageEvent[]
-  subscriptions  Subscription[]
-  avulsoCompras  AvulsoCompra[]
+  sessions         Session[]
+  reminders        Reminder[]
+  usage            UsageEvent[]
+  subscriptions    Subscription[]
+  avulsoCompras    AvulsoCompra[]
   creditosCortesia CreditoCortesia[]
 
   @@index([whatsappNumber])
@@ -88,42 +91,42 @@ model User {
 // Sessão = janela de conversa ativa. Histórico cheio até 8 turnos,
 // resumido a partir do 9º (Seção 4.5 do briefing v6).
 model Session {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  startedAt   DateTime  @default(now())
-  lastSeenAt  DateTime  @default(now())
-  summary     String?
-  closed      Boolean   @default(false)
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt       DateTime  @default(now())
+  lastSeenAt      DateTime  @default(now())
+  summary         String?
+  closed          Boolean   @default(false)
   // Fluxo aberto de redação/análise nesta sessão (troca de fluxo sem perder o fio).
-  fluxo        String?  @db.VarChar(16)
-  fluxoTipo    String?  @db.VarChar(64)
-  fluxoOcioso  Int      @default(0)
-  fluxoCobrado Boolean  @default(false)
+  fluxo           String?   @db.VarChar(16)
+  fluxoTipo       String?   @db.VarChar(64)
+  fluxoOcioso     Int       @default(0)
+  fluxoCobrado    Boolean   @default(false)
   // Cota da dúvida é por tema, não por mensagem: a continuação da mesma dúvida não cobra.
   duvidaTema      String?   @db.Text
   duvidaCobradaEm DateTime?
-  messages    Message[]
+  messages        Message[]
 
   @@index([userId, lastSeenAt])
 }
 
 model Message {
-  id         String      @id @default(cuid())
-  sessionId  String
-  session    Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  role       MessageRole
-  content    String      @db.Text
-  model      ModelTier?
+  id               String      @id @default(cuid())
+  sessionId        String
+  session          Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role             MessageRole
+  content          String      @db.Text
+  model            ModelTier?
   // Tokens para auditoria de custo (Seção 8.2 do briefing v6)
-  inputTokens     Int?
-  outputTokens    Int?
-  cacheReadTokens Int?
+  inputTokens      Int?
+  outputTokens     Int?
+  cacheReadTokens  Int?
   cacheWriteTokens Int?
   // Dados técnicos do turno (função, tipo, regras que subiram, fallback): o painel mostra
   // isso sem abrir o conteúdo da conversa.
-  meta       Json?
-  createdAt  DateTime    @default(now())
+  meta             Json?
+  createdAt        DateTime    @default(now())
 
   @@index([sessionId, createdAt])
 }
@@ -145,13 +148,13 @@ model ConversaAcesso {
 
 // Cache semântico (Seção 4.3 do briefing v6): TTL 24h, hash da pergunta.
 model SemanticCache {
-  id         String   @id @default(cuid())
-  hash       String   @unique
-  question   String   @db.Text
-  answer     String   @db.Text
-  hits       Int      @default(0)
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  hash      String   @unique
+  question  String   @db.Text
+  answer    String   @db.Text
+  hits      Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
   @@index([hash])
   @@index([expiresAt])
@@ -159,20 +162,23 @@ model SemanticCache {
 
 // 3 fluxos de lembrete (Seção 3.4 do briefing v6).
 model Reminder {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  titulo      String
-  descricao   String?  @db.Text
-  dataAlvo    DateTime
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  titulo         String
+  descricao      String?  @db.Text
+  dataAlvo       DateTime
   // D-3, D-1, dia: marca cada disparo realizado
-  enviadoD3   Boolean  @default(false)
-  enviadoD1   Boolean  @default(false)
-  enviadoDia  Boolean  @default(false)
-  cancelado   Boolean  @default(false)
+  enviadoD3      Boolean  @default(false)
+  enviadoD1      Boolean  @default(false)
+  enviadoDia     Boolean  @default(false)
+  cancelado      Boolean  @default(false)
   // Preenchido quando o lembrete nasceu do calendário global (ObrigacaoCalendario).
-  obrigacaoId String?  @db.VarChar(191)
-  createdAt   DateTime @default(now())
+  obrigacaoId    String?  @db.VarChar(191)
+  // Dias de antecedência dos avisos (copiados da obrigação; manuais: 3, 1 e 0) e os já enviados.
+  antecedencias  Json     @default("[3,1,0]")
+  etapasEnviadas Json     @default("[]")
+  createdAt      DateTime @default(now())
 
   @@index([userId, dataAlvo])
   @@index([dataAlvo, cancelado])
@@ -182,27 +188,37 @@ model Reminder {
 // Calendário global de obrigações por perfil (DAS do MEI dia 20, DASN-SIMEI 31/05...).
 // Editado no Admin; o job de lembretes cria um Reminder por usuário a cada ocorrência.
 model ObrigacaoCalendario {
-  id        String   @id @default(cuid())
-  titulo    String
-  descricao String?  @db.Text
+  id                     String        @id @default(cuid())
+  titulo                 String
+  descricao              String?       @db.Text
   // Perfis atingidos (lista de TipoEmpresa em JSON; MySQL não tem String[]).
-  perfis    Json     @default("[]")
-  dia       Int
+  perfis                 Json          @default("[]")
+  dia                    Int
   // null = todo mês; 1..12 = uma vez por ano nesse mês.
-  mes       Int?
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  mes                    Int?
+  ativo                  Boolean       @default(true)
+  // Avisos: dias de antecedência (ex.: [3,1,0], [1], [7,1]).
+  antecedencias          Json          @default("[3,1,0]")
+  // Dia 20 em fim de semana/feriado: DAS vai pro dia útil seguinte, FGTS e INSS vêm pro anterior.
+  ajusteDiaUtil          AjusteDiaUtil @default(NENHUM)
+  // true = "dia" conta dias úteis (5º dia útil do salário; sábado conta).
+  diaUtil                Boolean       @default(false)
+  // Só para quem tem funcionário registrado (salário, FGTS, 13º).
+  somenteComFuncionarios Boolean       @default(false)
+  // Preenchido = aviso de uma vez só, naquele ano (mudança de lei). Exige mês.
+  ano                    Int?
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
 }
 
 // Status da assinatura (fluxo-assinatura-whatsapp-v1).
 enum SubscriptionStatus {
-  TRIALING       // trial ativo, sem pagamento
-  PENDING        // aguardando primeiro pagamento
-  ACTIVE         // pago e em dia
-  PAST_DUE       // falha de cobrança em curso (dunning D+1 a D+3)
-  CANCELED       // cancelada — acesso ativo até subscription.currentPeriodEnd
-  SUSPENDED      // dunning estourou ou trial expirou sem upgrade
+  TRIALING // trial ativo, sem pagamento
+  PENDING // aguardando primeiro pagamento
+  ACTIVE // pago e em dia
+  PAST_DUE // falha de cobrança em curso (dunning D+1 a D+3)
+  CANCELED // cancelada — acesso ativo até subscription.currentPeriodEnd
+  SUSPENDED // dunning estourou ou trial expirou sem upgrade
 }
 
 // Método de pagamento escolhido pelo usuário no fluxo de assinatura.
@@ -223,45 +239,45 @@ enum PaymentStatus {
 
 // Catálogo dos planos (v6 §7.2). Permite mudar preço/limite sem alterar enum.
 model PlanCatalog {
-  id              String   @id @default(cuid())
-  codigo          Plano    @unique
-  nome            String
-  precoCentavos   Int
-  duvidasMes      Int?     // null = ilimitado
-  analisesMes     Int?
-  redacoesMes     Int?
-  lembretesMes    Int?
-  ativo           Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String   @id @default(cuid())
+  codigo        Plano    @unique
+  nome          String
+  precoCentavos Int
+  duvidasMes    Int? // null = ilimitado
+  analisesMes   Int?
+  redacoesMes   Int?
+  lembretesMes  Int?
+  ativo         Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // Assinatura efetiva do usuário. Um usuário tem sempre 1 ativa.
 model Subscription {
-  id                String             @id @default(cuid())
-  userId            String
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plano             Plano
-  status            SubscriptionStatus @default(TRIALING)
-  paymentMethod     PaymentMethod?
+  id            String             @id @default(cuid())
+  userId        String
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plano         Plano
+  status        SubscriptionStatus @default(TRIALING)
+  paymentMethod PaymentMethod?
 
-  trialEndsAt       DateTime?
+  trialEndsAt        DateTime?
   currentPeriodStart DateTime?
   currentPeriodEnd   DateTime?
-  canceledAt        DateTime?
-  cancelMotivo      String?            @db.Text
+  canceledAt         DateTime?
+  cancelMotivo       String?   @db.Text
   // "whatsapp" (pelo próprio cliente), "admin" (painel) ou "gateway" (Mercado Pago).
-  cancelOrigem      String?            @db.VarChar(16)
-  suspendedAt       DateTime?
+  cancelOrigem       String?   @db.VarChar(16)
+  suspendedAt        DateTime?
 
   // Referência externa Mercado Pago (subscription/preapproval/customer)
-  mpCustomerId      String?
-  mpSubscriptionId  String?
-  mpCardToken       String?
+  mpCustomerId     String?
+  mpSubscriptionId String?
+  mpCardToken      String?
 
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  payments          Payment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  payments  Payment[]
 
   @@index([userId, status])
   @@index([currentPeriodEnd])
@@ -293,28 +309,28 @@ model Payment {
 // Compra avulsa (v6 §7.2): porta de entrada pra quem não assina, e reforço
 // pós-cota pra quem estourou o limite do plano no mês. 1 compra = 1 uso de 1 serviço.
 model AvulsoCompra {
-  id              String        @id @default(cuid())
-  userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  servico         UsageKind
-  precoCentavos   Int
-  metodo          PaymentMethod
-  status          PaymentStatus @default(PENDING)
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  servico       UsageKind
+  precoCentavos Int
+  metodo        PaymentMethod
+  status        PaymentStatus @default(PENDING)
 
   // Referência externa Mercado Pago (payment.id ou preference.id)
-  mpPaymentId     String?       @unique
+  mpPaymentId     String? @unique
   mpPreferenceId  String?
-  pixQrCode       String?       @db.Text
-  pixQrCodeImage  String?       @db.Text
-  pixCopyPaste    String?       @db.Text
-  cardCheckoutUrl String?       @db.Text
+  pixQrCode       String? @db.Text
+  pixQrCodeImage  String? @db.Text
+  pixCopyPaste    String? @db.Text
+  cardCheckoutUrl String? @db.Text
 
-  paidAt          DateTime?
+  paidAt      DateTime?
   // Marcado pelo serviço que atende o WhatsApp quando o crédito é gasto.
-  consumidoEm     DateTime?
+  consumidoEm DateTime?
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, servico, status])
   @@index([status, createdAt])
@@ -322,14 +338,14 @@ model AvulsoCompra {
 
 // Alerta interno pro founder — reconciliação webhook, dunning, etc.
 enum AdminAlertKind {
-  RECONCILIATION   // pago no gateway mas sem ativação
-  PAYMENT_FAILURE  // dunning em curso
-  TRIAL_EXPIRING   // trial acaba em 24h
-  WEBHOOK_FAILURE  // webhook caiu
-  HUMAN_REQUEST    // cliente pediu atendimento humano no WhatsApp
-  CANCELAMENTO     // cliente cancelou a assinatura pelo WhatsApp
-  ESTORNO          // cancelamento dentro dos 7 dias: estorno a fazer no Mercado Pago
-  EXCLUSAO_DADOS   // cliente pediu a exclusão dos dados pelo WhatsApp
+  RECONCILIATION // pago no gateway mas sem ativação
+  PAYMENT_FAILURE // dunning em curso
+  TRIAL_EXPIRING // trial acaba em 24h
+  WEBHOOK_FAILURE // webhook caiu
+  HUMAN_REQUEST // cliente pediu atendimento humano no WhatsApp
+  CANCELAMENTO // cliente cancelou a assinatura pelo WhatsApp
+  ESTORNO // cancelamento dentro dos 7 dias: estorno a fazer no Mercado Pago
+  EXCLUSAO_DADOS // cliente pediu a exclusão dos dados pelo WhatsApp
 }
 
 enum AdminAlertStatus {
@@ -339,15 +355,15 @@ enum AdminAlertStatus {
 }
 
 model AdminAlert {
-  id          String            @id @default(cuid())
-  kind        AdminAlertKind
-  status      AdminAlertStatus  @default(OPEN)
-  titulo      String
-  detalhe     String?           @db.Text
-  userId      String?
-  paymentId   String?
-  createdAt   DateTime          @default(now())
-  resolvedAt  DateTime?
+  id         String           @id @default(cuid())
+  kind       AdminAlertKind
+  status     AdminAlertStatus @default(OPEN)
+  titulo     String
+  detalhe    String?          @db.Text
+  userId     String?
+  paymentId  String?
+  createdAt  DateTime         @default(now())
+  resolvedAt DateTime?
 
   @@index([status, createdAt])
   @@index([userId])
@@ -359,44 +375,44 @@ model AdminAlert {
 // ============================================================
 
 model Cliente {
-  id              String         @id @default(cuid())
-  email           String         @unique
+  id              String   @id @default(cuid())
+  email           String   @unique
   senhaHash       String
   nomeNegocio     String
   nomeContato     String?
   whatsappContato String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  bots            Bot[]
-  assinatura      AssinaturaCliente?
+  bots       Bot[]
+  assinatura AssinaturaCliente?
 
   @@index([email])
 }
 
 enum BotStatus {
-  CRIADO        // criado mas nunca pareou WhatsApp
-  PAREANDO      // QR gerado, aguardando scan
-  ATIVO         // pareado e operando
-  DESCONECTADO  // perdeu conexão WhatsApp
-  PAUSADO       // cliente desativou
+  CRIADO // criado mas nunca pareou WhatsApp
+  PAREANDO // QR gerado, aguardando scan
+  ATIVO // pareado e operando
+  DESCONECTADO // perdeu conexão WhatsApp
+  PAUSADO // cliente desativou
 }
 
 model Bot {
-  id            String     @id @default(cuid())
-  clienteId     String
-  cliente       Cliente    @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  nome          String
+  id             String    @id @default(cuid())
+  clienteId      String
+  cliente        Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  nome           String
   // Nome único da instância no Evolution (ex: "bot-cuid123")
-  instanceName  String     @unique
-  status        BotStatus  @default(CRIADO)
-  whatsappNumero String?   // preenchido após pareamento
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  instanceName   String    @unique
+  status         BotStatus @default(CRIADO)
+  whatsappNumero String? // preenchido após pareamento
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  config        BotConfig?
-  leads         Lead[]
-  conversas     Conversa[]
+  config    BotConfig?
+  leads     Lead[]
+  conversas Conversa[]
 
   @@index([clienteId])
   @@index([instanceName])
@@ -404,73 +420,73 @@ model Bot {
 
 // Persona, tom, instruções e FAQ do bot — configurado pelo cliente.
 model BotConfig {
-  id           String   @id @default(cuid())
-  botId        String   @unique
-  bot          Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
-  persona      String   @db.Text  // "Sou o bot da Loja X, vendo bolos..."
-  tom          String   @default("amigável e direto")
-  instrucoes   String?  @db.Text  // regras extra do cliente
-  faqJson      String?  @db.Text  // FAQ em JSON
-  modelo       ModelTier @default(HAIKU)
-  updatedAt    DateTime @updatedAt
+  id         String    @id @default(cuid())
+  botId      String    @unique
+  bot        Bot       @relation(fields: [botId], references: [id], onDelete: Cascade)
+  persona    String    @db.Text // "Sou o bot da Loja X, vendo bolos..."
+  tom        String    @default("amigável e direto")
+  instrucoes String?   @db.Text // regras extra do cliente
+  faqJson    String?   @db.Text // FAQ em JSON
+  modelo     ModelTier @default(HAIKU)
+  updatedAt  DateTime  @updatedAt
 }
 
 // Quem manda mensagem pro bot (cliente do cliente — número WhatsApp).
 model Lead {
-  id            String    @id @default(cuid())
-  botId         String
-  bot           Bot       @relation(fields: [botId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  botId          String
+  bot            Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
   whatsappNumero String
-  pushName      String?
-  createdAt     DateTime  @default(now())
+  pushName       String?
+  createdAt      DateTime @default(now())
 
-  conversas     Conversa[]
+  conversas Conversa[]
 
   @@unique([botId, whatsappNumero])
   @@index([botId])
 }
 
 model Conversa {
-  id          String    @id @default(cuid())
-  botId       String
-  bot         Bot       @relation(fields: [botId], references: [id], onDelete: Cascade)
-  leadId      String
-  lead        Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  startedAt   DateTime  @default(now())
-  lastSeenAt  DateTime  @default(now())
-  fechada     Boolean   @default(false)
+  id         String   @id @default(cuid())
+  botId      String
+  bot        Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+  leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  startedAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  fechada    Boolean  @default(false)
 
-  mensagens   MensagemBot[]
+  mensagens MensagemBot[]
 
   @@index([botId, lastSeenAt])
   @@index([leadId])
 }
 
 enum MensagemDirecao {
-  IN   // lead → bot
-  OUT  // bot → lead
+  IN // lead → bot
+  OUT // bot → lead
 }
 
 model MensagemBot {
-  id           String          @id @default(cuid())
-  conversaId   String
-  conversa     Conversa        @relation(fields: [conversaId], references: [id], onDelete: Cascade)
-  direcao      MensagemDirecao
-  conteudo     String          @db.Text
-  modelo       ModelTier?
-  inputTokens  Int?
-  outputTokens Int?
+  id              String          @id @default(cuid())
+  conversaId      String
+  conversa        Conversa        @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+  direcao         MensagemDirecao
+  conteudo        String          @db.Text
+  modelo          ModelTier?
+  inputTokens     Int?
+  outputTokens    Int?
   cacheReadTokens Int?
-  createdAt    DateTime        @default(now())
+  createdAt       DateTime        @default(now())
 
   @@index([conversaId, createdAt])
 }
 
 enum AssinaturaPlano {
   TRIAL
-  STARTER     // R$ 49,90 — 1 bot, até 500 msg/mês
-  PRO         // R$ 99,90 — 3 bots, até 2.000 msg/mês
-  BUSINESS    // R$ 199,90 — 10 bots, até 10.000 msg/mês
+  STARTER // R$ 49,90 — 1 bot, até 500 msg/mês
+  PRO // R$ 99,90 — 3 bots, até 2.000 msg/mês
+  BUSINESS // R$ 199,90 — 10 bots, até 10.000 msg/mês
 }
 
 enum AssinaturaStatus {
@@ -500,7 +516,7 @@ model TipDicaOnboarding {
   perfil    TipoEmpresa
   texto     String      @db.Text
   ativo     Boolean     @default(true)
-  usadoPor  Json        @default("[]")   // lista de userIds (MySQL nao suporta String[])
+  usadoPor  Json        @default("[]") // lista de userIds (MySQL nao suporta String[])
   createdAt DateTime    @default(now())
 
   @@index([perfil, ativo])
@@ -551,7 +567,7 @@ model FichaConhecimento {
 // Índice derivado: sem FK para a fonte compartilhada, não altera seus escritores.
 // Restricted operational audit: query may contain personal data; never expose via public APIs/logs.
 model KnowledgeInteraction {
-  id        String @id @db.VarChar(191)
+  id        String   @id @db.VarChar(191)
   payload   Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -582,56 +598,59 @@ model KnowledgeFeedback {
 }
 
 model KnowledgeDocument {
-  sourceId    String @id
-  fingerprint String @db.Char(64)
-  model       String @db.VarChar(191)
+  sourceId    String           @id
+  fingerprint String           @db.Char(64)
+  model       String           @db.VarChar(191)
   published   Boolean
   chunks      KnowledgeChunk[]
 }
 
 model KnowledgeChunk {
-  id          String @id @default(cuid())
+  id          String               @id @default(cuid())
   sourceId    String
-  document    KnowledgeDocument @relation(fields: [sourceId], references: [sourceId], onDelete: Cascade)
+  document    KnowledgeDocument    @relation(fields: [sourceId], references: [sourceId], onDelete: Cascade)
   ordinal     Int
-  chapter     String @db.LongText
-  subchapter  String? @db.LongText
+  chapter     String               @db.LongText
+  subchapter  String?              @db.LongText
   line        Int
-  content     String @db.LongText
-  embeddingId String @db.Char(64)
-  embedding   KnowledgeEmbedding @relation(fields: [embeddingId], references: [id])
+  content     String               @db.LongText
+  embeddingId String               @db.Char(64)
+  embedding   KnowledgeEmbedding   @relation(fields: [embeddingId], references: [id])
   areas       KnowledgeChunkArea[]
+
   @@unique([sourceId, ordinal])
 }
 
 model KnowledgeChunkArea {
   chunkId String
-  area    String @db.VarChar(32)
+  area    String         @db.VarChar(32)
   chunk   KnowledgeChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
   @@id([chunkId, area])
   @@index([area, chunkId])
 }
 
 model KnowledgeEmbedding {
-  id         String @id @db.Char(64)
-  model      String @db.VarChar(191)
+  id         String           @id @db.Char(64)
+  model      String           @db.VarChar(191)
   dimensions Int
   vector     Json
   chunks     KnowledgeChunk[]
 }
 
 model KnowledgeJob {
-  id          String @id @default(cuid())
-  requestKey  String @unique @db.VarChar(191)
-  activeKey   String? @unique @db.VarChar(32)
-  status      String @default("pending") @db.VarChar(16)
-  total       Int @default(0)
-  processed   Int @default(0)
-  result      Json?
-  errors      Json?
-  leaseUntil  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id @default(cuid())
+  requestKey String    @unique @db.VarChar(191)
+  activeKey  String?   @unique @db.VarChar(32)
+  status     String    @default("pending") @db.VarChar(16)
+  total      Int       @default(0)
+  processed  Int       @default(0)
+  result     Json?
+  errors     Json?
+  leaseUntil DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
   @@index([status, createdAt])
 }
 
@@ -679,7 +698,7 @@ model CreditoCortesia {
 
 enum RegraConjunto {
   COMPOSICAO // receitas de redação (Seção B)
-  ANALISE    // fichas de análise (Seção C)
+  ANALISE // fichas de análise (Seção C)
 }
 
 model RegraDocumento {
@@ -763,14 +782,14 @@ model ProdutoAvulso {
 // dos Termos, o log das conversas e os pagamentos ficam aqui por 5 anos, fora das tabelas
 // operacionais. Só o painel abre, com a senha de conteúdo.
 model ArquivoRetencao {
-  id            String   @id @default(cuid())
+  id           String   @id @default(cuid())
   // SHA-256 do número de WhatsApp: permite localizar sem guardar o número em claro.
-  whatsappHash  String   @db.VarChar(64)
-  aceite        Json
-  conversas     Json
-  pagamentos    Json
-  expiraEm      DateTime
-  createdAt     DateTime @default(now())
+  whatsappHash String   @db.VarChar(64)
+  aceite       Json
+  conversas    Json
+  pagamentos   Json
+  expiraEm     DateTime
+  createdAt    DateTime @default(now())
 
   @@index([whatsappHash])
   @@index([expiraEm])
@@ -778,18 +797,18 @@ model ArquivoRetencao {
 
 // Comprovante de exclusão: o que foi apagado, quando, por quem e por quê.
 model ExclusaoCertificado {
-  id            String   @id @default(cuid())
-  whatsappHash  String   @db.VarChar(64)
-  whatsappFinal String   @db.VarChar(4)
+  id            String    @id @default(cuid())
+  whatsappHash  String    @db.VarChar(64)
+  whatsappFinal String    @db.VarChar(4)
   nome          String?
-  motivo        String   @db.Text
+  motivo        String    @db.Text
   // "usuario" (pediu pelo WhatsApp), "admin" (painel) ou "retencao" (prazo da política).
-  origem        String   @db.VarChar(16)
+  origem        String    @db.VarChar(16)
   executadoPor  String?
   solicitadoEm  DateTime?
   contagens     Json
-  arquivoId     String?  @db.VarChar(191)
-  createdAt     DateTime @default(now())
+  arquivoId     String?   @db.VarChar(191)
+  createdAt     DateTime  @default(now())
 
   @@index([createdAt])
 }
@@ -803,3 +822,9 @@ model LembreteEnvio {
   @@index([userId, createdAt])
 }
 
+// Regra de dia útil de uma obrigação do calendário quando a data cai em fim de semana ou feriado nacional.
+enum AjusteDiaUtil {
+  NENHUM
+  POSTERIOR
+  ANTERIOR
+}

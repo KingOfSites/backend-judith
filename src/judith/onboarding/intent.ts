@@ -66,3 +66,12 @@ export function parseTipoEmpresa(text: string): TipoEmpresa | null {
   if (n.includes("empresa")) return "ME";
   return null;
 }
+
+// Resposta SIM/NÃO livre ("tenho sim", "não tenho nenhum", "2 funcionários"). null = não entendeu.
+export function parseSimNao(text: string): boolean | null {
+  const n = normalize(text).replace(/[^\p{L}\p{N} ]/gu, " ").replace(/\s+/g, " ").trim();
+  if (!n) return null;
+  if (NEGATIVAS.includes(n) || /^(nao|não)\b/.test(n) || /\b(nenhum|ninguem|sem funcionario|sem empregado|sozinh)/.test(n)) return false;
+  if (ACEITES.includes(n) || /^(sim|tenho|isso|positivo|afirmativo)\b/.test(n) || /\b(tenho|temos)\b/.test(n) || /\b\d+ (funcionario|empregado|colaborador)/.test(n)) return true;
+  return null;
+}

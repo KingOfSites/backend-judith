@@ -1,14 +1,15 @@
 import { MessageRole, ModelTier, User } from "@prisma/client";
 import { prisma } from "../db/client.js";
-import { env } from "../config/env.js";
 import { carregarRegras } from "../regras/repository.js";
 import { planejarTurno, PlanoTurno } from "../regras/fluxo.js";
 import { isPedidoHumano, registrarPedidoHumano } from "./humano.js";
 import { getKnowledgeContext } from "./conhecimento.js";
 import { askJudith, ChatTurn } from "./claude.js";
 import { processarOnboarding } from "./onboarding/flow.js";
-import { checarCota, registrarUso } from "./quota.js";
+import { carregarTextosOnboarding, nomeParaSaudacao, preencher, TEXTOS_RESERVA } from "./onboarding/textos.js";
+import { checarCota, registrarUso, trialVencido } from "./quota.js";
 import { routeIntent } from "./router.js";
+import { classificarIntencao, MENSAGEM_FORA_DO_ESCOPO_RESERVA } from "./intencao.js";
 import { KnowledgeSearchError, knowledgeMessage } from "../knowledge/errors.js";
 import { smalltalk } from "./smalltalk.js";
 import { createHash } from "node:crypto";
@@ -20,14 +21,17 @@ import {
   confirmacaoPendente, confirmarCancelamento, desistirCancelamento, desistirExclusaoDados, iniciarCancelamento,
   isConfirmacao, isDesistenciaExclusao, isNegativa, isPedidoCancelamento, isPedidoExclusaoDados, limparConfirmacao, pedirExclusaoDados,
 } from "./cancelamento.js";
+import {
+  criarLembrete, extrairLembrete, isPedidoAvulso, isPedidoCota, isPedidoLembretes, listarLembretes, pediuEmTexto, respostaSemPlano, resumoCota,
+} from "./autoatendimento.js";
 
 // Só usada se o fundador não tiver definido a mensagem no Admin (Classificadores e desvio).
 export const MENSAGEM_ANEXO_RESERVA =
   "Não consegui ler esse arquivo agora. Pode mandar de novo em instantes, ou copiar e colar o texto do documento na conversa? Nada foi descontado da sua cota. 🙂";
 
-// Mensagem de encerramento na entrega do documento (orientação da OAB). Editável no Admin.
-export const MENSAGEM_ENTREGA_RESERVA =
-  "Pronto, seu documento está aqui! 📄\n\nEle foi montado com as informações que você me passou. Por orientação da OAB, recomendo que passe por um advogado antes de ser assinado ou enviado, pra garantir que está adequado ao seu caso.\n\nSe quiser ajustar alguma cláusula, é só me dizer.";
+// Mensagem de entrega do documento. Hoje é editada em Onboarding (entregaDocumento); a chave antiga
+// de Regras (mensagemEntregaDocumento) continua valendo se for a única preenchida.
+export const MENSAGEM_ENTREGA_RESERVA = TEXTOS_RESERVA.entregaDocumento;
 
 // Limite de histórico de sessão (Seção 4.5 do briefing v6): 8 turnos cheios.
 const TURN_WINDOW = 8;
@@ -90,6 +94,8 @@ export type HandleInput = {
 
 export type DocumentoPronto = { pdf: Buffer; fileName: string; titulo: string; mensagemEntrega: string };
 
+export type Autoatendimento = "cota" | "lembretes" | "lembrete_criado" | "avulso" | "sem_plano" | "fora_do_escopo";
+
 export type HandleOutput = {
   // Lista de mensagens pra mandar em sequência (WhatsApp-first style)
   replies: string[];
@@ -104,8 +110,14 @@ export type HandleOutput = {
   pedidoHumano?: boolean;
   cancelamento?: "pedido" | "confirmado" | "desistiu";
   exclusaoDados?: "pedido" | "desistiu";
+  // Turno resolvido sem modelo: cota, lembretes, avulso, sem plano, fora do escopo.
+  autoatendimento?: Autoatendimento;
   // Documento redigido: vai como PDF com a mensagem de encerramento no lugar do texto.
   documento?: DocumentoPronto;
+  // Documento redigido entregue em texto (a pedido do cliente ou PDF indisponível): texto + entrega.
+  entregaEmTexto?: boolean;
+  // Intenção lida pelo classificador editável (ou "palavras-chave" quando ele falhou/não rodou).
+  intencao?: { valor: string; origem: string };
   // Rastro das Regras de Composição/Análise: o que subiu neste turno (vai pro log).
   regras?: {
     funcao: string;
@@ -130,7 +142,7 @@ function duplicada(error: unknown): boolean {
   return typeof error === "object" && error !== null && "code" in error && (error as { code: unknown }).code === "P2002";
 }
 
-// Turno resolvido sem modelo (humano, cancelamento, exclusão): grava o par pergunta/resposta.
+// Turno resolvido sem modelo (humano, cancelamento, exclusão, autoatendimento): grava o par pergunta/resposta.
 async function gravarTurnoFixo(user: User, sessionId: string, entrada: string, resposta: string, meta: Record<string, string>, messageId?: string): Promise<boolean> {
   const id = idEstavel(user, messageId);
   try {
@@ -163,6 +175,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   // 2. Regras de Composição/Análise: só entram em cena quando há tipos cadastrados no Admin.
   //    Sem cadastro, o fluxo é exatamente o de antes.
   const regras = await carregarRegras();
+  const textos = await carregarTextosOnboarding();
 
   // Arquivo que não pôde ser lido (formato, tamanho, sem texto ou falha): aviso sem modelo e
   // sem cota. Com leitura, o texto do documento entra no pipeline como análise.
@@ -195,36 +208,53 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
 
   // Onboarding deixou seguir — checa assinatura/cota antes de chamar IA.
   // Com documento em andamento, um "ok" é resposta da coleta, não conversa fiada.
-  const commonReply = !fluxoAberto && !anexoLido ? smalltalk(texto) : null;
+  // A saudação de quem volta é editável em Onboarding (saudacaoRetorno).
+  const commonReply = !fluxoAberto && !anexoLido ? smalltalk(texto, { saudacao: preencher(textos.saudacaoRetorno, { nome: nomeParaSaudacao(user.nome) }) }) : null;
   if (commonReply) return { replies: [commonReply], userId: user.id };
+
+  // Turnos resolvidos sem modelo e sem cota.
+  const fixo = async (mensagem: string, meta: Record<string, string>, extra: Partial<HandleOutput>): Promise<HandleOutput> => {
+    await gravarTurnoFixo(user, session.id, texto, mensagem, meta, input.messageId);
+    return { replies: [mensagem], userId: user.id, sessionId: session.id, ...extra };
+  };
 
   if (!fluxoAberto && !anexoLido) {
     // Cancelar a assinatura da JUDITH: pede confirmação com o uso do mês. Sem modelo e sem cota.
-    if (isPedidoCancelamento(texto)) {
-      const mensagem = await iniciarCancelamento(user);
-      await gravarTurnoFixo(user, session.id, texto, mensagem, { funcao: "cancelamento", etapa: "pedido" }, input.messageId);
-      return { replies: [mensagem], userId: user.id, sessionId: session.id, cancelamento: "pedido" };
-    }
+    if (isPedidoCancelamento(texto)) return fixo(await iniciarCancelamento(user), { funcao: "cancelamento", etapa: "pedido" }, { cancelamento: "pedido" });
     // LGPD: exclusão dos dados (ou desistência dela).
-    if (user.exclusaoSolicitadaEm && isDesistenciaExclusao(texto)) {
-      const mensagem = await desistirExclusaoDados(user);
-      await gravarTurnoFixo(user, session.id, texto, mensagem, { funcao: "exclusao", etapa: "desistiu" }, input.messageId);
-      return { replies: [mensagem], userId: user.id, sessionId: session.id, exclusaoDados: "desistiu" };
-    }
-    if (isPedidoExclusaoDados(texto)) {
-      const mensagem = await pedirExclusaoDados(user);
-      await gravarTurnoFixo(user, session.id, texto, mensagem, { funcao: "exclusao", etapa: "pedido" }, input.messageId);
-      return { replies: [mensagem], userId: user.id, sessionId: session.id, exclusaoDados: "pedido" };
-    }
+    if (user.exclusaoSolicitadaEm && isDesistenciaExclusao(texto)) return fixo(await desistirExclusaoDados(user), { funcao: "exclusao", etapa: "desistiu" }, { exclusaoDados: "desistiu" });
+    if (isPedidoExclusaoDados(texto)) return fixo(await pedirExclusaoDados(user), { funcao: "exclusao", etapa: "pedido" }, { exclusaoDados: "pedido" });
     // Pedido de atendimento humano: mensagem fixa com o canal, alerta no painel, sem modelo e sem cota.
     if (isPedidoHumano(texto)) {
       const mensagem = await registrarPedidoHumano({ userId: user.id, whatsappNumber: user.whatsappNumber, nome: user.nome, texto, mensagemConfigurada: regras.config.mensagemAtendimentoHumano });
-      await gravarTurnoFixo(user, session.id, texto, mensagem, { funcao: "humano" }, input.messageId);
-      return { replies: [mensagem], userId: user.id, sessionId: session.id, pedidoHumano: true };
+      return fixo(mensagem, { funcao: "humano" }, { pedidoHumano: true });
     }
+    // Autoatendimento: cota do mês, lembretes (ver e criar) e avulso sem plano.
+    if (isPedidoCota(texto)) return fixo(await resumoCota(user), { funcao: "autoatendimento", tipo: "cota" }, { autoatendimento: "cota" });
+    if (isPedidoLembretes(texto)) return fixo(await listarLembretes(user), { funcao: "autoatendimento", tipo: "lembretes" }, { autoatendimento: "lembretes" });
+    const lembrete = extrairLembrete(texto);
+    if (lembrete) return fixo(await criarLembrete(user, lembrete), { funcao: "autoatendimento", tipo: "lembrete_criado", titulo: lembrete.titulo }, { autoatendimento: "lembrete_criado" });
+    if (isPedidoAvulso(texto)) return fixo(await respostaSemPlano(user, "duvida", "pedido_avulso"), { funcao: "autoatendimento", tipo: "avulso" }, { autoatendimento: "avulso" });
   }
 
+  // 4. Intenção: palavras-chave do router e, sem anexo nem fluxo aberto, o classificador editável
+  //    (Regras → Classificadores). Ele decide dúvida / redação / análise / fora do escopo; se falhar,
+  //    valem as palavras-chave.
   let route = routeIntent({ text: texto, hasAttachment: Boolean(anexoLido) });
+  let intencao: HandleOutput["intencao"] = { valor: route.funcao, origem: "palavras-chave" };
+  if (!anexoLido && !fluxoAberto) {
+    const lida = await classificarIntencao(regras.config, texto, history);
+    if (lida.origem === "classificador") {
+      intencao = { valor: lida.intencao, origem: "classificador" };
+      if (lida.intencao === "fora_do_escopo") {
+        const mensagem = regras.config.mensagemForaDoEscopo?.trim() || MENSAGEM_FORA_DO_ESCOPO_RESERVA;
+        return fixo(mensagem, { funcao: "fora_do_escopo", intencao: "fora_do_escopo" }, { autoatendimento: "fora_do_escopo", intencao });
+      }
+      if (lida.intencao !== route.funcao) {
+        route = { ...route, funcao: lida.intencao, tier: lida.intencao === "duvida" ? route.tier : ModelTier.SONNET, reason: `classificador de intenção: ${lida.intencao}` };
+      }
+    }
+  }
 
   let plano: PlanoTurno | null = null;
   if (regras.habilitadas) {
@@ -254,6 +284,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
         replies: [plano.desvio.mensagem],
         sessionId: session.id,
         userId: user.id,
+        intencao,
         regras: { funcao: plano.funcao, tipo: plano.tipo, desvio: true, cobrou: false, usadas: [], motivo: plano.motivo },
       };
     }
@@ -291,15 +322,9 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
         userId: user.id,
       };
     }
-    const trialAcabou = user.plano === "TRIAL" && user.trialFimEm && user.trialFimEm <= new Date();
-    return {
-      replies: [
-        trialAcabou
-          ? `Seu período de teste terminou. Pra continuar usando a JUDITH, é só escolher um plano aqui: ${env.WEB_JUDITH_URL}/planos 😊`
-          : `Sua assinatura não está ativa no momento. Pra reativar, é só escolher um plano aqui: ${env.WEB_JUDITH_URL}/planos — ou manda um oi que a gente resolve o acesso pra você. 🙂`,
-      ],
-      userId: user.id,
-    };
+    // Sem plano ativo: texto editável em Onboarding (trialEncerrado / avulsoSemPlano) com o link avulso.
+    const mensagem = await respostaSemPlano(user, route.funcao, trialVencido(user) ? "trial_encerrado" : "sem_plano");
+    return fixo(mensagem, { funcao: "autoatendimento", tipo: "sem_plano" }, { autoatendimento: "sem_plano", intencao });
   }
 
   // Lida antes de gravar a mensagem atual, para não pegar a própria pergunta.
@@ -353,21 +378,35 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     });
   } catch (error) {
     if (!(error instanceof KnowledgeSearchError)) throw error;
-    return { replies: [knowledgeMessage(error.code)], sessionId: session.id, userId: user.id, knowledgeFailure: error.code };
+    return { replies: [knowledgeMessage(error.code)], sessionId: session.id, userId: user.id, knowledgeFailure: error.code, intencao };
   }
 
   if (!result.text.trim()) throw new Error("A IA retornou uma resposta vazia");
 
-  // Documento redigido pronto: vira PDF com logo e sai com a mensagem de encerramento (OAB).
+  // Documento redigido pronto: PDF com logo e a mensagem de entrega como legenda. Se o cliente pediu
+  // em texto (pra copiar e colar) ou o PDF falhar, o texto vai como mensagem e a entrega vai em seguida:
+  // é ela que avisa do uso de IA e de quando passar por um advogado, então sai nos dois casos.
   let documento: DocumentoPronto | undefined;
+  let entregaEmTexto = false;
+  let mensagemEntregaTexto: string | undefined;
   if (route.funcao === "redacao" && pareceDocumentoPronto(result.text)) {
-    try {
-      const titulo = tituloDoDocumento(result.text);
-      const pdf = await gerarPdf(result.text, { titulo });
-      documento = { pdf, fileName: nomeDoArquivo(titulo), titulo, mensagemEntrega: regras.config.mensagemEntregaDocumento?.trim() || MENSAGEM_ENTREGA_RESERVA };
-    } catch (error) {
-      console.warn(JSON.stringify({ msg: "redacao.pdf.falhou", erro: error instanceof Error ? error.message : String(error) }));
+    const mensagemEntrega = textos.entregaDocumento !== TEXTOS_RESERVA.entregaDocumento
+      ? textos.entregaDocumento
+      : regras.config.mensagemEntregaDocumento?.trim() || textos.entregaDocumento;
+    const emTexto = pediuEmTexto(texto) || history.filter(h => h.role === "user").slice(-3).some(h => pediuEmTexto(h.content));
+    if (emTexto) {
+      entregaEmTexto = true;
+    } else {
+      try {
+        const titulo = tituloDoDocumento(result.text);
+        const pdf = await gerarPdf(result.text, { titulo });
+        documento = { pdf, fileName: nomeDoArquivo(titulo), titulo, mensagemEntrega };
+      } catch (error) {
+        entregaEmTexto = true;
+        console.warn(JSON.stringify({ msg: "redacao.pdf.falhou", erro: error instanceof Error ? error.message : String(error) }));
+      }
     }
+    if (entregaEmTexto) { documento = undefined; mensagemEntregaTexto = mensagemEntrega; }
   }
 
   const estadoDuvida = route.funcao === "duvida" && cobrar ? { duvidaTema: texto.slice(0, 1000), duvidaCobradaEm: new Date() } : {};
@@ -390,8 +429,11 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
           modelo: result.model,
           cobrou: cobrar,
           cotaMotivo,
+          intencao: intencao.valor,
+          intencaoOrigem: intencao.origem,
           ...(result.fallback ? { fallback: result.fallback } : {}),
-          ...(documento ? { pdf: documento.fileName } : {}),
+          ...(documento ? { pdf: documento.fileName, entrega: "pdf" } : {}),
+          ...(entregaEmTexto ? { entrega: "texto" } : {}),
           ...(plano && plano.funcao !== "duvida"
             ? { tipo: plano.tipo, regras: plano.pacote?.usadas.map(u => `${u.papel}:${u.codigo} · ${u.titulo}`) ?? [], trocouDeFluxo: plano.trocouDeFluxo, ...(blocosBase ? { blocosBase } : {}) }
             : {}),
@@ -405,12 +447,14 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   }, { isolationLevel: "ReadCommitted" });
 
   return {
-    replies: [...(resultado.mensagensExtras ?? []), ...(documento ? [] : [result.text])],
+    replies: [...(resultado.mensagensExtras ?? []), ...(documento ? [] : [result.text]), ...(mensagemEntregaTexto ? [mensagemEntregaTexto] : [])],
     sessionId: session.id,
     userId: user.id,
     modelUsed: result.model,
     cota: { cobrou: cobrar, motivo: cotaMotivo },
+    intencao,
     ...(documento ? { documento } : {}),
+    ...(entregaEmTexto ? { entregaEmTexto } : {}),
     ...(route.funcao === "duvida" && persistedIncomingId ? { feedbackInteractionId: persistedIncomingId } : {}),
     ...(plano && plano.funcao !== "duvida"
       ? {

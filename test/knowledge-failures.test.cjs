@@ -44,10 +44,14 @@ test('continuação: consulta curta é literal; pergunta completa preservada; te
   context='comprei um produto pela internet. Posso desistir da compra mesmo sem defeito?';
   const history=[{role:'user',content:context},{role:'assistant',content:'Não use esta resposta como fonte: prazo inventado de 99 dias.'}];
   terms=['prazo','desistir da compra','pela internet'];
-  assert.deepEqual(await provider.contextualize(question,history),{searchText:'prazo desistir da compra pela internet',resolvedQuestion:question+'\nContexto informado pelo usuário: '+context});
+  // O texto de busca leva a pergunta inteira e o contexto literal do usuário; os termos só reforçam.
+  assert.deepEqual(await provider.contextualize(question,history),{searchText:question+'\n'+context+'\nprazo desistir da compra pela internet',resolvedQuestion:question+'\nContexto informado pelo usuário: '+context});
   assert.ok(!rewrite.messages[0].content.includes('99 dias'));
+  // Termo inventado (não literal) nunca entra na busca; os literais restantes continuam valendo.
   for(const bad of [['prazo','desistir','7 dias'],['desistir','pela internet'],['prazo'],['prazo',42]]){
-    terms=bad;await assert.rejects(provider.contextualize(question,history),e=>e.code==='CLASSIFICATION_INVALID');
+    terms=bad;const r=await provider.contextualize(question,history);
+    assert.ok(r.searchText.startsWith(question+'\n'+context),'pergunta e contexto literais primeiro');
+    assert.ok(!r.searchText.includes('7 dias')&&!r.searchText.includes('42'),'termo inventado fora da busca');
   }
   terms=undefined;context=null;
 });
@@ -76,5 +80,5 @@ test('consulta extrativa: mudança de assunto usa só pergunta atual; fatos inve
   context = 'O empregado foi demitido ontem';
   await assert.rejects(provider.contextualize('E agora?', history), e => e.code === 'CLASSIFICATION_INVALID');
   context = history[0].content;
-  assert.deepEqual(await provider.contextualize('E agora?', history), {resolvedQuestion:'E agora?\nContexto informado pelo usuário: ' + context,searchText:'E agora? '+context});
+  assert.deepEqual(await provider.contextualize('E agora?', history), {resolvedQuestion:'E agora?\nContexto informado pelo usuário: ' + context,searchText:'E agora?\n'+context+'\nE agora? '+context});
 });

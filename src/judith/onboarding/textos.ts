@@ -1,13 +1,16 @@
 // Textos do onboarding editáveis no Admin (tabela OnboardingTexto). Sem linha salva, vale o
 // texto reserva daqui. Marcadores: {termos} (link dos termos), {dica} (dica do perfil),
-// {reacao} (instrução do 👍/👎), {planos} (link dos planos), {data} (data do fim do trial).
+// {reacao} (instrução do 👍/👎), {planos} (link dos planos), {data} (data do fim do trial),
+// {avulso} (link de pagamento avulso), {servico} (nome do serviço), {nome} (primeiro nome).
 // Cache de 60s, como o prompt e as regras: o que o fundador salva vale em até 1 minuto.
 
 import { prisma } from "../../db/client.js";
 
 export const CHAVES_ONBOARDING = [
   "boasVindas", "recebiDuvida", "perfilA", "perfilB", "recusa", "pedirPerfilDeNovo",
+  "perguntaFuncionarios", "pedirFuncionariosDeNovo",
   "confirmacaoA", "confirmacaoB", "dicaReacao", "retornoD1", "trialD3", "revisaoBase",
+  "saudacaoRetorno", "avulsoSemPlano", "trialEncerrado", "entregaDocumento",
 ] as const;
 export type ChaveOnboarding = (typeof CHAVES_ONBOARDING)[number];
 
@@ -34,6 +37,10 @@ Preciso saber pra te dar a resposta certa. 😊`,
 
 Estarei aqui. 😊`,
   pedirPerfilDeNovo: `Quase! Preciso saber qual dos três: MEI, empresa no Simples (ME ou EPP) ou autônomo sem CNPJ?`,
+  perguntaFuncionarios: `Só mais uma: você tem funcionário registrado (CLT)? Responde SIM ou NÃO.
+
+Assim eu só te lembro dos prazos de salário, FGTS e 13º se isso fizer parte da sua rotina. 😊`,
+  pedirFuncionariosDeNovo: `Não entendi. Você tem funcionário registrado? Responde SIM ou NÃO, por favor.`,
   confirmacaoA: `Perfeito! Antes de você mandar sua dúvida, uma coisa que vale saber:
 
 {dica}
@@ -54,6 +61,22 @@ Agora, sobre sua pergunta:`,
 
 Se tiver qualquer dúvida sobre os planos, me pergunta. 😊`,
   revisaoBase: `📚 Base jurídica revisada em {revisao}.`,
+  saudacaoRetorno: `Oi{nome}! 👋 Que bom te ver de novo. Pode mandar sua dúvida por texto ou áudio, ou me pedir um documento. 😊
+
+Minhas respostas são preparadas com auxílio de inteligência artificial, a partir da base jurídica da JUDITH.`,
+  avulsoSemPlano: `Você ainda não tem um plano ativo, mas dá pra usar a JUDITH de duas formas:
+
+1) Assinar um plano, com dúvidas, análises e redações todo mês: {planos}
+
+2) Pagar só este atendimento, avulso, sem assinatura. Pra {servico} é só pagar por este link e me mandar a mensagem em seguida: {avulso}
+
+As respostas são preparadas com auxílio de inteligência artificial e servem como orientação inicial. 😊`,
+  trialEncerrado: `Seu período de teste da JUDITH terminou. 😊
+
+Pra continuar, é só escolher um plano aqui: {planos}
+
+Se preferir, pode pagar só este atendimento avulso ({servico}) por este link: {avulso}`,
+  entregaDocumento: `Pronto, seu documento está aqui! Ele foi preparado com auxílio de inteligência artificial, a partir do que você me contou, para você usar. Confere tudo com calma antes de assinar ou enviar — e, se o valor for superior a 20 salários mínimos ou o risco for alto, vale passar por um advogado antes.`,
 };
 
 export const DESCRICAO_TEXTO: Record<ChaveOnboarding, string> = {
@@ -63,12 +86,18 @@ export const DESCRICAO_TEXTO: Record<ChaveOnboarding, string> = {
   perfilB: "Pergunta de perfil depois do SIM, no Cenário B (dúvida guardada).",
   recusa: "Resposta a quem recusa os termos.",
   pedirPerfilDeNovo: "Quando a resposta de perfil não foi entendida.",
+  perguntaFuncionarios: "Depois do perfil: pergunta se tem funcionário registrado (SIM/NÃO). Define quem recebe lembretes de salário, FGTS e 13º.",
+  pedirFuncionariosDeNovo: "Quando a resposta sobre funcionário não foi SIM nem NÃO.",
   confirmacaoA: "Depois do perfil, no Cenário A: confirmação com a dica ({dica}) e a instrução de reação ({reacao}).",
   confirmacaoB: "Depois do perfil, no Cenário B: introdução antes de responder a dúvida guardada. Usa {dica} e {reacao}.",
   dicaReacao: "Instrução do 👍/👎, injetada onde houver {reacao}.",
   retornoD1: "Retorno D+1: enviada um dia depois do aceite a quem ainda não mandou nenhuma dúvida.",
   trialD3: "Aviso 3 dias antes do fim do trial. Usa {data} e {planos}.",
   revisaoBase: "Linha da data de revisão da base (Ajustes da base), inserida antes do parágrafo dos termos. Usa {revisao}.",
+  saudacaoRetorno: "Saudação de quem já tem cadastro e manda só um oi. Pode usar {nome}.",
+  avulsoSemPlano: "Resposta a quem não tem plano ativo e manda uma dúvida ou pede pra comprar avulso. Usa {planos}, {avulso} (link de pagamento) e {servico}.",
+  trialEncerrado: "Resposta a quem mandou uma dúvida depois que o trial terminou. Usa {planos}, {avulso} e {servico}.",
+  entregaDocumento: "Mensagem de entrega do documento redigido: legenda do PDF ou mensagem depois do texto. É ela que avisa do uso de IA e quando passar por um advogado.",
 };
 
 const TTL_MS = 60_000;
@@ -95,4 +124,10 @@ export function limparCacheTextos(): void {
 
 export function preencher(texto: string, vars: Record<string, string | null | undefined>): string {
   return texto.replace(/\{(\w+)\}/g, (m, chave: string) => (vars[chave] == null ? m : String(vars[chave])));
+}
+
+// "{nome}" vira ", Maria" (primeiro nome) ou nada: "Oi{nome}!" fica "Oi, Maria!" ou "Oi!".
+export function nomeParaSaudacao(nome: string | null | undefined): string {
+  const primeiro = (nome ?? "").trim().split(/\s+/)[0] ?? "";
+  return primeiro && /^[\p{L}'-]{2,}$/u.test(primeiro) ? `, ${primeiro}` : "";
 }

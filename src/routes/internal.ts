@@ -9,6 +9,7 @@ import { prisma } from "../db/client.js";
 import { excluirUsuario } from "../retencao/exclusao.js";
 import { cancelarAssinatura } from "../judith/cancelamento.js";
 import { executarRotinas } from "../jobs/runner.js";
+import { desconectarInstancia, estadoConexao, qrCodeConexao } from "../evolution/client.js";
 
 const exclusao = z.object({ motivo: z.string().min(10).max(2000), executadoPor: z.string().max(191).optional() }).strict();
 const cancelamento = z.object({ motivo: z.string().min(3).max(2000), executadoPor: z.string().max(191).optional() }).strict();
@@ -44,6 +45,11 @@ export function registerInternalRoutes(app: FastifyInstance) {
       const forcarRetencao = Boolean((req.body as { retencao?: unknown } | null)?.retencao);
       return executarRotinas(app.log, { forcarRetencao });
     });
+
+    // Conexão do WhatsApp da JUDITH: estado, QR code para parear e troca de número (logout).
+    scoped.get("/internal/whatsapp/estado", async () => estadoConexao());
+    scoped.get("/internal/whatsapp/qrcode", async () => qrCodeConexao());
+    scoped.post("/internal/whatsapp/desconectar", async () => { await desconectarInstancia(); return { ok: true }; });
 
     scoped.setErrorHandler((error, _req, reply) => {
       app.log.error({ err: error }, "internal.fail");

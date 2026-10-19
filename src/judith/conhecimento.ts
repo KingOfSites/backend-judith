@@ -5,10 +5,16 @@ import { KnowledgeSearchError } from "../knowledge/errors.js";
 import { loadCandidates } from "../knowledge/repository.js";
 import { accidentSourceForDefect } from "../knowledge/scope.js";
 import { loadAreaKeywords } from "../knowledge/settings.js";
+import { carregarRegras } from "../regras/repository.js";
+
+// Critério do classificador de área editado no Admin (Regras → Classificadores). Sem ele, reserva.
+async function promptAreaConfigurado(): Promise<string | null> {
+  try { return (await carregarRegras()).config.classificadorArea ?? null; } catch { return null; }
+}
 
 export async function getKnowledgeContext(question: string, history: SearchTurn[] = [], previousArea: Area | null = null, extraAreas: Area[] = []) {
   let result;
-  try { result = await retrieve(question, createProvider(), loadCandidates, history, { previousArea, keywords: await loadAreaKeywords(), extraAreas }); }
+  try { result = await retrieve(question, createProvider({ promptArea: await promptAreaConfigurado() }), loadCandidates, history, { previousArea, keywords: await loadAreaKeywords(), extraAreas }); }
   catch (error) {
     if (error instanceof KnowledgeSearchError) throw error;
     throw new KnowledgeSearchError("KNOWLEDGE_UNAVAILABLE");

@@ -130,6 +130,9 @@ app.post("/webhook/evolution", async (req, reply) => {
           cancelamento: result.cancelamento,
           exclusaoDados: result.exclusaoDados,
           documento: result.documento?.fileName,
+          entregaEmTexto: result.entregaEmTexto,
+          autoatendimento: result.autoatendimento,
+          intencao: result.intencao,
         },
         "judith.reply"
       );
