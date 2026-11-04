@@ -5,8 +5,11 @@ import { AreaKeywords, keywordAreas } from "./keywords.js";
 import { KnowledgeSearchError } from "./errors.js";
 
 export const hash = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
+const VERSAO_JANELAS = "janelas-v1";
 export type Source = { id: string; slug: string; titulo: string; area: string; status: string; fontes: unknown; conteudo: string; ordem: number };
-export const fingerprint = (s: Source) => hash(JSON.stringify([PARSER_VERSION, s.id, s.slug, s.titulo, s.area, s.status, s.fontes, s.conteudo, s.ordem]));
+// A versão das janelas de embedding entra na impressão digital: mudar como o bloco longo é lido
+// tem que reindexar, mesmo com o caderno igual.
+export const fingerprint = (s: Source) => hash(JSON.stringify([PARSER_VERSION, VERSAO_JANELAS, s.id, s.slug, s.titulo, s.area, s.status, s.fontes, s.conteudo, s.ordem]));
 export type SearchTurn = { role: "user" | "assistant"; content: string };
 export type RerankCandidate = { id: string; chapter: string; subchapter: string | null; content: string };
 export type SemanticProvider = {
@@ -29,7 +32,6 @@ export const CANDIDATOS_REORDENACAO = 12;
 export const LIMITE_JANELA = 1800;
 const TAMANHO_JANELA = 1500;
 const SOBREPOSICAO = 250;
-const VERSAO_JANELAS = "janelas-v1";
 
 export function janelas(texto: string): string[] {
   if (texto.length <= LIMITE_JANELA) return [texto];
