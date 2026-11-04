@@ -1,5 +1,6 @@
 // Rotas internas usadas pelo painel (admin-judith), protegidas pela INTERNAL_API_KEY:
-// exclusão de usuário com comprovante, cancelamento de assinatura e execução das rotinas.
+// exclusão de usuário com comprovante, cancelamento de assinatura, execução das rotinas,
+// pausa da IA e mensagem da equipe (atendimento humano).
 
 import { timingSafeEqual } from "node:crypto";
 import type { FastifyInstance } from "fastify";
@@ -9,10 +10,13 @@ import { prisma } from "../db/client.js";
 import { excluirUsuario } from "../retencao/exclusao.js";
 import { cancelarAssinatura } from "../judith/cancelamento.js";
 import { executarRotinas } from "../jobs/runner.js";
-import { desconectarInstancia, estadoConexao, qrCodeConexao } from "../evolution/client.js";
+import { desconectarInstancia, estadoConexao, qrCodeConexao, sendText } from "../evolution/client.js";
+import { MessageRole } from "@prisma/client";
 
 const exclusao = z.object({ motivo: z.string().min(10).max(2000), executadoPor: z.string().max(191).optional() }).strict();
 const cancelamento = z.object({ motivo: z.string().min(3).max(2000), executadoPor: z.string().max(191).optional() }).strict();
+const pausa = z.object({ minutos: z.number().int().min(5).max(7 * 24 * 60).optional(), retomar: z.boolean().optional(), executadoPor: z.string().max(191).optional() }).strict();
+const mensagemEquipe = z.object({ texto: z.string().min(1).max(4000), executadoPor: z.string().max(191).optional() }).strict();
 
 export function registerInternalRoutes(app: FastifyInstance) {
   app.register(async scoped => {
@@ -44,6 +48,34 @@ export function registerInternalRoutes(app: FastifyInstance) {
     scoped.post("/internal/rotinas/executar", async req => {
       const forcarRetencao = Boolean((req.body as { retencao?: unknown } | null)?.retencao);
       return executarRotinas(app.log, { forcarRetencao });
+    });
+
+    // Atendimento humano: pausa a IA para um número (a equipe responde pelo painel) e retoma.
+    scoped.post<{ Params: { id: string } }>("/internal/usuarios/:id/pausa", async (req, reply) => {
+      const parsed = pausa.safeParse(req.body);
+      if (!parsed.success) return reply.code(400).send({ error: "INVALID_PAYLOAD", issues: parsed.error.issues });
+      const user = await prisma.user.findUnique({ where: { id: req.params.id } });
+      if (!user) return reply.code(404).send({ error: "USER_NOT_FOUND" });
+      const ate = parsed.data.retomar ? null : new Date(Date.now() + (parsed.data.minutos ?? 120) * 60_000);
+      await prisma.user.update({ where: { id: user.id }, data: { iaPausadaAte: ate } });
+      app.log.info({ userId: user.id, ate, por: parsed.data.executadoPor ?? null }, "humano.pausa");
+      return { ok: true, iaPausadaAte: ate };
+    });
+
+    // Mensagem da equipe pelo número da JUDITH. Fica na sessão (meta.autor = equipe) para o painel.
+    scoped.post<{ Params: { id: string } }>("/internal/usuarios/:id/mensagem", async (req, reply) => {
+      const parsed = mensagemEquipe.safeParse(req.body);
+      if (!parsed.success) return reply.code(400).send({ error: "INVALID_PAYLOAD", issues: parsed.error.issues });
+      const user = await prisma.user.findUnique({ where: { id: req.params.id } });
+      if (!user) return reply.code(404).send({ error: "USER_NOT_FOUND" });
+      const texto = parsed.data.texto.trim();
+      const messageId = await sendText(user.whatsappNumber, texto);
+      const cutoff = new Date(Date.now() - 30 * 60_000);
+      const sessao = (await prisma.session.findFirst({ where: { userId: user.id, closed: false, lastSeenAt: { gte: cutoff } }, orderBy: { lastSeenAt: "desc" } }))
+        ?? (await prisma.session.create({ data: { userId: user.id } }));
+      await prisma.message.create({ data: { sessionId: sessao.id, role: MessageRole.ASSISTANT, content: texto, meta: { funcao: "humano", autor: parsed.data.executadoPor ?? "equipe" } } });
+      await prisma.session.update({ where: { id: sessao.id }, data: { lastSeenAt: new Date() } });
+      return { ok: true, messageId };
     });
 
     // Conexão do WhatsApp da JUDITH: estado, QR code para parear e troca de número (logout).

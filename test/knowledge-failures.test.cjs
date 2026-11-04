@@ -23,7 +23,8 @@ const input = { tier: 'HAIKU', funcao: 'duvida', user: null, history: [], userMe
 
 test('busca: classificação inválida, nenhuma área e embeddings offline impedem geração jurídica', async t => {
   t.mock.method(global, 'fetch', async () => { throw new Error('offline'); });
-  for (const value of ['financeiro', 'civil, consumidor', 'civil, civil', 'A área é civil']) {
+  // Lista de áreas válidas ("civil, consumidor") passou a valer; prosa e área desconhecida seguem inválidas.
+  for (const value of ['financeiro', 'civil e consumidor', 'A área é civil', 'civil, financeiro']) {
     answer = value;
     await assert.rejects(askJudith(input), e => e.code === 'CLASSIFICATION_INVALID');
   }

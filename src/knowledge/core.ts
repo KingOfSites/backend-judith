@@ -8,7 +8,59 @@ export const hash = (text: string) => createHash("sha256").update(text, "utf8").
 export type Source = { id: string; slug: string; titulo: string; area: string; status: string; fontes: unknown; conteudo: string; ordem: number };
 export const fingerprint = (s: Source) => hash(JSON.stringify([PARSER_VERSION, s.id, s.slug, s.titulo, s.area, s.status, s.fontes, s.conteudo, s.ordem]));
 export type SearchTurn = { role: "user" | "assistant"; content: string };
-export type SemanticProvider = { model: string; embed(text: string, kind?: "query" | "passage"): Promise<number[]>; classify(question: string, history?: SearchTurn[]): Promise<Area | null>; contextualize?(question: string, history: SearchTurn[]): Promise<string | { resolvedQuestion: string; searchText: string }> };
+export type RerankCandidate = { id: string; chapter: string; subchapter: string | null; content: string };
+export type SemanticProvider = {
+  model: string;
+  embed(text: string, kind?: "query" | "passage"): Promise<number[]>;
+  // Uma área, várias (a primeira é a principal) ou nenhuma.
+  classify(question: string, history?: SearchTurn[]): Promise<Area | Area[] | null>;
+  contextualize?(question: string, history: SearchTurn[]): Promise<string | { resolvedQuestion: string; searchText: string }>;
+  // Opcional: reordena os melhores candidatos da similaridade e devolve os ids úteis, em ordem.
+  rerank?(question: string, candidates: RerankCandidate[]): Promise<string[]>;
+};
+
+// Quantos blocos vão para o modelo e quantos candidatos da similaridade passam pela reordenação.
+export const BLOCOS_NA_RESPOSTA = 5;
+export const CANDIDATOS_REORDENACAO = 12;
+
+// O modelo local de embeddings lê no máximo ~480 tokens (~1.800 caracteres): um bloco maior que
+// isso ficava representado só pelo começo. Blocos longos são lidos em janelas sobrepostas e o
+// vetor final é a média normalizada das janelas, cobrindo o bloco inteiro.
+export const LIMITE_JANELA = 1800;
+const TAMANHO_JANELA = 1500;
+const SOBREPOSICAO = 250;
+const VERSAO_JANELAS = "janelas-v1";
+
+export function janelas(texto: string): string[] {
+  if (texto.length <= LIMITE_JANELA) return [texto];
+  const saida: string[] = [];
+  let inicio = 0;
+  while (inicio < texto.length) {
+    let fim = Math.min(texto.length, inicio + TAMANHO_JANELA);
+    if (fim < texto.length) {
+      // Fecha a janela numa quebra de linha ou espaço, para não cortar palavra no meio.
+      const corte = Math.max(texto.lastIndexOf("\n", fim), texto.lastIndexOf(" ", fim));
+      if (corte > inicio + TAMANHO_JANELA / 2) fim = corte;
+    }
+    saida.push(texto.slice(inicio, fim));
+    if (fim >= texto.length) break;
+    inicio = Math.max(fim - SOBREPOSICAO, inicio + 1);
+  }
+  return saida;
+}
+
+export async function embedCompleto(provider: SemanticProvider, texto: string): Promise<number[]> {
+  const partes = janelas(texto);
+  if (partes.length === 1) return vector(await provider.embed(partes[0]!, "passage"));
+  const vetores: number[][] = [];
+  for (const parte of partes) vetores.push(vector(await provider.embed(parte, "passage")));
+  const dim = vetores[0]!.length;
+  if (vetores.some(v => v.length !== dim)) throw new Error("VECTOR_DIMENSION_MISMATCH");
+  const media = new Array<number>(dim).fill(0);
+  for (const v of vetores) for (let i = 0; i < dim; i++) media[i]! += v[i]! / vetores.length;
+  const norma = Math.hypot(...media) || 1;
+  return vector(media.map(n => n / norma));
+}
 export type PreparedDocument = { sourceId: string; fingerprint: string; model: string; published: boolean; chunks: (Chunk & { embeddingId: string })[] };
 /** `known` lists ids already referenced by the indexed document: they exist (FK) and need no reload. */
 export type EmbeddingStore = { get(id: string): Promise<number[] | null>; put(id: string, model: string, vector: number[]): Promise<void>; known?: Set<string> };
@@ -34,12 +86,13 @@ export async function prepareDocument(source: Source, provider: SemanticProvider
   for (const chunk of chunks) {
     // Area, fontes and notebook metadata are not part of the semantic input.
     const semanticText = [chunk.chapter, chunk.subchapter ?? "", chunk.semanticText].join("\n");
-    const embeddingId = hash(JSON.stringify([provider.model, semanticText]));
+    // Blocos longos levam a versão das janelas no id: os curtos mantêm o vetor já guardado.
+    const embeddingId = hash(JSON.stringify(semanticText.length > LIMITE_JANELA ? [provider.model, VERSAO_JANELAS, semanticText] : [provider.model, semanticText]));
     if (cache.known?.has(embeddingId)) reused++;
     else {
       const cached = await cache.get(embeddingId);
       if (cached) { vector(cached); reused++; }
-      else { await cache.put(embeddingId, provider.model, vector(await provider.embed(semanticText, "passage"))); created++; }
+      else { await cache.put(embeddingId, provider.model, await embedCompleto(provider, semanticText)); created++; }
     }
     document.chunks.push({ ...chunk, embeddingId });
     await progress();
@@ -147,22 +200,44 @@ export async function retrieve(question: string, provider: SemanticProvider, loa
     }
   }
   const { searchText, resolvedQuestion } = typeof prepared === "string" ? { searchText: prepared, resolvedQuestion: prepared } : prepared;
-  const classified = await provider.classify(resolvedQuestion);
+  const classificacao = await provider.classify(resolvedQuestion);
+  const classifiedAreas = Array.isArray(classificacao) ? classificacao : classificacao ? [classificacao] : [];
+  const classified = classifiedAreas[0] ?? null;
   const base = classified ?? (prepared !== question ? options.previousArea ?? null : null);
-  const addedByKeywords = keywordAreas(resolvedQuestion, options.keywords ?? {}).filter(a => a !== base);
-  const extras = (options.extraAreas ?? []).filter(a => a !== base && !addedByKeywords.includes(a));
-  const areas = [...(base ? [base] : []), ...addedByKeywords, ...extras];
+  // O classificador pode devolver mais de uma área: a primeira manda, as outras ampliam a busca.
+  const addedByClassifier = classifiedAreas.slice(1).filter(a => a !== base);
+  const addedByKeywords = keywordAreas(resolvedQuestion, options.keywords ?? {}).filter(a => a !== base && !addedByClassifier.includes(a));
+  const extras = (options.extraAreas ?? []).filter(a => a !== base && !addedByKeywords.includes(a) && !addedByClassifier.includes(a));
+  const areas = [...(base ? [base] : []), ...addedByClassifier, ...addedByKeywords, ...extras];
   const area = areas[0] ?? null;
   const areaSource = classified ? "classifier" as const : base ? "previous" as const : area ? "keywords" as const : null;
   const meta = { area, areas, areaSource, addedByKeywords, searchText, resolvedQuestion };
-  if (!area) return { ...meta, chunks: [] };
+  if (!area) return { ...meta, chunks: [], reranked: false };
   // Loader MUST constrain area/publication in the DB, before embeddings/similarity.
   const seen = new Set<string>();
   const candidates = (await Promise.all(areas.map(a => load(a, provider.model)))).flat()
     .filter(c => c.published && c.areas.some(a => areas.includes(a)) && !seen.has(c.id) && seen.add(c.id));
-  if (!candidates.length) return { ...meta, chunks: [] };
+  if (!candidates.length) return { ...meta, chunks: [], reranked: false };
   const query = vector(await provider.embed(searchText, "query"));
-  const chunks = candidates.map(c => ({ ...c, score: cosine(query, c.vector) }))
-    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id)).slice(0, 5);
-  return { ...meta, chunks };
+  const ranked = candidates.map(c => ({ ...c, score: cosine(query, c.vector) }))
+    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  let chunks = ranked.slice(0, BLOCOS_NA_RESPOSTA);
+  let reranked = false;
+  // Similaridade do e5 fica toda entre 0,83 e 0,88: a ordem dos cinco primeiros é frágil. O
+  // reordenador lê os doze melhores e escolhe os que tratam do fato perguntado. Se falhar, vale
+  // a ordem da similaridade.
+  const topo = ranked.slice(0, CANDIDATOS_REORDENACAO);
+  if (provider.rerank && topo.length > BLOCOS_NA_RESPOSTA) {
+    try {
+      const ids = await provider.rerank(resolvedQuestion, topo.map(c => ({ id: c.id, chapter: c.chapter, subchapter: c.subchapter, content: c.content })));
+      const escolhidos = ids.map(id => topo.find(c => c.id === id)).filter((c): c is typeof topo[number] => Boolean(c));
+      if (escolhidos.length) {
+        chunks = [...escolhidos, ...topo.filter(c => !escolhidos.includes(c))].slice(0, BLOCOS_NA_RESPOSTA);
+        reranked = true;
+      }
+    } catch {
+      // segue com a ordem da similaridade
+    }
+  }
+  return { ...meta, chunks, reranked };
 }

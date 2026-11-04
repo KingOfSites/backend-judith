@@ -42,6 +42,8 @@ enum OnboardingEstado {
   AGUARDANDO_TERMOS
   AGUARDANDO_PERFIL
   AGUARDANDO_FUNCIONARIOS
+  AGUARDANDO_RAMO
+  AGUARDANDO_CIDADE
   CONCLUIDO
   RECUSADO
 }
@@ -57,6 +59,8 @@ model User {
   // Tem funcionário registrado (CLT)? null = não perguntado. Filtra lembretes de salário, FGTS e 13º.
   temFuncionarios        Boolean?
   ramo                   String?
+  // Atendimento humano: até esta hora a JUDITH não responde a este número (a equipe responde pelo painel).
+  iaPausadaAte           DateTime?
   cidade                 String?
   plano                  Plano            @default(TRIAL)
   aceitouTermos          Boolean          @default(false)

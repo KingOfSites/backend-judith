@@ -5,7 +5,8 @@
 // formato e despacha para o fornecedor certo, olhando só o id do modelo:
 //
 //   gemini-*  → Google (dúvida, classificadores, lembretes/coleta)
-//   gpt-*     → OpenAI (análise e redação; e o fallback gpt-4.1-mini)
+//   gpt-*     → OpenAI (análise e redação; dúvida no gpt-6; e o fallback gpt-4.1-mini)
+//                GPT-5.6+ vai pela API Responses com ponto de cache explícito; os demais, Chat Completions
 //   claude-*  → Anthropic (mantido para os bots dos clientes e para os testes)
 //
 // Resiliência (spec §7): em 429/5xx tenta de novo com espera crescente e, esgotando,
@@ -196,8 +197,88 @@ async function chamarGoogle(req: LlmRequest, options: LlmOptions): Promise<LlmRe
 
 let openai: OpenAI | null = null;
 
+// GPT-5.6 em diante aceita o ponto de cache explícito (prompt_cache_breakpoint) nos blocos de
+// entrada, só na API Responses. Sem ele, o prefixo fixo (prompt + regras) não é reaproveitado de
+// forma confiável e o custo da dúvida quase triplica (medição do fundador). Os modelos anteriores
+// (gpt-4.1, gpt-4.1-mini) seguem no Chat Completions com o cache automático.
+export function aceitaPontoDeCache(model: string): boolean {
+  const m = /^gpt-(\d+)(?:\.(\d+))?/i.exec(model);
+  if (!m) return false;
+  const maior = Number(m[1]), menor = Number(m[2] ?? 0);
+  return maior > 5 || (maior === 5 && menor >= 6);
+}
+
+type BlocoEntrada = { type: "input_text"; text: string; prompt_cache_breakpoint?: { mode: "explicit" } };
+
+// Blocos do system na ordem em que vieram; cada bloco marcado com cache_control fecha um ponto de
+// cache explícito (mesma semântica dos blocos do formato "messages").
+export function blocosEntradaDe(system: LlmRequest["system"]): BlocoEntrada[] {
+  if (!system) return [];
+  if (typeof system === "string") return [{ type: "input_text", text: system }];
+  return system.map(b => ({ type: "input_text" as const, text: b.text, ...(b.cache_control ? { prompt_cache_breakpoint: { mode: "explicit" as const } } : {}) }));
+}
+
+async function chamarOpenAIResponses(req: LlmRequest, options: LlmOptions): Promise<LlmResponse> {
+  openai ??= new OpenAI({ apiKey: env.OPENAI_API_KEY, maxRetries: 0 });
+  const forcada = ferramentaForcada(req);
+  const blocos = blocosEntradaDe(req.system);
+  const input = [
+    ...(blocos.length ? [{ role: "developer" as const, content: blocos }] : []),
+    ...turnos(req.messages).map(t => ({ role: t.role, content: [{ type: t.role === "assistant" ? ("output_text" as const) : ("input_text" as const), text: t.text }] })),
+  ];
+  const corpo: Record<string, unknown> = {
+    model: req.model,
+    max_output_tokens: req.max_tokens,
+    ...(req.temperature === undefined ? {} : { temperature: req.temperature }),
+    input,
+    // Só os pontos marcados por nós entram no cache: o fim do prompt fixo, não a pergunta do cliente.
+    prompt_cache_options: { mode: blocos.some(b => b.prompt_cache_breakpoint) ? "explicit" : "implicit" },
+    ...(req.tools?.length
+      ? {
+          tools: req.tools.map(t => ({ type: "function", name: t.name, description: t.description ?? "", parameters: t.input_schema, strict: false })),
+          tool_choice: forcada ? { type: "function", name: forcada } : req.tool_choice?.type === "any" ? "required" : "auto",
+        }
+      : {}),
+  };
+  const response = await (openai.responses.create as unknown as (body: unknown, opts: unknown) => Promise<{
+    id: string; model: string; status?: string; incomplete_details?: { reason?: string } | null;
+    output?: ({ type: "message"; content?: { type: string; text?: string }[] } | { type: "function_call"; call_id: string; name: string; arguments: string } | { type: string })[];
+    usage?: { input_tokens?: number; output_tokens?: number; input_tokens_details?: { cached_tokens?: number } };
+  }>)(corpo, { timeout: options.timeout ?? 120_000 });
+
+  const content: LlmContentBlock[] = [];
+  for (const item of response.output ?? []) {
+    if (item.type === "message" && "content" in item) {
+      const texto = (item.content ?? []).filter(c => c.type === "output_text" && typeof c.text === "string").map(c => c.text).join("");
+      if (texto) content.push({ type: "text", text: texto });
+    } else if (item.type === "function_call" && "arguments" in item) {
+      let input: unknown;
+      try { input = JSON.parse(item.arguments); }
+      catch { throw new LlmHttpError(502, "OpenAI devolveu argumentos de ferramenta que não são JSON"); }
+      content.push({ type: "tool_use", id: item.call_id, name: item.name, input });
+    }
+  }
+  if (!content.length) throw new LlmHttpError(502, `OpenAI sem conteúdo (status=${response.status ?? "ausente"})`);
+
+  const cached = response.usage?.input_tokens_details?.cached_tokens ?? 0;
+  const cortou = response.status === "incomplete" && response.incomplete_details?.reason === "max_output_tokens";
+  return {
+    id: response.id,
+    model: response.model,
+    content,
+    stop_reason: cortou ? "max_tokens" : content.some(b => b.type === "tool_use") ? "tool_use" : "end_turn",
+    usage: {
+      input_tokens: Math.max(0, (response.usage?.input_tokens ?? 0) - cached),
+      output_tokens: response.usage?.output_tokens ?? 0,
+      cache_read_input_tokens: cached,
+      cache_creation_input_tokens: 0,
+    },
+  };
+}
+
 async function chamarOpenAI(req: LlmRequest, options: LlmOptions): Promise<LlmResponse> {
   if (!env.OPENAI_API_KEY) throw new LlmHttpError(401, "OPENAI_API_KEY ausente");
+  if (aceitaPontoDeCache(req.model)) return chamarOpenAIResponses(req, options);
   // As tentativas são controladas aqui, não pelo SDK, para o fallback enxergar a falha.
   openai ??= new OpenAI({ apiKey: env.OPENAI_API_KEY, maxRetries: 0 });
   const system = systemDe(req.system);

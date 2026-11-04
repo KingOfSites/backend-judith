@@ -6,10 +6,13 @@ import { prisma } from "../db/client.js";
 import { env } from "../config/env.js";
 import { linkAvulso, podeCriarLembrete, SERVICO_LABEL } from "./quota.js";
 import { carregarTextosOnboarding, preencher } from "./onboarding/textos.js";
-import { chaveData, dataLocal, instanteLocal, somarDias, type DataLocal } from "../jobs/lembretes.js";
+import { chaveData, dataLocal, diasAte, instanteLocal, somarDias, type DataLocal } from "../jobs/lembretes.js";
+import { Llm } from "../llm/client.js";
 import type { Funcao } from "./claude.js";
 
 const normalizar = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+// A frase "me lembra dia 15/11 de pagar o aluguel" continua valendo; agora também "em 30 dias",
+// "semana que vem", "mês que vem", "na sexta", "hoje".
 const dataBr = (d: DataLocal) => `${String(d.dia).padStart(2, "0")}/${String(d.mes).padStart(2, "0")}/${d.ano}`;
 const dataCurta = (d: Date) => d.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
 
@@ -42,11 +45,40 @@ export function pediuEmTexto(texto: string): boolean {
 }
 
 const MESES = ["janeiro", "fevereiro", "marco", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+const DIAS_SEMANA = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
+const NUMEROS: Record<string, number> = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10, quinze: 15, vinte: 20, trinta: 30 };
 
 export type PedidoLembrete = { titulo: string; alvo: DataLocal };
 
 function diasNoMes(ano: number, mes: number): number {
   return new Date(Date.UTC(ano, mes, 0)).getUTCDate();
+}
+
+// Mesmo dia N meses à frente; dia 31 em mês curto cai no último dia.
+function somarMeses(d: DataLocal, n: number): DataLocal {
+  const total = d.mes - 1 + n;
+  const ano = d.ano + Math.floor(total / 12);
+  const mes = (total % 12) + 1;
+  return { ano, mes, dia: Math.min(d.dia, diasNoMes(ano, mes)) };
+}
+
+// Título limpo pelo modelo leve: corrige digitação e tira palavras soltas ("Pagar um o fornecedor
+// do som" → "Pagar o fornecedor do som"). Sem cota. Se falhar, vale o recorte da frase.
+const clientePonta = new Llm({ timeout: 15_000, maxRetries: 0 });
+export async function limparTituloLembrete(titulo: string): Promise<string> {
+  try {
+    const response = await clientePonta.messages.create({
+      model: env.JUDITH_MODEL_CLASSIFICADOR ?? env.JUDITH_MODEL_HAIKU, max_tokens: 40, temperature: 0,
+      system: "Reescreva o texto como título curto de lembrete em português do Brasil: até 60 caracteres, verbo no infinitivo quando houver ação, corrigindo erros de digitação e removendo palavras repetidas ou soltas. Não acrescente informação. Devolva SOMENTE o título, sem aspas, sem ponto final.",
+      messages: [{ role: "user", content: titulo }],
+    });
+    const texto = response.content.find(b => b.type === "text");
+    const limpo = texto && texto.type === "text" ? texto.text.replace(/^["'“”\s]+|["'“”.\s]+$/g, "").replace(/\s+/g, " ") : "";
+    if (!limpo || limpo.length > 80 || /\n/.test(limpo)) return titulo;
+    return limpo.charAt(0).toUpperCase() + limpo.slice(1);
+  } catch {
+    return titulo;
+  }
 }
 
 // "me lembra dia 15/11 de pagar o aluguel", "lembrete: 20/10 renovar o alvará", "me avisa dia 5 de
@@ -89,6 +121,29 @@ export function extrairLembrete(texto: string, hoje: DataLocal = dataLocal()): P
     alvo = somarDias(hoje, m[1] === "amanha" ? 1 : 2);
     // "ã" não é caractere de palavra para o \b do JavaScript: fecha com espaço ou fim.
     trecho = /(?:^|\s)(?:depois de amanh[aã]|amanh[aã])(?=\s|$|[,.!?])/;
+  } else if ((m = n.match(/\b(?:em|daqui a|daqui|dentro de|em ate|ate) (\d{1,3}|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|quinze|vinte|trinta) (dia|dias|semana|semanas|mes|meses)\b/))) {
+    // Prazo relativo: "em 30 dias", "daqui a duas semanas", "dentro de um mês".
+    const quantidade = NUMEROS[m[1]!] ?? Number(m[1]);
+    if (!quantidade || quantidade > 400) return null;
+    const unidade = m[2]!.startsWith("semana") ? 7 : m[2]!.startsWith("mes") ? 0 : 1;
+    alvo = unidade === 0 ? somarMeses(hoje, quantidade) : somarDias(hoje, quantidade * unidade);
+    trecho = /\b(?:em|daqui a|daqui|dentro de|em at[eé]|at[eé]) (?:\d{1,3}|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|quinze|vinte|trinta) (?:dias?|semanas?|m[eê]s|meses)\b/;
+  } else if (/\b(semana que vem|proxima semana|na proxima semana|na semana que vem)\b/.test(n)) {
+    alvo = somarDias(hoje, 7);
+    trecho = /\b(?:na )?(?:semana que vem|pr[oó]xima semana)\b/;
+  } else if (/\b(mes que vem|proximo mes|no proximo mes|no mes que vem)\b/.test(n)) {
+    alvo = somarMeses(hoje, 1);
+    trecho = /\b(?:no )?(?:m[eê]s que vem|pr[oó]ximo m[eê]s)\b/;
+  } else if ((m = n.match(/\b(?:na |nesta |nessa |essa |esta |proxima |proximo |no |neste |nesse )?(segunda|terca|quarta|quinta|sexta|sabado|domingo)(?:-feira| feira)?(?: que vem)?\b/))) {
+    // "na sexta", "segunda que vem", "próxima terça": a próxima ocorrência (hoje não conta).
+    const dia = DIAS_SEMANA.indexOf(m[1]!);
+    const atual = new Date(Date.UTC(hoje.ano, hoje.mes - 1, hoje.dia)).getUTCDay();
+    const faltam = ((dia - atual + 7) % 7) || 7;
+    alvo = somarDias(hoje, faltam);
+    trecho = /\b(?:na |nesta |nessa |essa |esta |pr[oó]xima |pr[oó]ximo |no |neste |nesse )?(?:segunda|ter[cç]a|quarta|quinta|sexta|s[aá]bado|domingo)(?:-feira| feira)?(?: que vem)?\b/;
+  } else if (/\bhoje\b/.test(n)) {
+    alvo = hoje;
+    trecho = /\bhoje\b/;
   }
   if (!alvo || !trecho) return null;
 
@@ -167,11 +222,15 @@ export async function criarLembrete(user: User, pedido: PedidoLembrete): Promise
   if (!(await podeCriarLembrete(user))) {
     return `Seu plano já usou os lembretes incluídos neste mês. Os prazos do seu perfil eu continuo avisando automaticamente. Pra ter mais lembretes, veja os planos: ${env.WEB_JUDITH_URL}/planos`;
   }
+  const titulo = await limparTituloLembrete(pedido.titulo);
   await prisma.$transaction([
-    prisma.reminder.create({ data: { userId: user.id, titulo: pedido.titulo, dataAlvo: instanteLocal(pedido.alvo), antecedencias: [1, 0] } }),
+    prisma.reminder.create({ data: { userId: user.id, titulo, dataAlvo: instanteLocal(pedido.alvo), antecedencias: [1, 0] } }),
     prisma.usageEvent.create({ data: { userId: user.id, kind: "LEMBRETE" } }),
   ]);
-  return `Anotado! 📅 Te lembro de *${pedido.titulo}* em ${dataBr(pedido.alvo)}: um aviso na véspera e outro no dia.\n\nPra ver tudo que está marcado, diga *meus lembretes*.`;
+  // "Aviso na véspera" só faz sentido se a véspera ainda não é hoje.
+  const faltam = diasAte(pedido.alvo, dataLocal());
+  const avisos = faltam <= 0 ? "te aviso ainda hoje" : faltam === 1 ? "te aviso amanhã, no dia" : "um aviso na véspera e outro no dia";
+  return `Anotado! 📅 Te lembro de *${titulo}* em ${dataBr(pedido.alvo)}: ${avisos}.\n\nPra ver tudo que está marcado, diga *meus lembretes*.`;
 }
 
 // Quem não tem plano ativo (ou pediu avulso): texto editável no Admin com o link de pagamento.

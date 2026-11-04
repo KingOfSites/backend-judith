@@ -15,6 +15,7 @@ import { processarMensagemBot } from "./bot/handler.js";
 import { getPromptVersao } from "./judith/prompts/principal.js";
 import { registerKnowledgeRoutes } from "./routes/knowledge.js";
 import { registerKnowledgeWorker } from "./knowledge/worker.js";
+import { FilaPorNumero } from "./judith/fila.js";
 
 const app = Fastify({
   logger: {
@@ -105,18 +106,65 @@ app.post("/webhook/evolution", async (req, reply) => {
     }
   }
 
+  if (isJudithLegacy) {
+    // JUDITH: entra na fila do número. Mensagens seguidas viram um turno só, e nunca há dois
+    // turnos do mesmo cliente rodando ao mesmo tempo (ver judith/fila.ts).
+    filaJudith.receber(parsed.whatsappNumber, {
+      pushName: parsed.pushName,
+      text: textoParaPipeline,
+      hasAttachment: parsed.hasAttachment && !isAudio,
+      anexo,
+      messageId: parsed.messageId,
+    });
+    return;
+  }
+
   try {
-    if (isJudithLegacy) {
-      // Fluxo original da JUDITH jurídica (single-tenant)
-      await sendTyping(parsed.whatsappNumber, 1_500);
-      const result = await handleInbound({
-        whatsappNumber: parsed.whatsappNumber,
-        pushName: parsed.pushName,
-        text: textoParaPipeline,
-        hasAttachment: parsed.hasAttachment && !isAudio,
-        anexo,
-        messageId: parsed.messageId,
+    {
+      // Bot multi-tenant: roteia pela instância → busca Bot → responde com persona do cliente
+      const r = await processarMensagemBot({
+        instanceName,
+        fromNumero: parsed.whatsappNumber,
+        fromPushName: parsed.pushName,
+        texto: textoParaPipeline,
       });
+      app.log.info({ instance: instanceName, result: r }, "bot.reply");
+    }
+  } catch (err) {
+    app.log.error({ err, instance: instanceName }, "webhook.fail");
+  }
+});
+
+type ItemFila = { pushName?: string; text: string; hasAttachment: boolean; anexo?: AnexoInput; messageId: string };
+
+// Várias mensagens do mesmo número viram uma: os textos se juntam em linhas; vale o primeiro
+// arquivo lido (o id da primeira mensagem identifica o turno, para não repetir em reentrega).
+export function juntarLote(lote: ItemFila[]): ItemFila {
+  const comAnexo = lote.find(i => i.anexo && "leitura" in i.anexo) ?? lote.find(i => i.anexo);
+  return {
+    pushName: lote.map(i => i.pushName).filter(Boolean).pop(),
+    text: lote.map(i => i.text.trim()).filter(Boolean).join("\n"),
+    hasAttachment: lote.some(i => i.hasAttachment),
+    anexo: comAnexo?.anexo,
+    messageId: lote[0]!.messageId,
+  };
+}
+
+const filaJudith = new FilaPorNumero<ItemFila>(env.JUNTAR_MENSAGENS_MS, async (whatsappNumber, lote) => {
+  const item = juntarLote(lote);
+  if (lote.length > 1) app.log.info({ user: whatsappNumber, juntadas: lote.length }, "judith.lote");
+  try {
+    {
+      await sendTyping(whatsappNumber, 1_500);
+      const result = await handleInbound({
+        whatsappNumber,
+        pushName: item.pushName,
+        text: item.text,
+        hasAttachment: item.hasAttachment,
+        anexo: item.anexo,
+        messageId: item.messageId,
+      });
+      const parsed = { whatsappNumber, messageId: item.messageId };
       app.log.info(
         {
           user: parsed.whatsappNumber,
@@ -155,26 +203,15 @@ app.post("/webhook/evolution", async (req, reply) => {
           await sendText(parsed.whatsappNumber, result.documento.mensagemEntrega);
         }
       }
-    } else {
-      // Bot multi-tenant: roteia pela instância → busca Bot → responde com persona do cliente
-      const r = await processarMensagemBot({
-        instanceName,
-        fromNumero: parsed.whatsappNumber,
-        fromPushName: parsed.pushName,
-        texto: textoParaPipeline,
-      });
-      app.log.info({ instance: instanceName, result: r }, "bot.reply");
     }
   } catch (err) {
-    app.log.error({ err, instance: instanceName }, "webhook.fail");
-    if (isJudithLegacy) {
-      await sendText(
-        parsed.whatsappNumber,
-        "Opa, deu uma travadinha aqui do meu lado. Pode mandar de novo? 🙏"
-      );
-    }
+    app.log.error({ err, instance: env.EVOLUTION_INSTANCE }, "webhook.fail");
+    await sendText(
+      whatsappNumber,
+      "Opa, deu uma travadinha aqui do meu lado. Pode mandar de novo? 🙏"
+    ).catch(() => undefined);
   }
-});
+}, (numero, err) => app.log.error({ err, user: numero }, "judith.fila.fail"));
 
 async function getUltimaResposta(sessionId?: string): Promise<string | null> {
   if (!sessionId) return null;

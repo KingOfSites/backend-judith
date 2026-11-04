@@ -53,9 +53,17 @@ function modelIdFor(tier: ModelTier): string {
   return tier === ModelTier.SONNET ? env.JUDITH_MODEL_SONNET : env.JUDITH_MODEL_HAIKU;
 }
 
+// Data de hoje em Brasília, por extenso: o modelo não sabe que dia é e deixava "[DATA DE HOJE]"
+// no recibo mesmo com o cliente pedindo "usar hoje". Entra no bloco dinâmico, fora do cache.
+export function linhaDataDeHoje(agora = new Date()): string {
+  const extenso = agora.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+  const curta = agora.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric" });
+  return `Data de hoje: ${extenso} (${curta}, horário de Brasília). Use esta data quando o documento ou a resposta precisar da data atual; nunca deixe marcador como [DATA].`;
+}
+
 function userProfileBlock(user: User | null): string {
   if (!user) {
-    return "Perfil do usuário: ainda não cadastrado — peça o aceite dos termos e o tipo de empresa antes de responder substantivamente.";
+    return `Perfil do usuário: ainda não cadastrado — peça o aceite dos termos e o tipo de empresa antes de responder substantivamente.\n${linhaDataDeHoje()}`;
   }
   const linhas: string[] = ["Perfil do usuário:"];
   if (user.nome) linhas.push(`- Nome: ${user.nome}`);
@@ -63,6 +71,7 @@ function userProfileBlock(user: User | null): string {
   if (user.ramo) linhas.push(`- Ramo: ${user.ramo}`);
   if (user.cidade) linhas.push(`- Cidade: ${user.cidade}`);
   linhas.push(`- Plano: ${user.plano}`);
+  linhas.push(linhaDataDeHoje());
   return linhas.join("\n");
 }
 
@@ -113,8 +122,8 @@ export async function askJudith(input: AskInput): Promise<AskOutput> {
       await writeAudit(traceId, { ...audit, stage: "retrieval_failed", code: error instanceof KnowledgeSearchError ? error.code : "KNOWLEDGE_UNAVAILABLE", ...(areas?.length ? { area: areas[0], areas } : {}) });
       throw error;
     }
-    Object.assign(audit, { stage: "retrieved", area: context.area, areas: context.areas, areaSource: context.areaSource, addedByKeywords: context.addedByKeywords, searchQuery: context.searchText, excludedFromGeneration: context.excludedFromGeneration,
-      chunks: context.chunks.map(c => ({ id: c.id, sourceId: c.sourceId, version: c.version, contentHash: hash(c.content), score: c.score, content: c.content, chapter: c.chapter, fontes: c.fontes })) });
+    Object.assign(audit, { stage: "retrieved", area: context.area, areas: context.areas, areaSource: context.areaSource, addedByKeywords: context.addedByKeywords, reranked: context.reranked, searchQuery: context.searchText, excludedFromGeneration: context.excludedFromGeneration,
+      chunks: context.chunks.map(c => ({ id: c.id, sourceId: c.sourceId, version: c.version, contentHash: hash(c.content), score: c.score, content: c.content, chapter: c.chapter, subchapter: c.subchapter, fontes: c.fontes })) });
     await writeAudit(traceId, audit);
   }
   const conhecimento = context?.text ?? "";

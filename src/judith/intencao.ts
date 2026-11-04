@@ -26,7 +26,7 @@ Valores validos:
 Nunca classifique como fora_do_escopo por o assunto parecer fora da area juridica estrita: se envolver o dia a dia do negocio da pessoa, e "duvida".`;
 
 export const MENSAGEM_FORA_DO_ESCOPO_RESERVA =
-  "Eu cuido da parte jurídica e burocrática do seu negócio: dúvidas sobre clientes, fornecedores, funcionários, contratos, cobranças, impostos e prazos, além de redigir e analisar documentos. Esse assunto fica fora do que eu atendo. 🙂 Se tiver algo do seu negócio, é só mandar.";
+  "Eu cuido da parte jurídica e burocrática do seu negócio: dúvidas sobre clientes, fornecedores, funcionários, contratos, cobranças, impostos e prazos, além de redigir e analisar documentos. Esse assunto fica fora do que eu atendo. 🙂 Se tiver algo do seu negócio, é só mandar. Nenhum crédito foi consumido.";
 
 export type Anterior = { role: "user" | "assistant"; content: string };
 export type ResultadoIntencao = { intencao: Intencao; origem: "classificador" | "falha"; bruto?: string };
@@ -57,7 +57,7 @@ export async function classificarIntencao(config: Record<string, string>, texto:
   const user = `${contexto(anteriores)}Mensagem a classificar:\n${texto.slice(0, 4000)}`;
   for (let tentativa = 0; tentativa < 2; tentativa++) {
     try {
-      const response = await client.messages.create({ model: env.JUDITH_MODEL_HAIKU, max_tokens: 40, temperature: 0, system, messages: [{ role: "user", content: user }] });
+      const response = await client.messages.create({ model: env.JUDITH_MODEL_CLASSIFICADOR ?? env.JUDITH_MODEL_HAIKU, max_tokens: 40, temperature: 0, system, messages: [{ role: "user", content: user }] });
       const primeiro = response.content[0];
       const bruto = primeiro?.type === "text" ? primeiro.text : "";
       const valor = extrairJson(bruto)?.intencao;

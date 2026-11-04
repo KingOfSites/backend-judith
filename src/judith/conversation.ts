@@ -24,6 +24,7 @@ import {
 import {
   criarLembrete, extrairLembrete, isPedidoAvulso, isPedidoCota, isPedidoLembretes, listarLembretes, pediuEmTexto, respostaSemPlano, resumoCota,
 } from "./autoatendimento.js";
+import { mensagemTrivial } from "./fila.js";
 
 // Só usada se o fundador não tiver definido a mensagem no Admin (Classificadores e desvio).
 export const MENSAGEM_ANEXO_RESERVA =
@@ -112,6 +113,10 @@ export type HandleOutput = {
   exclusaoDados?: "pedido" | "desistiu";
   // Turno resolvido sem modelo: cota, lembretes, avulso, sem plano, fora do escopo.
   autoatendimento?: Autoatendimento;
+  // Mensagem sem pedido (".", emoji, "ok"): ignorada, sem resposta, sem modelo e sem cota.
+  trivial?: boolean;
+  // IA pausada pela equipe (atendimento humano): a mensagem é guardada e ninguém responde por aqui.
+  pausado?: boolean;
   // Documento redigido: vai como PDF com a mensagem de encerramento no lugar do texto.
   documento?: DocumentoPronto;
   // Documento redigido entregue em texto (a pedido do cliente ou PDF indisponível): texto + entrega.
@@ -164,6 +169,20 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     texto: input.text || "(anexo)",
   });
 
+  // IA pausada pela equipe (Painel → usuário → Atendimento humano): guarda a mensagem na sessão
+  // para quem atende ler no painel e não responde nada. Vale até a hora marcada.
+  if (user.iaPausadaAte && user.iaPausadaAte > new Date()) {
+    const session = await getOrCreateActiveSession(user.id);
+    const id = idEstavel(user, input.messageId);
+    try {
+      await prisma.message.create({ data: { ...(id ? { id } : {}), sessionId: session.id, role: MessageRole.USER, content: input.text || "(anexo)", meta: { pausado: true } } });
+      await prisma.session.update({ where: { id: session.id }, data: { lastSeenAt: new Date() } });
+    } catch (error) {
+      if (!(id && duplicada(error))) throw error;
+    }
+    return { replies: [], userId: user.id, sessionId: session.id, pausado: true };
+  }
+
   if (resultado.tipo === "responder") {
     // Onboarding cuidou do turno — não chama IA
     return {
@@ -211,6 +230,12 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   // A saudação de quem volta é editável em Onboarding (saudacaoRetorno).
   const commonReply = !fluxoAberto && !anexoLido ? smalltalk(texto, { saudacao: preencher(textos.saudacaoRetorno, { nome: nomeParaSaudacao(user.nome) }) }) : null;
   if (commonReply) return { replies: [commonReply], userId: user.id };
+
+  // ".", "?", emoji, "ok": não há pedido. Nada de modelo, nada de cota, nenhuma resposta. Antes,
+  // um "." no meio de uma análise refazia a análise e cobrava de novo.
+  if (!anexoLido && mensagemTrivial(texto, fluxoAberto)) {
+    return { replies: [], userId: user.id, sessionId: session.id, trivial: true };
+  }
 
   // Turnos resolvidos sem modelo e sem cota.
   const fixo = async (mensagem: string, meta: Record<string, string>, extra: Partial<HandleOutput>): Promise<HandleOutput> => {
@@ -378,7 +403,9 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
     });
   } catch (error) {
     if (!(error instanceof KnowledgeSearchError)) throw error;
-    return { replies: [knowledgeMessage(error.code)], sessionId: session.id, userId: user.id, knowledgeFailure: error.code, intencao };
+    // "Não encontrei suporte": texto editável em Regras → Classificadores (mensagemSemSuporte).
+    const mensagem = error.code === "SUPPORT_INSUFFICIENT" && regras.config.mensagemSemSuporte?.trim() ? regras.config.mensagemSemSuporte.trim() : knowledgeMessage(error.code);
+    return { replies: [mensagem], sessionId: session.id, userId: user.id, knowledgeFailure: error.code, intencao };
   }
 
   if (!result.text.trim()) throw new Error("A IA retornou uma resposta vazia");

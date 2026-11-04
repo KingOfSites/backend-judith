@@ -61,7 +61,7 @@ function contexto(anteriores: TurnoAnterior[]): string {
 
 async function chamar(system: string, user: string): Promise<string> {
   const response = await client.messages.create({
-    model: env.JUDITH_MODEL_HAIKU,
+    model: env.JUDITH_MODEL_CLASSIFICADOR ?? env.JUDITH_MODEL_HAIKU,
     max_tokens: 60,
     temperature: 0,
     system,

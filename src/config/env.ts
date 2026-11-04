@@ -8,12 +8,19 @@ const schema = z.object({
   PUBLIC_URL: z.string().url().default("http://localhost:3000"),
 
   // Modelos por função (spec §1). O fornecedor sai do id do modelo: gemini-*, gpt-* ou claude-*.
-  //   tier leve  (HAIKU no banco)  → dúvida, classificadores, lembretes/coleta
+  //   tier leve  (HAIKU no banco)  → dúvida
   //   tier forte (SONNET no banco) → análise e redação
+  //   classificadores               → intenção, área, tema da dúvida, tipo/turno, busca, lembrete
+  //   auditoria                     → verificação de suporte da resposta da dúvida
   JUDITH_MODEL_HAIKU: z.string().default("gemini-3.8-flash"),
   JUDITH_MODEL_SONNET: z.string().default("gpt-4.1"),
+  JUDITH_MODEL_CLASSIFICADOR: z.string().default("gemini-3.5-flash-lite"),
+  JUDITH_MODEL_AUDITORIA: z.string().default("gemini-3.8-flash"),
   // Troca de fornecedor quando o principal cai (429/5xx após as tentativas).
   JUDITH_MODEL_FALLBACK: z.string().default("gpt-4.1-mini"),
+  // Mensagens seguidas do mesmo número são juntadas: espera este tempo depois da última antes de
+  // responder (o cliente manda "quero demitir" e "não posso?" em seguida e recebe UMA resposta).
+  JUNTAR_MENSAGENS_MS: z.coerce.number().int().min(0).max(30_000).default(6_000),
   // Bots dos clientes do site. Sem valor, seguem os modelos da JUDITH.
   BOT_MODEL_HAIKU: z.string().optional(),
   BOT_MODEL_SONNET: z.string().optional(),
@@ -63,7 +70,7 @@ const CHAVE_DO_FORNECEDOR: [RegExp, "GEMINI_API_KEY" | "OPENAI_API_KEY" | "ANTHR
   [/./, "ANTHROPIC_API_KEY"],
 ];
 const faltando = new Set<string>();
-for (const nome of ["JUDITH_MODEL_HAIKU", "JUDITH_MODEL_SONNET", "JUDITH_MODEL_FALLBACK", "JUDITH_MODEL_LEITURA", "BOT_MODEL_HAIKU", "BOT_MODEL_SONNET"] as const) {
+for (const nome of ["JUDITH_MODEL_HAIKU", "JUDITH_MODEL_SONNET", "JUDITH_MODEL_CLASSIFICADOR", "JUDITH_MODEL_AUDITORIA", "JUDITH_MODEL_FALLBACK", "JUDITH_MODEL_LEITURA", "BOT_MODEL_HAIKU", "BOT_MODEL_SONNET"] as const) {
   const modelo = parsed.data[nome];
   if (!modelo) continue;
   const chave = CHAVE_DO_FORNECEDOR.find(([padrao]) => padrao.test(modelo))![1];

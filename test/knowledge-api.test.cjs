@@ -88,7 +88,10 @@ test('provedor: classificação estrita e embeddings locais completos, sem fallb
   assert.equal(await provider.classify('pergunta'), 'civil');
   answer = 'nenhuma'; assert.equal(await provider.classify('?'), null);
   answer = 'financeiro'; await assert.rejects(provider.classify('?'));
-  answer = 'civil, consumidor'; await assert.rejects(provider.classify('?'), /CLASSIFICATION_INVALID/);
+  // Mais de uma área válida vale: a primeira manda, as outras ampliam a busca. Prosa segue inválida.
+  answer = 'civil, consumidor'; assert.deepEqual(await provider.classify('?'), ['civil', 'consumidor']);
+  answer = 'civil, civil'; assert.equal(await provider.classify('?'), 'civil');
+  answer = 'A área é civil'; await assert.rejects(provider.classify('?'), /CLASSIFICATION_INVALID/);
   const originalFetch = global.fetch;
   let response = { model: LOCAL_EMBEDDING_MODEL, vector: Array.from({length:1024},(_,i)=>i===0?1:0) };
   global.fetch = async (url, options) => {

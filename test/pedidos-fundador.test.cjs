@@ -204,9 +204,30 @@ test('onboarding: depois do perfil pergunta se tem funcionário; SIM/NÃO conclu
   assert.match(x.replies[0], /Responde SIM ou NÃO/);
   const s = await enviar('tenho sim, dois');
   assert.equal(state.user.temFuncionarios, true);
+  // Depois do funcionário: ramo e cidade (pedido do fundador, 27/10), antes da dica.
+  assert.equal(state.user.onboarding, 'AGUARDANDO_RAMO');
+  assert.match(s.replies[0], /ramo do seu negócio/);
+  const r = await enviar('sou salão de beleza');
+  assert.equal(state.user.ramo, 'Salão de Beleza');
+  assert.equal(state.user.onboarding, 'AGUARDANDO_CIDADE');
+  assert.match(r.replies[0], /cidade/);
+  const c0 = await enviar('moro em curitiba - pr');
+  assert.equal(state.user.cidade, 'Curitiba/PR');
   assert.equal(state.user.onboarding, 'CONCLUIDO');
-  assert.match(s.replies[0], /DICA/);
+  assert.match(c0.replies[0], /DICA/);
 
+  // Pergunta no lugar do ramo segue como dúvida, sem travar; "não sei" na cidade pula.
+  reset(); Object.assign(state.user, { onboarding: 'AGUARDANDO_RAMO', ramo: null, cidade: null, duvidaPendente: null });
+  const q = await enviar('posso demitir meu funcionário que está há 8 meses comigo?');
+  assert.equal(state.user.onboarding, 'CONCLUIDO');
+  assert.equal(state.asks[0].userMessage, 'posso demitir meu funcionário que está há 8 meses comigo?');
+  assert.equal(q.replies.at(-1), 'RESPOSTA');
+  reset(); Object.assign(state.user, { onboarding: 'AGUARDANDO_CIDADE', ramo: 'Pintura', cidade: null, duvidaPendente: null });
+  await enviar('não sei');
+  assert.equal(state.user.cidade, null);
+  assert.equal(state.user.onboarding, 'CONCLUIDO');
+
+  // Com dúvida guardada (cenário B), ramo e cidade não entram na frente da resposta.
   reset(); Object.assign(state.user, { onboarding: 'AGUARDANDO_FUNCIONARIOS', temFuncionarios: null, duvidaPendente: 'posso demitir na experiência?' });
   const n = await enviar('não');
   assert.equal(state.user.temFuncionarios, false);
@@ -220,8 +241,8 @@ test('onboarding: depois do perfil pergunta se tem funcionário; SIM/NÃO conclu
   assert.equal(state.asks[0].userMessage, 'meu cliente não pagou a nota de setembro e sumiu, o que eu posso fazer agora?');
   assert.equal(d.replies.at(-1), 'RESPOSTA');
 
-  // cadastro pelo painel já com funcionário respondido: só pergunta o perfil
-  reset(); Object.assign(state.user, { onboarding: 'CONCLUIDO', tipoEmpresa: null, temFuncionarios: true });
+  // cadastro pelo painel já com funcionário, ramo e cidade: só pergunta o perfil
+  reset(); Object.assign(state.user, { onboarding: 'CONCLUIDO', tipoEmpresa: null, temFuncionarios: true, ramo: 'Loja', cidade: 'Curitiba/PR' });
   await enviar('oi');
   assert.equal(state.user.onboarding, 'AGUARDANDO_PERFIL');
   const c = await enviar('empresa no simples');

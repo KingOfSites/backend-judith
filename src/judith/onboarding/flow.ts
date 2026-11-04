@@ -29,6 +29,8 @@ async function textos() {
     pedirPerfilDeNovo: preencher(t.pedirPerfilDeNovo, vars),
     perguntaFuncionarios: preencher(t.perguntaFuncionarios, vars),
     pedirFuncionariosDeNovo: preencher(t.pedirFuncionariosDeNovo, vars),
+    perguntaRamo: preencher(t.perguntaRamo, vars),
+    perguntaCidade: preencher(t.perguntaCidade, vars),
     confirmacaoA: (dica: string) => preencher(t.confirmacaoA, { ...vars, dica, reacao: t.dicaReacao }),
     confirmacaoB: (dica: string) => preencher(t.confirmacaoB, { ...vars, dica, reacao: t.dicaReacao }),
     revisaoBase: t.revisaoBase,
@@ -71,6 +73,54 @@ async function concluir(user: User, t: Awaited<ReturnType<typeof textos>>): Prom
     user,
     resultado: { tipo: "seguir_com_duvida", mensagemParaIA: duvidaOriginal, mensagensExtras: [t.confirmacaoB(dica)] },
   };
+}
+
+// Próxima pergunta depois do perfil/funcionário: ramo (se não tem), cidade (se não tem), fim.
+// `respondido` evita repetir a pergunta que acabou de ser pulada ("não sei").
+async function avancar(user: User, t: Awaited<ReturnType<typeof textos>>, respondido?: "ramo" | "cidade"): Promise<{ user: User; resultado: OnboardingResult }> {
+  // Quem chegou com uma dúvida guardada (Cenário B) está esperando a resposta: não entram mais
+  // duas perguntas na frente dela. Ramo e cidade ficam para o painel ou para a conversa.
+  if (user.duvidaPendente && !respondido) {
+    const concluido = await prisma.user.update({ where: { id: user.id }, data: { onboarding: "CONCLUIDO" } });
+    return concluir(concluido, t);
+  }
+  if (!user.ramo && respondido !== "ramo" && respondido !== "cidade") {
+    await prisma.user.update({ where: { id: user.id }, data: { onboarding: "AGUARDANDO_RAMO" } });
+    return { user, resultado: { tipo: "responder", mensagens: [t.perguntaRamo] } };
+  }
+  if (!user.cidade && respondido !== "cidade") {
+    await prisma.user.update({ where: { id: user.id }, data: { onboarding: "AGUARDANDO_CIDADE" } });
+    return { user, resultado: { tipo: "responder", mensagens: [t.perguntaCidade] } };
+  }
+  const concluido = await prisma.user.update({ where: { id: user.id }, data: { onboarding: "CONCLUIDO" } });
+  return concluir(concluido, t);
+}
+
+// Mandou uma pergunta em vez de responder ramo/cidade.
+function pareceDuvida(texto: string): boolean {
+  return texto.length > 80 || /\?/.test(texto) || /\b(posso|preciso|como|quero|tenho que|devo|meu cliente|meu funcion[aá]rio)\b/i.test(texto);
+}
+
+function naoQuisDizer(texto: string): boolean {
+  const n = texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+  return /^(nao|nao sei|nao quero|prefiro nao|pular|pula|passo|nenhum|nenhuma|n\/a|-)\b/.test(n) || n.length < 2;
+}
+
+const capitalizar = (s: string) => s.replace(/\p{L}+/gu, p => (p.length > 2 || /^[A-Z]{2}$/.test(p) ? p.charAt(0).toUpperCase() + p.slice(1).toLowerCase() : p.toLowerCase()));
+
+export function limparRamo(texto: string): string {
+  const limpo = texto.trim().replace(/[.!]+$/g, "")
+    .replace(/^(eu |a gente )?(sou|tenho|trabalho com|trabalho de|trabalho em|mexo com|atuo com|atuo em|e |é |meu ramo e|meu ramo é|ramo de|ramo:|um |uma |o |a )\s*/i, "")
+    .replace(/\s+/g, " ").trim();
+  return capitalizar(limpo).slice(0, 60);
+}
+
+export function limparCidade(texto: string): string {
+  const limpo = texto.trim().replace(/[.!]+$/g, "")
+    .replace(/^(eu |a gente )?(moro em|atendo em|fica em|estou em|sou de|e em|é em|em|na|no|cidade:|cidade de)\s+/i, "")
+    .replace(/\s*[-,/]\s*([a-z]{2})$/i, (_m, uf: string) => `/${uf.toUpperCase()}`)
+    .replace(/\s+/g, " ").trim();
+  return capitalizar(limpo).replace(/\/([a-z]{2})$/i, (_m, uf: string) => `/${uf.toUpperCase()}`).slice(0, 60);
 }
 
 // ------------------------------------------------------------
@@ -170,11 +220,10 @@ export async function processarOnboarding(input: {
       return { user, resultado: { tipo: "responder", mensagens: [t.pedirPerfilDeNovo] } };
     }
 
-    // Perfil anotado. Quem já respondeu sobre funcionário (cadastro pelo painel) conclui direto;
+    // Perfil anotado. Quem já respondeu sobre funcionário (cadastro pelo painel) pula essa pergunta;
     // os demais respondem a pergunta de funcionário, que define os lembretes de salário/FGTS/13º.
     if (user.temFuncionarios !== null) {
-      const concluido = await prisma.user.update({ where: { id: user.id }, data: { tipoEmpresa: tipo, onboarding: "CONCLUIDO" } });
-      return concluir(concluido, t);
+      return avancar(await prisma.user.update({ where: { id: user.id }, data: { tipoEmpresa: tipo } }), t);
     }
     await prisma.user.update({ where: { id: user.id }, data: { tipoEmpresa: tipo, onboarding: "AGUARDANDO_FUNCIONARIOS" } });
     return { user, resultado: { tipo: "responder", mensagens: [t.perguntaFuncionarios] } };
@@ -192,8 +241,20 @@ export async function processarOnboarding(input: {
       }
       return { user, resultado: { tipo: "responder", mensagens: [t.pedirFuncionariosDeNovo] } };
     }
-    const concluido = await prisma.user.update({ where: { id: user.id }, data: { temFuncionarios: resposta, onboarding: "CONCLUIDO" } });
-    return concluir(concluido, t);
+    return avancar(await prisma.user.update({ where: { id: user.id }, data: { temFuncionarios: resposta } }), t);
+  }
+
+  // --- Estados AGUARDANDO_RAMO e AGUARDANDO_CIDADE ---
+  // Ramo e cidade entram no perfil que o modelo recebe (documentos usam a cidade). Resposta livre;
+  // quem manda uma dúvida, ou não quer dizer, segue sem travar.
+  if (user.onboarding === "AGUARDANDO_RAMO" || user.onboarding === "AGUARDANDO_CIDADE") {
+    const campo = user.onboarding === "AGUARDANDO_RAMO" ? "ramo" : "cidade";
+    if (pareceDuvida(texto)) {
+      const concluido = await prisma.user.update({ where: { id: user.id }, data: { onboarding: "CONCLUIDO", duvidaPendente: user.duvidaPendente ?? texto } });
+      return concluir(concluido, t);
+    }
+    const valor = naoQuisDizer(texto) ? null : campo === "ramo" ? limparRamo(texto) : limparCidade(texto);
+    return avancar(await prisma.user.update({ where: { id: user.id }, data: valor ? { [campo]: valor } : {} }), t, campo);
   }
 
   // Fallback: trata como concluído

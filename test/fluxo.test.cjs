@@ -78,7 +78,7 @@ async function main() {
     },
   };
   replace(base + 'db/client.js', { prisma });
-  replace(base + 'config/env.js', { env: { NODE_ENV: 'test', LOG_LEVEL: 'silent', PORT: 0, EVOLUTION_INSTANCE: 'judith', ANTHROPIC_API_KEY: 'fake', JUDITH_MODEL_HAIKU: 'mock-haiku', JUDITH_MODEL_SONNET: 'mock-sonnet', WEB_JUDITH_URL: 'https://checkout.invalid', INTERNAL_API_KEY: 'fake', URL_TERMOS: 'https://judith.invalid/termos' } });
+  replace(base + 'config/env.js', { env: { NODE_ENV: 'test', LOG_LEVEL: 'silent', PORT: 0, EVOLUTION_INSTANCE: 'judith', ANTHROPIC_API_KEY: 'fake', JUDITH_MODEL_HAIKU: 'mock-haiku', JUDITH_MODEL_SONNET: 'mock-sonnet', WEB_JUDITH_URL: 'https://checkout.invalid', INTERNAL_API_KEY: 'fake', URL_TERMOS: 'https://judith.invalid/termos', JUNTAR_MENSAGENS_MS: 0 } });
   replace('axios', { post: async (url, data) => { state.payments.push({ url, data }); if (state.paymentFail) throw new Error('mock checkout unavailable'); return { data: { url: 'https://checkout.invalid/synthetic' } }; } });
   replace('@anthropic-ai/sdk', class { messages = { create: async (req) => { assert.equal(state.consumed, 0); state.calls.push(req); if (state.aiFail || state.generationSecondFail && state.calls.length === 2) throw new Error('mock AI unavailable'); return { content: req.tools ? [{type:'tool_use',name:'grounded_answer',input:{scopeAnalysis:'mock scope',unsupported:false,answer:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}}] : [{type:'text',text:state.aiEmpty ? '  ' : 'SIMULATED RESPONSE'}], usage: { input_tokens: 1, output_tokens: 1 } }; } }; });
   replace(base + 'evolution/client.js', { sendTyping: async () => {}, sendText: async (number, text) => { state.sends.push({ number, text }); return 'sent-' + state.sends.length; } });
@@ -108,6 +108,8 @@ async function main() {
     const payload = { event: 'messages.upsert', instance: 'judith', data: { key: { remoteJid: '0000000000000@s.whatsapp.net', fromMe: false, id: 'synthetic-smoke-' + transportId++ }, message: { conversation: text } }, ...extra };
     const response = await app.inject({ method: 'POST', url: '/webhook/evolution', payload });
     assert.equal(response.statusCode, 200);
+    // A JUDITH responde pela fila do número (espera curta depois da última mensagem).
+    await new Promise(resolve => setTimeout(resolve, 25));
     for (let i = 0; i < 20; i++) await new Promise(resolve => setImmediate(resolve));
     return response;
   }

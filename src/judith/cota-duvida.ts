@@ -49,7 +49,7 @@ export async function ehMesmaDuvida(config: Record<string, string>, tema: string
   const user = `Duvida em andamento (primeira mensagem do tema):\n${tema.slice(0, 800)}\n\n${ultimas ? `Ultimas mensagens:\n${ultimas}\n\n` : ""}Nova mensagem do usuario:\n${texto.slice(0, 2000)}`;
   for (let tentativa = 0; tentativa < 2; tentativa++) {
     try {
-      const response = await client.messages.create({ model: env.JUDITH_MODEL_HAIKU, max_tokens: 30, temperature: 0, system, messages: [{ role: "user", content: user }] });
+      const response = await client.messages.create({ model: env.JUDITH_MODEL_CLASSIFICADOR ?? env.JUDITH_MODEL_HAIKU, max_tokens: 30, temperature: 0, system, messages: [{ role: "user", content: user }] });
       const primeiro = response.content[0];
       const mesma = extrairMesma(primeiro?.type === "text" ? primeiro.text : "");
       if (mesma !== null) return { mesma, origem: "classificador" };

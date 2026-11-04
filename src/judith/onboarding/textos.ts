@@ -8,7 +8,7 @@ import { prisma } from "../../db/client.js";
 
 export const CHAVES_ONBOARDING = [
   "boasVindas", "recebiDuvida", "perfilA", "perfilB", "recusa", "pedirPerfilDeNovo",
-  "perguntaFuncionarios", "pedirFuncionariosDeNovo",
+  "perguntaFuncionarios", "pedirFuncionariosDeNovo", "perguntaRamo", "perguntaCidade",
   "confirmacaoA", "confirmacaoB", "dicaReacao", "retornoD1", "trialD3", "revisaoBase",
   "saudacaoRetorno", "avulsoSemPlano", "trialEncerrado", "entregaDocumento", "assinaturaAtiva",
 ] as const;
@@ -41,6 +41,12 @@ Estarei aqui. 😊`,
 
 Assim eu só te lembro dos prazos de salário, FGTS e 13º se isso fizer parte da sua rotina. 😊`,
   pedirFuncionariosDeNovo: `Não entendi. Você tem funcionário registrado? Responde SIM ou NÃO, por favor.`,
+  perguntaRamo: `E qual é o ramo do seu negócio? (ex.: salão de beleza, loja de roupas, pintura residencial, consultoria)
+
+Uso isso pra adaptar as respostas e os documentos ao seu dia a dia. 😊`,
+  perguntaCidade: `Última: em que cidade você atende? (ex.: Curitiba/PR)
+
+Entra nos documentos que eu redigir e nos seus prazos.`,
   confirmacaoA: `Perfeito! Antes de você mandar sua dúvida, uma coisa que vale saber:
 
 {dica}
@@ -90,6 +96,8 @@ export const DESCRICAO_TEXTO: Record<ChaveOnboarding, string> = {
   pedirPerfilDeNovo: "Quando a resposta de perfil não foi entendida.",
   perguntaFuncionarios: "Depois do perfil: pergunta se tem funcionário registrado (SIM/NÃO). Define quem recebe lembretes de salário, FGTS e 13º.",
   pedirFuncionariosDeNovo: "Quando a resposta sobre funcionário não foi SIM nem NÃO.",
+  perguntaRamo: "Depois da pergunta de funcionário: ramo de atividade (texto livre). Entra no perfil que o modelo recebe. Quem manda uma dúvida em vez de responder segue sem travar.",
+  perguntaCidade: "Depois do ramo: cidade (texto livre, ex.: Curitiba/PR). Entra nos documentos e no perfil. Quem manda uma dúvida em vez de responder segue sem travar.",
   confirmacaoA: "Depois do perfil, no Cenário A: confirmação com a dica ({dica}) e a instrução de reação ({reacao}).",
   confirmacaoB: "Depois do perfil, no Cenário B: introdução antes de responder a dúvida guardada. Usa {dica} e {reacao}.",
   dicaReacao: "Instrução do 👍/👎, injetada onde houver {reacao}.",
