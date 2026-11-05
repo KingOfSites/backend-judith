@@ -42,6 +42,16 @@ async function applyPlan(tx: Prisma.TransactionClient, doc: PreparedDocument, pl
 
 export const LEASE_MS = 300_000;
 const lease = () => new Date(Date.now() + LEASE_MS);
+// A troca final roda centenas de consultas em sequência num banco remoto (~100 ms cada): com os
+// 21 cadernos reembutidos de uma vez, 60 s não bastaram e o job falhou sem registrar o motivo.
+export const SWAP_TIMEOUT_MS = 900_000;
+
+/** Resumo seguro de um erro para o log da aplicação: nome, código Prisma e começo da mensagem, sem URLs. */
+export function resumoErro(error: unknown): { nome: string; codigo?: string; mensagem: string } {
+  const e = error as { name?: string; code?: string; message?: string } | null;
+  const mensagem = String(e?.message ?? error).replace(/[a-z]+:\/\/\S+/gi, "[url]").replace(/\s+/g, " ").slice(0, 300);
+  return { nome: e?.name ?? typeof error, ...(e?.code ? { codigo: e.code } : {}), mensagem };
+}
 export function publicError(error: unknown): Prisma.InputJsonValue {
   if (error instanceof KnowledgeValidationError) return { code: "VALIDATION", issues: JSON.parse(JSON.stringify(error.issues)) };
   const known = ["SOURCE_CHANGED", "LEASE_LOST", "LOCAL_EMBEDDING_UNAVAILABLE", "EMBEDDING_MODEL_MISMATCH", "INVALID_VECTOR", "VECTOR_DIMENSION_MISMATCH"];
@@ -63,7 +73,7 @@ export async function requestIndex(db: PrismaClient, requestKey: string) {
   }
 }
 
-export async function processNextJob(db: PrismaClient, provider: SemanticProvider) {
+export async function processNextJob(db: PrismaClient, provider: SemanticProvider, aoFalhar?: (erro: ReturnType<typeof resumoErro>, jobId: string) => void) {
   await db.knowledgeJob.updateMany({
     where: { status: "processing", leaseUntil: { lt: new Date() } },
     data: { status: "failed", activeKey: null, errors: { code: "WORKER_INTERRUPTED", mensagem: "Lease expirou; solicite uma nova execução." } },
@@ -137,8 +147,9 @@ export async function processNextJob(db: PrismaClient, provider: SemanticProvide
         status: "completed", activeKey: null, leaseUntil: null,
         result: { changed: changed.length, unchanged, removed: removed.length, embeddingsCreated: created, embeddingsReused: reused, chunks: changed.reduce((sum, d) => sum + d.chunks.length, 0), ...counts },
       } });
-    }, { isolationLevel: "Serializable", timeout: 60_000, maxWait: 10_000 });
+    }, { isolationLevel: "Serializable", timeout: SWAP_TIMEOUT_MS, maxWait: 10_000 });
   } catch (error) {
+    aoFalhar?.(resumoErro(error), job.id);
     await db.knowledgeJob.updateMany({ where: { id: job.id, status: "processing" }, data: { status: "failed", activeKey: null, leaseUntil: null, errors: publicError(error) } });
   } finally { clearInterval(timer); }
 }

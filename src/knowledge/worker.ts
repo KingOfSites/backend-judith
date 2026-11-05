@@ -10,7 +10,7 @@ export function registerKnowledgeWorker(app: FastifyInstance) {
   let running: Promise<void> | undefined;
   const tick = () => {
     if (stopped || running) return;
-    running = processNextJob(prisma, createProvider())
+    running = processNextJob(prisma, createProvider(), (erro, jobId) => { app.log.error({ code: "KNOWLEDGE_JOB_FAILED", jobId, erro }, "Indexação da base falhou"); })
       .catch(() => { app.log.error({ code: "KNOWLEDGE_WORKER_FAILED" }, "Falha no worker da base"); })
       .finally(() => { running = undefined; });
   };
