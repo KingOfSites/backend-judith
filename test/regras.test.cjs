@@ -74,6 +74,12 @@ replace(base + 'regras/classificador.js', {
   classificarTipo: async () => { state.chamadasTipo++; return { tipo: state.classificaTipo.shift() ?? 'outro', origem: 'classificador' }; },
   classificarTurno: async () => { state.chamadasTurno++; return state.classificaTurno.shift() ?? 'continua'; },
 });
+// Intenção: só responde como classificador quando o teste pedir; o resto cai nas palavras-chave.
+const intencaoReal = require(base + 'judith/intencao.js');
+replace(base + 'judith/intencao.js', {
+  ...intencaoReal,
+  classificarIntencao: async () => { state.chamadasIntencao = (state.chamadasIntencao ?? 0) + 1; return state.intencao ? { intencao: state.intencao, origem: 'classificador' } : { intencao: 'duvida', origem: 'falha' }; },
+});
 replace(base + 'judith/onboarding/flow.js', {
   processarOnboarding: async ({ texto }) => ({ user: { id: 'u1', whatsappNumber: '5500000000000', plano: 'TEST' }, resultado: { tipo: 'seguir', mensagemParaIA: texto } }),
 });
@@ -231,6 +237,34 @@ test('dúvida nova no meio do fluxo não derruba o fluxo; ele expira sem retomar
   assert.deepEqual([state.session.fluxo, state.session.fluxoOcioso], ['redacao', 1]);
   for (let i = 0; i < 4; i++) await enviar('outra dúvida qualquer sobre imposto');
   assert.equal(state.session.fluxo, null);
+});
+
+test('pausa longa com fluxo aberto: pergunta vira dúvida nova; resposta de coleta segue no documento sem cobrar de novo', async () => {
+  const { PAUSA_LONGA_MIN } = require(base + 'regras/fluxo.js');
+  reset({ classificaTipo: ['locacao_comercial'], classificaTurno: ['continua', 'continua', 'continua'] });
+  limparCacheRegras();
+  await enviar('quero redigir um contrato de aluguel');
+  // Pausa curta: o classificador de turno manda e a intenção nem é lida.
+  state.chamadasIntencao = 0;
+  state.intencao = 'duvida';
+  state.session.lastSeenAt = new Date(Date.now() - 2 * 60_000);
+  await enviar('como funciona a multa por atraso?');
+  assert.equal(state.asks[1].funcao, 'redacao');
+  assert.equal(state.chamadasIntencao ?? 0, 0);
+  // Pausa longa e intenção "duvida": dúvida nova, sem regras do documento, fluxo fica aberto e ocioso.
+  state.session.lastSeenAt = new Date(Date.now() - (PAUSA_LONGA_MIN + 2) * 60_000);
+  await enviar('como funciona a contratação de temporário no fim de ano?');
+  assert.equal(state.asks[2].funcao, 'duvida');
+  assert.equal(state.asks[2].regras, undefined);
+  assert.equal(state.chamadasIntencao, 1);
+  assert.deepEqual([state.session.fluxo, state.session.fluxoOcioso], ['redacao', 1]);
+  // Pausa longa mas a mensagem é resposta de coleta: continua no documento e não cobra de novo.
+  state.intencao = 'redacao';
+  state.session.lastSeenAt = new Date(Date.now() - (PAUSA_LONGA_MIN + 2) * 60_000);
+  await enviar('o locatário é João da Silva, CPF 000.000.000-00');
+  assert.equal(state.asks[3].funcao, 'redacao');
+  assert.deepEqual(state.usos, ['redacao', 'duvida']);
+  state.intencao = null;
 });
 
 test('abandono responde dentro do fluxo e fecha em seguida', async () => {

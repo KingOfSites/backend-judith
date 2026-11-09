@@ -209,6 +209,8 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   const session = await getOrCreateActiveSession(user.id);
   const history = await loadHistory(session.id);
   const fluxoAberto = regras.habilitadas && Boolean(session.fluxo);
+  // Minutos parado desde a última mensagem; com fluxo aberto, uma pausa longa pesa no planejador.
+  const pausaMin = session.lastSeenAt ? Math.max(0, (Date.now() - new Date(session.lastSeenAt).getTime()) / 60_000) : 0;
 
   // 3. Cancelamento em confirmação: SIM cancela, NÃO mantém, qualquer outra coisa segue normal.
   if (!anexoLido && confirmacaoPendente(user)) {
@@ -266,7 +268,7 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
   //    (Regras → Classificadores). Ele decide dúvida / redação / análise / fora do escopo; se falhar,
   //    valem as palavras-chave.
   let route = routeIntent({ text: texto, hasAttachment: Boolean(anexoLido) });
-  let intencao: HandleOutput["intencao"] = { valor: route.funcao, origem: "palavras-chave" };
+  let intencao: NonNullable<HandleOutput["intencao"]> = { valor: route.funcao, origem: "palavras-chave" };
   if (!anexoLido && !fluxoAberto) {
     const lida = await classificarIntencao(regras.config, texto, history);
     if (lida.origem === "classificador") {
@@ -289,6 +291,13 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
       funcaoRoteada: route.funcao,
       texto,
       anteriores: history,
+      pausaMin,
+      lerIntencao: async () => {
+        const lida = await classificarIntencao(regras.config, texto, history);
+        if (lida.origem !== "classificador") return null;
+        intencao = { valor: lida.intencao, origem: "classificador" };
+        return lida.intencao;
+      },
     });
     if (plano.funcao !== route.funcao) {
       route = { ...route, funcao: plano.funcao, tier: plano.funcao === "duvida" ? route.tier : ModelTier.SONNET, reason: plano.motivo };

@@ -13,6 +13,12 @@ import type { RegrasSnapshot } from "./repository.js";
 // Turnos seguidos fora do fluxo antes de ele expirar sozinho (spec §5).
 export const LIMITE_OCIOSO = 5;
 
+// Pausa longa com fluxo aberto: quem volta depois desse tempo com uma pergunta quase sempre mudou
+// de assunto. Se o classificador de turno disser "continua" mas o de intenção ler "duvida", o
+// turno vira dúvida nova (modelo de dúvida com a base). Resposta de coleta ("o nome é João") não é
+// lida como dúvida, então a redação em andamento segue sem cobrar de novo.
+export const PAUSA_LONGA_MIN = 10;
+
 export type EstadoFluxo = {
   fluxo: string | null;
   fluxoTipo: string | null;
@@ -49,8 +55,11 @@ export async function planejarTurno(input: {
   funcaoRoteada: "duvida" | FuncaoDocumento;
   texto: string;
   anteriores: TurnoAnterior[];
+  // Minutos desde a última mensagem da sessão e leitura da intenção (só usada após pausa longa).
+  pausaMin?: number;
+  lerIntencao?: () => Promise<string | null>;
 }): Promise<PlanoTurno> {
-  const { snapshot, estado, funcaoRoteada, texto, anteriores } = input;
+  const { snapshot, estado, funcaoRoteada, texto, anteriores, pausaMin = 0, lerIntencao } = input;
   const aberto = fluxoValido(estado.fluxo);
 
   let funcao: "duvida" | FuncaoDocumento;
@@ -61,8 +70,12 @@ export async function planejarTurno(input: {
     funcao = funcaoRoteada;
     motivo = "pedido explícito na mensagem";
   } else if (aberto) {
-    const turno = await classificarTurno(snapshot, aberto, texto, anteriores);
+    let turno = await classificarTurno(snapshot, aberto, texto, anteriores);
     motivo = `fluxo de ${aberto} aberto; turno classificado como ${turno}`;
+    if (turno === "continua" && pausaMin >= PAUSA_LONGA_MIN && lerIntencao && (await lerIntencao()) === "duvida") {
+      turno = "nova_duvida";
+      motivo += `; após ${Math.floor(pausaMin)} min parado a intenção é dúvida, vira dúvida nova`;
+    }
     if (turno === "redacao" || turno === "analise") funcao = turno;
     else if (turno === "nova_duvida") funcao = "duvida";
     else { funcao = aberto; encerraDepois = turno === "abandona"; }
