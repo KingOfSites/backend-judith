@@ -235,6 +235,8 @@ export function blocosEntradaDe(system: LlmRequest["system"]): BlocoEntrada[] {
   return system.map(b => ({ type: "input_text" as const, text: b.text, ...(b.cache_control ? { prompt_cache_breakpoint: { mode: "explicit" as const } } : {}) }));
 }
 
+export const MARGEM_RACIOCINIO_OPENAI = 1024;
+
 async function chamarOpenAIResponses(req: LlmRequest, options: LlmOptions): Promise<LlmResponse> {
   openai ??= new OpenAI({ apiKey: env.OPENAI_API_KEY, maxRetries: 0 });
   const forcada = ferramentaForcada(req);
@@ -245,8 +247,10 @@ async function chamarOpenAIResponses(req: LlmRequest, options: LlmOptions): Prom
   ];
   const corpo: Record<string, unknown> = {
     model: req.model,
-    max_output_tokens: req.max_tokens,
-    ...(req.temperature === undefined ? {} : { temperature: req.temperature }),
+    // O raciocínio conta no limite de saída (medido: ~50 tokens numa dúvida comum), daí a margem.
+    max_output_tokens: req.max_tokens + MARGEM_RACIOCINIO_OPENAI,
+    // Sem temperature: os modelos desta API (gpt-5.6+/gpt-6) recusam o parâmetro com 400
+    // ("Unsupported parameter: 'temperature'"), o que derrubou toda dúvida em 09/11/2026.
     input,
     // Só os pontos marcados por nós entram no cache: o fim do prompt fixo, não a pergunta do cliente.
     prompt_cache_options: { mode: blocos.some(b => b.prompt_cache_breakpoint) ? "explicit" : "implicit" },

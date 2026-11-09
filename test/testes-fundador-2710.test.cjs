@@ -120,7 +120,9 @@ test('OpenAI Responses: corpo com breakpoint depois do prompt fixo, ferramenta f
   const { gerar } = require(base + 'llm/client.js');
   const r = await gerar({ model: 'gpt-6-luna', max_tokens: 1024, temperature: 0, system: [{ type: 'text', text: 'FIXO', cache_control: { type: 'ephemeral' } }, { type: 'text', text: 'DINÂMICO' }], messages: [{ role: 'user', content: 'pergunta' }], tools: [{ name: 'grounded_answer', input_schema: { type: 'object' } }], tool_choice: { type: 'tool', name: 'grounded_answer' } });
   const body = chamadas[0];
-  assert.equal(body.model, 'gpt-6-luna'); assert.equal(body.max_output_tokens, 1024);
+  assert.equal(body.model, 'gpt-6-luna'); assert.equal(body.max_output_tokens, 1024 + 1024);
+  // gpt-6-luna recusa temperature com 400: o parâmetro pedido pela dúvida não pode chegar à API.
+  assert.equal('temperature' in body, false);
   assert.deepEqual(body.prompt_cache_options, { mode: 'explicit' });
   assert.deepEqual(body.input[0], { role: 'developer', content: [{ type: 'input_text', text: 'FIXO', prompt_cache_breakpoint: { mode: 'explicit' } }, { type: 'input_text', text: 'DINÂMICO' }] });
   assert.deepEqual(body.input[1], { role: 'user', content: [{ type: 'input_text', text: 'pergunta' }] });
