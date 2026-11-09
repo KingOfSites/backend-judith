@@ -395,7 +395,11 @@ export async function handleInbound(input: HandleInput): Promise<HandleOutput> {
       tier: route.tier,
       funcao: route.funcao,
       user,
-      history,
+      // Documento novo (sem fluxo aberto antes): a conversa anterior era dúvida e não entra. Em
+      // 09/11/2026 o "quero um contrato" levou as perguntas anteriores sem resposta e o modelo
+      // respondeu a elas em vez de coletar os dados do contrato. Troca de fluxo (análise → redação)
+      // e turnos seguintes do mesmo documento continuam com o histórico inteiro.
+      history: plano && route.funcao !== "duvida" && !session.fluxo && !plano.trocouDeFluxo ? [] : history,
       userMessage: texto,
       interactionId: persistedIncomingId,
       previousArea,

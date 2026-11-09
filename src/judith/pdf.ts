@@ -9,11 +9,27 @@ import path from "node:path";
 const LOGO = path.join(__dirname, "../../assets/judith-logo.jpg");
 
 // Heurística de "documento pronto": a redação entregou o texto final, não uma pergunta de coleta.
+// Só um documento vira PDF. A versão anterior aceitava qualquer texto longo com a palavra
+// "contrato" em algum lugar: em 09/11/2026 explicações em tom de conversa ("Oi, Luiz! Entendo
+// sua dúvida...") foram entregues como PDF, inclusive a resposta a "por que você mandou um PDF?".
+const TITULO_DOCUMENTO = /(CL[ÁA]USULA|CONTRATO|NOTIFICA[ÇC][ÃA]O|DECLARA[ÇC][ÃA]O|PROCURA[ÇC][ÃA]O|EXCELENT[ÍI]SSIMO|TERMO DE|ACORDO|DISTRATO|RECIBO|REQUERIMENTO|PETI[ÇC][ÃA]O|ADVERT[ÊE]NCIA|CARTA DE|INSTRUMENTO PARTICULAR|PELO PRESENTE)/i;
+const ABERTURA_DE_CONVERSA = /^(oi|ol[áa]|opa|e a[íi]|bom dia|boa tarde|boa noite|entend[oi]|obrigad[ao]|claro|perfeito|[óo]tim[ao]|importante|sim\b|n[ãa]o\b|desculp|voc[êe] tem raz[ãa]o|pode deixar|beleza|certo|vamos l[áa]|que bom|fico feliz|poxa|calma)/i;
+
 export function pareceDocumentoPronto(texto: string): boolean {
   const t = texto.trim();
   if (t.length < 1200) return false;
-  if (/\?\s*$/.test(t)) return false;
-  return /(CL[ÁA]USULA|CONTRAT(O|ANTE|ADA)|NOTIFICA[ÇC][ÃA]O|DECLARA[ÇC][ÃA]O|PROCURA[ÇC][ÃA]O|EXCELENT[ÍI]SSIMO|TERMO DE|ACORDO|DISTRATO|RECIBO|REQUERIMENTO|PETI[ÇC][ÃA]O|ADVERT[ÊE]NCIA|CARTA DE)/i.test(t);
+  const limpo = (linha: string) => linha.replace(/[#*_`>]/g, "").trim();
+  const linhas = t.split("\n").map(limpo).filter(Boolean);
+  const primeira = linhas[0] ?? "";
+  // Conversa: cumprimento no começo, pergunta ou oferta no fim, emoji, vocativo ("Luiz!").
+  if (ABERTURA_DE_CONVERSA.test(primeira)) return false;
+  if (/\?/.test(t.slice(-300))) return false;
+  if (/[☀-➿\u{1F300}-\u{1FAFF}]/u.test(t)) return false;
+  if (/^[^\n]{0,40}\b[A-ZÀ-Ú][a-zà-ú]+!/.test(t)) return false;
+  // Documento: título com cara de documento nas primeiras linhas, ou cláusulas numeradas no corpo.
+  const cabecalho = linhas.slice(0, 3).join(" ");
+  const clausulas = (t.match(/CL[ÁA]USULA\s+\d|^\s*(\d+[.ºª]|[IVX]+\s*[-–.])\s*(DO|DA|DAS|DOS|DE)\s+[A-ZÀ-Ú]/gim) ?? []).length;
+  return TITULO_DOCUMENTO.test(cabecalho) || clausulas >= 2;
 }
 
 export function tituloDoDocumento(texto: string): string {

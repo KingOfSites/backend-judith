@@ -196,6 +196,25 @@ test('documento redigido pronto sai como PDF com a mensagem de encerramento no l
   assert.deepEqual(p.replies, ['Pra montar o contrato, me diz: qual o valor mensal e o prazo?']);
 });
 
+test('explicação em tom de conversa nunca vira PDF, mesmo longa e falando de contrato', async () => {
+  // 09/11/2026: respostas "Oi, Luiz! Entendo sua dúvida..." de 1500 a 2400 caracteres foram
+  // entregues como PDF, inclusive a resposta a "por que você mandou um PDF?".
+  const conversas = [
+    'Oi, Luiz! Entendo sua dúvida e vou te explicar certinho. ' + 'Quando você pede um contrato de trabalho, eu preciso saber as partes, o cargo e o salário antes de montar o documento. '.repeat(14) + ' Quer que eu te mostre um roteiro exato?',
+    'Importante esse cuidado. ⚠️ ' + 'Se o funcionário está em estabilidade, a rescisão do contrato sem justa causa pode ser anulada pela Justiça do Trabalho. '.repeat(14) + ' As informações aqui são educativas.',
+    'Você tem razão, e peço desculpas. ' + 'Nunca envio documento em PDF sem antes confirmar o tipo de contrato e coletar as informações. '.repeat(16),
+  ];
+  const { pareceDocumentoPronto } = require(base + 'judith/pdf.js');
+  for (const c of conversas) {
+    assert.ok(c.length >= 1200);
+    assert.equal(pareceDocumentoPronto(c), false, c.slice(0, 40));
+  }
+  const recibo = 'RECIBO DE PAGAMENTO\n\n' + 'Recebi de FULANO DE TAL a quantia de R$ 1.500,00 referente aos serviços prestados no mês de outubro. '.repeat(14) + '\n\nCuritiba, 09 de novembro de 2026.';
+  const markdown = '## CONTRATO DE LOCAÇÃO RESIDENCIAL\n\n**LOCADOR:** Fulano\n\n' + Array.from({ length: 12 }, (_, i) => `**${i + 1}. DO PRAZO E DO VALOR**\nO prazo da locação é de trinta meses, com aluguel mensal de dois mil reais, reajustado pelo IPCA.`).join('\n\n');
+  assert.equal(pareceDocumentoPronto(recibo), true, 'recibo');
+  assert.equal(pareceDocumentoPronto(markdown), true, 'contrato em markdown');
+});
+
 test('trial encerrado aponta para os planos', async () => {
   replace(base + 'judith/quota.js', { checarCota: async () => ({ allowed: false, motivo: 'sem_assinatura_ativa' }), registrarUso: async () => {}, temAcessoAtivo: async () => false, ...quotaExtras });
   delete require.cache[require.resolve(base + 'judith/autoatendimento.js')];
