@@ -77,6 +77,24 @@ test('Gemini: system em blocos na ordem, turnos seguidos unidos, thinking zerado
   assert.equal(r.fallback, undefined);
 });
 
+test('Gemini flash-lite: raciocínio mínimo por nível, porque recusa thinkingBudget 0 com 400', async () => {
+  reset();
+  const r = await gerar({ model: 'gemini-3.5-flash-lite', max_tokens: 40, temperature: 0, messages: [{ role: 'user', content: 'p' }] });
+  assert.match(state.google[0].url, /models\/gemini-3\.5-flash-lite:generateContent/);
+  assert.deepEqual(state.google[0].body.generationConfig.thinkingConfig, { thinkingLevel: 'minimal' });
+  assert.deepEqual(r.content, [{ type: 'text', text: 'RESPOSTA GEMINI' }]);
+});
+
+test('Gemini: 400 de argumento repete uma vez sem thinkingConfig em vez de derrubar a função', async () => {
+  reset({ googleRespostas: [{ status: 400, body: { error: { code: 400, message: 'Request contains an invalid argument.', status: 'INVALID_ARGUMENT' } } }] });
+  const r = await gerar({ model: 'gemini-3.8-flash', max_tokens: 40, temperature: 0, messages: [{ role: 'user', content: 'p' }] });
+  assert.equal(state.google.length, 2);
+  assert.deepEqual(state.google[0].body.generationConfig.thinkingConfig, { thinkingBudget: 0 });
+  assert.deepEqual(state.google[1].body.generationConfig, { maxOutputTokens: 40 + MARGEM_RACIOCINIO_GEMINI, temperature: 0 });
+  assert.deepEqual(r.content, [{ type: 'text', text: 'RESPOSTA GEMINI' }]);
+  assert.equal(r.fallback, undefined);
+});
+
 test('Gemini: ferramenta forçada vira chamada de função obrigatória e volta como tool_use', async () => {
   reset({ googleRespostas: [okGoogle([{ functionCall: { name: 'grounded_answer', args: { answer: 'sim', unsupported: false } } }])] });
   const r = await new Llm().messages.create({ model: 'gemini-3.8-flash', max_tokens: 100, messages: [{ role: 'user', content: 'p' }], tools: [FERRAMENTA], tool_choice: { type: 'tool', name: 'grounded_answer' } });

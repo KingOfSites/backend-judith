@@ -130,6 +130,13 @@ export function schemaParaGemini(schema: unknown): unknown {
 
 export const MARGEM_RACIOCINIO_GEMINI = 1024;
 
+// Cada família do Gemini 3.x desliga o raciocínio de um jeito e recusa o do outro com 400:
+// o flash aceita thinkingBudget 0 e recusa thinkingLevel "minimal"; o flash-lite é o contrário
+// (medido em 09/11/2026: o classificador em gemini-3.5-flash-lite derrubou toda dúvida).
+export function raciocinioGemini(model: string): Record<string, unknown> {
+  return /flash-lite/i.test(model) ? { thinkingLevel: "minimal" } : { thinkingBudget: 0 };
+}
+
 async function chamarGoogle(req: LlmRequest, options: LlmOptions): Promise<LlmResponse> {
   if (!env.GEMINI_API_KEY) throw new LlmHttpError(401, "GEMINI_API_KEY ausente");
   const system = systemDe(req.system);
@@ -144,7 +151,7 @@ async function chamarGoogle(req: LlmRequest, options: LlmOptions): Promise<LlmRe
       ...(req.temperature === undefined ? {} : { temperature: req.temperature }),
       // Pegadinha da spec: thinking no automático estoura tokens em texto grande. No Gemini 3.x
       // o zero reduz mas não elimina (medido: 35 a 45 tokens residuais), daí a margem acima.
-      thinkingConfig: { thinkingBudget: 0 },
+      thinkingConfig: raciocinioGemini(req.model),
     },
     ...(req.tools?.length
       ? {
@@ -154,13 +161,23 @@ async function chamarGoogle(req: LlmRequest, options: LlmOptions): Promise<LlmRe
       : {}),
   };
 
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(req.model)}:generateContent`, {
+  const chave = env.GEMINI_API_KEY;
+  const enviar = (corpo: Record<string, unknown>) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(req.model)}:generateContent`, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
-    body: JSON.stringify(body),
+    headers: { "content-type": "application/json", "x-goog-api-key": chave },
+    body: JSON.stringify(corpo),
     signal: AbortSignal.timeout(options.timeout ?? 60_000),
   });
-  const raw = await response.text();
+  let response = await enviar(body);
+  let raw = await response.text();
+  // Rede de segurança para modelo novo: se o 400 for de argumento, repete uma vez sem o
+  // thinkingConfig (raciocínio no automático, coberto pela margem) em vez de derrubar a função.
+  if (response.status === 400 && /INVALID_ARGUMENT|thinking/i.test(raw)) {
+    const { thinkingConfig: _fora, ...semRaciocinio } = body.generationConfig as Record<string, unknown>;
+    console.warn(JSON.stringify({ msg: "llm.gemini.sem_thinking_config", model: req.model }));
+    response = await enviar({ ...body, generationConfig: semRaciocinio });
+    raw = await response.text();
+  }
   if (!response.ok) throw new LlmHttpError(response.status, `Gemini ${response.status}: ${raw.slice(0, 300)}`);
 
   const data = JSON.parse(raw) as {
