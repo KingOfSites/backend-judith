@@ -37,6 +37,30 @@ test('detecta pedido explícito de humano e ignora conversa sobre IA', () => {
     assert.equal(isPedidoHumano(t), false, t);
 });
 
+test('dúvida jurídica com "pessoa", "alguém" ou "atendente" não vira pedido de humano', () => {
+  // Print do fundador em 09/11/2026: a primeira frase abriu atendimento humano.
+  for (const t of [
+    'posso proibir a entrada de uma pessoa cega na minha casa noturna?',
+    'eu sou obrigado a dar entrada grátis para PCD?',
+    'posso demitir uma pessoa que falta muito?',
+    'posso contratar uma pessoa sem registro?',
+    'tenho um atendente que chega atrasado, posso descontar?',
+    'quero contratar um atendente',
+    'posso transferir o contrato para uma pessoa da família?',
+    'posso passar a empresa para uma pessoa?',
+    'o responsável pela empresa pode assinar?',
+    'preciso conversar com o responsável pela obra, como notifico?',
+    'posso falar com uma pessoa sobre a dívida dela?',
+    'tem como cobrar alguém que não pagou?',
+    'pessoa',
+  ]) assert.equal(isPedidoHumano(t), false, t);
+  for (const t of [
+    'quero falar com alguém', 'posso falar com um atendente?', 'quero falar com uma pessoa, não com robô',
+    'me transfere pro atendimento', 'chama um atendente', 'tem algum humano aí?', 'quero um humano',
+    'quero ser atendido por uma pessoa de verdade', 'preciso falar com alguém da equipe', 'oi, tem atendente aí?',
+  ]) assert.equal(isPedidoHumano(t), true, t);
+});
+
 // ---- fluxo com banco simulado ----
 let state;
 function reset(extra = {}) {
