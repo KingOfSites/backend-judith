@@ -216,19 +216,52 @@ test('DeepSeek: redação no v4-pro vai com raciocínio low, piso de saída e ca
   assert.deepEqual(r.usage, { input_tokens: 500, output_tokens: 900, cache_read_input_tokens: 2500, cache_creation_input_tokens: 0 });
 });
 
-test('DeepSeek: ferramenta forçada e o flash rodam sem raciocínio, porque a API recusa tool_choice fixo em modo thinking', async () => {
+test('DeepSeek: ferramenta forçada no v4-pro raciocina pelo modo JSON e volta como tool_use; JSON inválido é falha', async () => {
   reset({ openaiRespostas: [
-    { id: 'd-2', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'tool_calls', message: { content: null, tool_calls: [{ id: 'c1', type: 'function', function: { name: 'grounded_answer', arguments: '{"answer":"ok"}' } }] } }], usage: { prompt_tokens: 10, completion_tokens: 5 } },
-    { id: 'd-3', model: 'deepseek-flash', choices: [{ finish_reason: 'stop', message: { content: 'trabalhista' } }], usage: { prompt_tokens: 10, completion_tokens: 2 } },
+    { id: 'd-2', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'stop', message: { content: '```json\n{"answer":"ok","closing":"Se quiser, eu redijo."}\n```', reasoning_content: 'pensei' } }], usage: { prompt_tokens: 10, completion_tokens: 5 } },
+    { id: 'd-3', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'stop', message: { content: '   ' } }], usage: { prompt_tokens: 10, completion_tokens: 0 } },
+    { id: 'd-3', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'stop', message: { content: 'não é json' } }], usage: { prompt_tokens: 10, completion_tokens: 3 } },
+    { id: 'd-3', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'stop', message: { content: '[1,2]' } }], usage: { prompt_tokens: 10, completion_tokens: 3 } },
+    { id: 'o-f', model: 'gpt-4.1-mini', choices: [{ finish_reason: 'tool_calls', message: { content: null, tool_calls: [{ id: 'c9', type: 'function', function: { name: 'grounded_answer', arguments: '{"answer":"fallback"}' } }] } }], usage: { prompt_tokens: 10, completion_tokens: 3 } },
   ] });
-  const r = await gerar({ model: 'deepseek-v4-pro', max_tokens: 1024, temperature: 0, system: 'S', messages: [{ role: 'user', content: 'p' }], tools: [FERRAMENTA], tool_choice: { type: 'tool', name: 'grounded_answer' } });
+  const r = await gerar({ model: 'deepseek-v4-pro', max_tokens: 1024, temperature: 0, system: [{ type: 'text', text: 'S1' }, { type: 'text', text: 'S2' }], messages: [{ role: 'user', content: 'p' }], tools: [FERRAMENTA], tool_choice: { type: 'tool', name: 'grounded_answer' } });
+  const q = state.openai[0];
+  assert.equal(q.reasoning_effort, 'low');
+  assert.deepEqual(q.thinking, { type: 'enabled' });
+  assert.deepEqual(q.response_format, { type: 'json_object' });
+  assert.equal('tools' in q, false);
+  assert.equal('tool_choice' in q, false);
+  assert.match(q.messages[0].content, /^S1\n\nS2\n\nFormato de saída obrigatório: responda SOMENTE com um objeto json/);
+  assert.ok(q.messages[0].content.includes(JSON.stringify(FERRAMENTA.input_schema)));
+  assert.deepEqual(r.content, [{ type: 'tool_use', id: 'json_d-2', name: 'grounded_answer', input: { answer: 'ok', closing: 'Se quiser, eu redijo.' } }]);
+  assert.equal(r.stop_reason, 'tool_use');
+  // Vazio, texto solto e lista: três falhas seguidas, cai no gpt-4.1-mini com a ferramenta de verdade.
+  const f = await gerar({ model: 'deepseek-v4-pro', max_tokens: 1024, system: 'S', messages: [{ role: 'user', content: 'p' }], tools: [FERRAMENTA], tool_choice: { type: 'tool', name: 'grounded_answer' } });
+  assert.equal(state.openai.length, 5);
+  assert.equal(state.openai[4].model, 'gpt-4.1-mini');
+  assert.deepEqual(state.openai[4].tool_choice, { type: 'function', function: { name: 'grounded_answer' } });
+  assert.equal(f.fallback.from, 'deepseek-v4-pro');
+  assert.deepEqual(f.content[0].input, { answer: 'fallback' });
+});
+
+test('DeepSeek: o flash roda sem raciocínio e com a ferramenta de verdade; tool_choice "any" também', async () => {
+  reset({ openaiRespostas: [
+    { id: 'd-4', model: 'deepseek-flash', choices: [{ finish_reason: 'tool_calls', message: { content: null, tool_calls: [{ id: 'c1', type: 'function', function: { name: 'grounded_answer', arguments: '{"answer":"ok"}' } }] } }], usage: { prompt_tokens: 10, completion_tokens: 5 } },
+    { id: 'd-5', model: 'deepseek-flash', choices: [{ finish_reason: 'stop', message: { content: 'trabalhista' } }], usage: { prompt_tokens: 10, completion_tokens: 2 } },
+    { id: 'd-6', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'tool_calls', message: { content: null, tool_calls: [{ id: 'c2', type: 'function', function: { name: 'grounded_answer', arguments: '{"answer":"ok"}' } }] } }], usage: { prompt_tokens: 10, completion_tokens: 5 } },
+  ] });
+  const r = await gerar({ model: 'deepseek-flash', max_tokens: 256, temperature: 0, system: 'S', messages: [{ role: 'user', content: 'p' }], tools: [FERRAMENTA], tool_choice: { type: 'tool', name: 'grounded_answer' } });
   assert.equal(state.openai[0].reasoning_effort, 'none');
   assert.deepEqual(state.openai[0].thinking, { type: 'disabled' });
   assert.deepEqual(state.openai[0].tool_choice, { type: 'function', function: { name: 'grounded_answer' } });
+  assert.equal('response_format' in state.openai[0], false);
   assert.deepEqual(r.content, [{ type: 'tool_use', id: 'c1', name: 'grounded_answer', input: { answer: 'ok' } }]);
   await gerar({ model: 'deepseek-flash', max_tokens: 40, temperature: 0, system: 'S', messages: [{ role: 'user', content: 'p' }] });
   assert.equal(state.openai[1].reasoning_effort, 'none');
   assert.equal(state.openai[1].max_tokens, MIN_SAIDA_DEEPSEEK);
+  await gerar({ model: 'deepseek-v4-pro', max_tokens: 40, system: 'S', messages: [{ role: 'user', content: 'p' }], tools: [FERRAMENTA], tool_choice: { type: 'any' } });
+  assert.equal(state.openai[2].reasoning_effort, 'none');
+  assert.equal(state.openai[2].tool_choice, 'required');
 });
 
 test('DeepSeek: resposta cortada ou vazia nunca vai ao cliente: tenta de novo e cai no gpt-4.1-mini', async () => {

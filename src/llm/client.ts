@@ -369,26 +369,41 @@ export const DEEPSEEK_URL = "https://api.deepseek.com";
 export const MIN_SAIDA_DEEPSEEK = 8192;
 let deepseek: OpenAI | null = null;
 
-// Esforço de raciocínio por chamada. A API recusa tool_choice fixo ou "required" em modo thinking
-// (400), então toda chamada com ferramenta forçada roda sem raciocínio; o deepseek-flash também
-// (classificadores, sem raciocínio por decisão do fundador). O resto segue JUDITH_DEEPSEEK_RACIOCINIO.
+// Esforço de raciocínio por chamada: o deepseek-flash roda sempre sem (classificadores, decisão do
+// fundador); tool_choice "any" também, porque a API recusa "required" em modo thinking (400). O
+// resto segue JUDITH_DEEPSEEK_RACIOCINIO. Ferramenta forçada com raciocínio vai pelo modo JSON (abaixo).
 export function raciocinioDeepSeek(req: LlmRequest): "none" | "low" | "high" | "max" {
   if (/flash/i.test(req.model)) return "none";
-  if (ferramentaForcada(req) || req.tool_choice?.type === "any") return "none";
+  if (req.tool_choice?.type === "any") return "none";
   return env.JUDITH_DEEPSEEK_RACIOCINIO ?? "low";
+}
+
+// A API recusa tool_choice fixo em modo thinking. Para a dúvida raciocinar (pedido do fundador em
+// 11/11/2026), a ferramenta forçada vira modo JSON: o esquema vai no system, o modelo devolve o
+// objeto e ele volta como tool_use. JSON inválido ou vazio é falha do fornecedor (nova tentativa).
+export function instrucaoJson(tool: LlmTool): string {
+  return `Formato de saída obrigatório: responda SOMENTE com um objeto json válido, sem texto antes ou depois e sem cercas de markdown, com exatamente os campos da ferramenta "${tool.name}"${tool.description ? ` (${tool.description})` : ""}. Esquema JSON do objeto: ${JSON.stringify(tool.input_schema)}`;
 }
 
 async function chamarDeepSeek(req: LlmRequest, options: LlmOptions): Promise<LlmResponse> {
   if (!env.DEEPSEEK_API_KEY) throw new LlmHttpError(401, "DEEPSEEK_API_KEY ausente");
   deepseek ??= new OpenAI({ apiKey: env.DEEPSEEK_API_KEY, baseURL: DEEPSEEK_URL, maxRetries: 0 });
   const esforco = raciocinioDeepSeek(req);
-  return chamarChatCompletions(
-    deepseek, "DeepSeek",
-    { ...req, max_tokens: Math.max(req.max_tokens, MIN_SAIDA_DEEPSEEK) },
-    options,
-    { reasoning_effort: esforco, thinking: { type: esforco === "none" ? "disabled" : "enabled" } },
-    true,
-  );
+  const extras: Record<string, unknown> = { reasoning_effort: esforco, thinking: { type: esforco === "none" ? "disabled" : "enabled" } };
+  const pedido: LlmRequest = { ...req, max_tokens: Math.max(req.max_tokens, MIN_SAIDA_DEEPSEEK) };
+  const forcada = ferramentaForcada(req);
+  const tool = forcada ? req.tools?.find(t => t.name === forcada) : undefined;
+  if (esforco === "none" || !tool) return chamarChatCompletions(deepseek, "DeepSeek", pedido, options, extras, true);
+
+  const blocos: LlmTextBlock[] = typeof req.system === "string" ? [{ type: "text", text: req.system }] : [...(req.system ?? [])];
+  const semFerramenta: LlmRequest = { ...pedido, system: [...blocos, { type: "text", text: instrucaoJson(tool) }], tools: undefined, tool_choice: undefined };
+  const resposta = await chamarChatCompletions(deepseek, "DeepSeek", semFerramenta, options, { ...extras, response_format: { type: "json_object" } }, true);
+  const texto = resposta.content.map(b => (b.type === "text" ? b.text : "")).join("").replace(/```(?:json)?/gi, "").trim();
+  let input: unknown;
+  try { input = JSON.parse(texto); }
+  catch { throw new LlmHttpError(502, "DeepSeek devolveu JSON inválido no modo json"); }
+  if (!input || typeof input !== "object" || Array.isArray(input)) throw new LlmHttpError(502, "DeepSeek devolveu JSON que não é um objeto no modo json");
+  return { ...resposta, content: [{ type: "tool_use", id: `json_${resposta.id}`, name: tool.name, input }], stop_reason: "tool_use" };
 }
 
 // ---------------------------------------------------------------- Anthropic

@@ -1,14 +1,14 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
 const base=path.resolve(__dirname,'../dist');const replace=(id,exports)=>{require.cache[require.resolve(id)]={exports}};
-let auditRows=new Map(),auditFail=false,calls=[],mode='good',draft='O titular pode pedir a eliminação dos dados tratados com consentimento.',judgeFail=false;
+let closing='';let auditRows=new Map(),auditFail=false,calls=[],mode='good',draft='O titular pode pedir a eliminação dos dados tratados com consentimento.',judgeFail=false;
 const source='O titular pode pedir a eliminação dos dados tratados com consentimento. A declaração completa de acesso deve ser fornecida em até 15 dias. O vazamento de dados sensíveis pode gerar dano moral presumido neste precedente.';
 const chunk={id:'chunk-1',sourceId:'source-1',version:'source-version',content:source,score:0.8,chapter:'Direitos',areas:['lgpd'],fontes:['LGPD'],published:true};
 replace(path.join(base,'config/env.js'),{env:{ANTHROPIC_API_KEY:'fake',JUDITH_MODEL_HAIKU:'judge-model'}});
 replace(path.join(base,'db/client.js'),{prisma:{knowledgeInteraction:{create:async({data})=>{if(auditFail)throw Error('private-db-error');assert.ok(!auditRows.has(data.id));auditRows.set(data.id,data.payload)},update:async({where,data})=>{if(auditFail)throw Error('private-db-error');auditRows.set(where.id,data.payload)}}}});
 replace(path.join(base,'judith/prompts/principal.js'),{getPrincipalSnapshot:async()=>({text:'EDITORIAL UNCHANGED',version:'editorial-v1'})});
 replace(path.join(base,'judith/conhecimento.js'),{getKnowledgeContext:async q=>({area:'lgpd',searchText:q+' contexto mínimo',chunks:[chunk],text:source})});
-replace('@anthropic-ai/sdk',class{messages={create:async req=>{calls.push(req);if(req.tools?.[0]?.name === "support_verdict"){if(judgeFail)throw Error('private-provider-error');return {id:'judge-id',model:'judge-model',content:mode==='malformed'?[]:[{type:'tool_use',name:'support_verdict',input:{units:[{index:0,supported:mode!=='reject',conversational:false,evidence:[{chunkId:'chunk-1',lineStart:0,lineEnd:0}]}]}}]}}return {id:'generation-id',model:'generation-model',content:[{type:'tool_use',name:'grounded_answer',input:{scopeAnalysis:'mock scope',unsupported:draft.startsWith('SEM_SUPORTE'),answer:draft}}],usage:{input_tokens:1,output_tokens:1}}}}});
-const {validateSupport,verifySupport,SUPPORT_POLICY,conversationalOnly,materializeEvidence}=require('../dist/knowledge/support.js');
+replace('@anthropic-ai/sdk',class{messages={create:async req=>{calls.push(req);if(req.tools?.[0]?.name === "support_verdict"){if(judgeFail)throw Error('private-provider-error');return {id:'judge-id',model:'judge-model',content:mode==='malformed'?[]:[{type:'tool_use',name:'support_verdict',input:{units:[{index:0,supported:mode!=='reject',conversational:false,evidence:[{chunkId:'chunk-1',lineStart:0,lineEnd:0}]}]}}]}}return {id:'generation-id',model:'generation-model',content:[{type:'tool_use',name:'grounded_answer',input:{scopeAnalysis:'mock scope',unsupported:draft.startsWith('SEM_SUPORTE'),answer:draft,closing}}],usage:{input_tokens:1,output_tokens:1}}}}});
+const {validateSupport,verifySupport,SUPPORT_POLICY,conversationalOnly,materializeEvidence,fechamentoConversacional}=require('../dist/knowledge/support.js');
 const {askJudith}=require('../dist/judith/claude.js');
 const vote=(quote=source)=>({units:[{index:0,supported:true,conversational:false,evidence:[{chunkId:'chunk-1',quote}]}]});
 test('known scope substitutions rejected even if reviewer incorrectly approves',()=>{
@@ -19,6 +19,12 @@ test('known scope substitutions rejected even if reviewer incorrectly approves',
  assert.equal(validateSupport('Texto',[chunk],materializeEvidence(raw,[chunk])),false);
  assert.equal(conversationalOnly('Ficou claro? Posso te ajudar em mais alguma coisa?'),true);
  assert.equal(conversationalOnly('## A recusa gera dano presumido.'),false);
+ assert.equal(conversationalOnly('Oi, Luiz!'),true);
+ assert.equal(conversationalOnly('Oi, Luiz Henrique! Boa pergunta.'),true);
+ assert.equal(conversationalOnly('Oi, Luiz! Você pode demitir.'),false);
+ assert.equal(conversationalOnly('Oi, Luiz! Prazo de 15 dias.'),false);
+ for(const ok of ['Se quiser, me manda os dados que eu redijo a notificação.','Qualquer dúvida sobre o caso, é só chamar!','Quer que eu monte o documento pra você?'])assert.equal(fechamentoConversacional(ok),true,ok);
+ for(const nao of ['','Você tem 30 dias para responder.','Lembre que a lei exige aviso prévio.','Você pode demitir sem justa causa, é só me chamar.','Recomendo pagar a multa de 40% do FGTS.','sem pontuação final','Uma. Duas. Três frases aqui.','x'.repeat(281)+'.'])assert.equal(fechamentoConversacional(nao),false,nao);
  for(const text of ['Você deve apagar os dados em 15 dias.','Basta a recusa de exclusão para gerar indenização presumida.','A maioria dos pequenos empresários perde.','A multa é de 90%.'])assert.equal(validateSupport(text,[chunk],vote()),false,text);
  assert.equal(validateSupport('O titular pode pedir a eliminação dos dados tratados com consentimento.',[chunk],vote()),true);
  assert.equal(validateSupport('O titular pode pedir a eliminação; a lei chama isso de direito ao esquecimento.',[chunk],vote()),false);
@@ -55,7 +61,7 @@ test('two-question and continuation pipeline, trace privacy, fail closed',async(
  assert.equal(JSON.parse(calls.at(-1).messages[0].content).sources[0].chapter,'Direitos');
  assert.equal(first.area,'lgpd');assert.equal(first.searchQuery,q+' contexto mínimo');assert.equal(first.chunks[0].id,'chunk-1');assert.equal(first.chunks[0].version,'source-version');assert.equal(first.chunks[0].content,source);assert.equal(first.prompt.version,'editorial-v1');assert.equal(first.actualModel,'generation-model');assert.equal(first.stage,'support_passed');
  assert.ok(!JSON.stringify(first).includes('EDITORIAL UNCHANGED'));assert.ok(!('user' in first));
- assert.equal(first.generationPolicy.version,'grounded-generation-v6');
+ assert.equal(first.generationPolicy.version,'grounded-generation-v7');
  const generation=calls.find(c=>c.tools?.[0]?.name === "grounded_answer");assert.equal(generation.system[0].text,'EDITORIAL UNCHANGED');
  assert.ok(generation.system.some(b=>b.text.includes('SOMENTE à pergunta atual')));
  const beforeSentinel=calls.length;draft='SEM_SUPORTE';
@@ -76,4 +82,18 @@ test('two-question and continuation pipeline, trace privacy, fail closed',async(
  auditFail=true;const before=calls.length;await assert.rejects(run(q),e=>e.code==='TRACE_UNAVAILABLE');assert.equal(calls.length,before);auditFail=false;
  assert.match(SUPPORT_POLICY,/vazamento não implica recusa/);
  assert.match(SUPPORT_POLICY,/não garantia/);
+});
+
+test('fechamento conversacional entra depois da verificação; fechamento com regra é descartado e fica no recibo',async()=>{
+ mode='good';judgeFail=false;draft='O titular pode pedir a eliminação dos dados tratados com consentimento.';
+ const run=(q,id)=>askJudith({tier:'HAIKU',funcao:'duvida',user:null,history:[],userMessage:q,interactionId:id});
+ closing='Se quiser, me manda os dados que eu redijo a resposta ao cliente.';
+ const ok=await run('Cliente pode pedir para apagar os dados?','closing-1');
+ assert.equal(ok.text,draft+'\n\n'+closing);
+ assert.equal(auditRows.get('closing-1').stage,'support_passed');
+ closing='Você tem 15 dias para apagar, conforme a lei.';
+ const nao=await run('Cliente pode pedir para apagar os dados?','closing-2');
+ assert.equal(nao.text,draft);
+ assert.equal(auditRows.get('closing-2').attempts[0].closingDropped,true);
+ closing='';
 });
