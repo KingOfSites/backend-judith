@@ -7,6 +7,7 @@
 //   gemini-*  → Google (dúvida, classificadores, lembretes/coleta)
 //   gpt-*     → OpenAI (análise e redação; dúvida no gpt-6; e o fallback gpt-4.1-mini)
 //                GPT-5.6+ vai pela API Responses com ponto de cache explícito; os demais, Chat Completions
+//   deepseek-* → DeepSeek (API compatível com o Chat Completions da OpenAI; cache automático)
 //   claude-*  → Anthropic (mantido para os bots dos clientes e para os testes)
 //
 // Resiliência (spec §7): em 429/5xx tenta de novo com espera crescente e, esgotando,
@@ -51,11 +52,12 @@ export type LlmResponse = {
 
 export type LlmOptions = { timeout?: number; maxRetries?: number };
 
-export type Fornecedor = "google" | "openai" | "anthropic";
+export type Fornecedor = "google" | "openai" | "deepseek" | "anthropic";
 
 export function fornecedorDe(model: string): Fornecedor {
   if (/^gemini/i.test(model)) return "google";
   if (/^(gpt|o\d|chatgpt)/i.test(model)) return "openai";
+  if (/^deepseek/i.test(model)) return "deepseek";
   return "anthropic";
 }
 
@@ -302,46 +304,54 @@ async function chamarOpenAI(req: LlmRequest, options: LlmOptions): Promise<LlmRe
   if (aceitaPontoDeCache(req.model)) return chamarOpenAIResponses(req, options);
   // As tentativas são controladas aqui, não pelo SDK, para o fallback enxergar a falha.
   openai ??= new OpenAI({ apiKey: env.OPENAI_API_KEY, maxRetries: 0 });
+  return chamarChatCompletions(openai, "OpenAI", req, options);
+}
+
+// Chat Completions, da OpenAI e dos fornecedores compatíveis (DeepSeek). `extras` entra no corpo
+// como veio; `corteEhFalha` trata resposta cortada no limite de saída como falha do fornecedor
+// (nova tentativa e fallback) em vez de entregar texto pela metade.
+async function chamarChatCompletions(cliente: OpenAI, fornecedor: string, req: LlmRequest, options: LlmOptions, extras: Record<string, unknown> = {}, corteEhFalha = false): Promise<LlmResponse> {
   const system = systemDe(req.system);
   const forcada = ferramentaForcada(req);
 
-  const response = await openai.chat.completions.create(
-    {
-      model: req.model,
-      max_tokens: req.max_tokens,
-      ...(req.temperature === undefined ? {} : { temperature: req.temperature }),
-      messages: [
-        ...(system ? [{ role: "system" as const, content: system }] : []),
-        ...turnos(req.messages).map(t => ({ role: t.role, content: t.text })),
-      ],
-      ...(req.tools?.length
-        ? {
-            tools: req.tools.map(t => ({ type: "function" as const, function: { name: t.name, description: t.description ?? "", parameters: t.input_schema } })),
-            tool_choice: forcada ? { type: "function" as const, function: { name: forcada } } : req.tool_choice?.type === "any" ? ("required" as const) : ("auto" as const),
-          }
-        : {}),
-    },
-    { timeout: options.timeout ?? 120_000 }
-  );
+  const corpo = {
+    model: req.model,
+    max_tokens: req.max_tokens,
+    ...(req.temperature === undefined ? {} : { temperature: req.temperature }),
+    messages: [
+      ...(system ? [{ role: "system" as const, content: system }] : []),
+      ...turnos(req.messages).map(t => ({ role: t.role, content: t.text })),
+    ],
+    ...(req.tools?.length
+      ? {
+          tools: req.tools.map(t => ({ type: "function" as const, function: { name: t.name, description: t.description ?? "", parameters: t.input_schema } })),
+          tool_choice: forcada ? { type: "function" as const, function: { name: forcada } } : req.tool_choice?.type === "any" ? ("required" as const) : ("auto" as const),
+        }
+      : {}),
+    ...extras,
+  };
+  const response = await cliente.chat.completions.create(corpo as unknown as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming, { timeout: options.timeout ?? 120_000 });
 
   const escolha = response.choices[0];
+  const fim = escolha?.finish_reason;
+  if (corteEhFalha && fim === "length") throw new LlmHttpError(502, `${fornecedor} cortou a resposta no limite de saída (finish_reason=length)`);
   const content: LlmContentBlock[] = [];
   if (escolha?.message.content) content.push({ type: "text", text: escolha.message.content });
   for (const chamada of escolha?.message.tool_calls ?? []) {
     if (chamada.type !== "function") continue;
     let input: unknown;
     try { input = JSON.parse(chamada.function.arguments); }
-    catch { throw new LlmHttpError(502, "OpenAI devolveu argumentos de ferramenta que não são JSON"); }
+    catch { throw new LlmHttpError(502, `${fornecedor} devolveu argumentos de ferramenta que não são JSON`); }
     content.push({ type: "tool_use", id: chamada.id, name: chamada.function.name, input });
   }
-  if (!content.length) throw new LlmHttpError(502, `OpenAI sem conteúdo (finish_reason=${escolha?.finish_reason ?? "ausente"})`);
+  if (!content.length) throw new LlmHttpError(502, `${fornecedor} sem conteúdo (finish_reason=${fim ?? "ausente"})`);
 
   const cached = response.usage?.prompt_tokens_details?.cached_tokens ?? 0;
   return {
     id: response.id,
     model: response.model,
     content,
-    stop_reason: escolha?.finish_reason === "length" ? "max_tokens" : escolha?.finish_reason === "tool_calls" ? "tool_use" : "end_turn",
+    stop_reason: fim === "length" ? "max_tokens" : fim === "tool_calls" ? "tool_use" : "end_turn",
     usage: {
       input_tokens: Math.max(0, (response.usage?.prompt_tokens ?? 0) - cached),
       output_tokens: response.usage?.completion_tokens ?? 0,
@@ -349,6 +359,36 @@ async function chamarOpenAI(req: LlmRequest, options: LlmOptions): Promise<LlmRe
       cache_creation_input_tokens: 0,
     },
   };
+}
+
+// ---------------------------------------------------------------- DeepSeek
+
+export const DEEPSEEK_URL = "https://api.deepseek.com";
+// Piso do limite de saída: nos testes do fundador (11/11/2026), 2 de 38 respostas saíram vazias ou
+// cortadas com limite baixo. A própria API usa 8K por padrão sem raciocínio; nunca pedimos menos.
+export const MIN_SAIDA_DEEPSEEK = 8192;
+let deepseek: OpenAI | null = null;
+
+// Esforço de raciocínio por chamada. A API recusa tool_choice fixo ou "required" em modo thinking
+// (400), então toda chamada com ferramenta forçada roda sem raciocínio; o deepseek-flash também
+// (classificadores, sem raciocínio por decisão do fundador). O resto segue JUDITH_DEEPSEEK_RACIOCINIO.
+export function raciocinioDeepSeek(req: LlmRequest): "none" | "low" | "high" | "max" {
+  if (/flash/i.test(req.model)) return "none";
+  if (ferramentaForcada(req) || req.tool_choice?.type === "any") return "none";
+  return env.JUDITH_DEEPSEEK_RACIOCINIO ?? "low";
+}
+
+async function chamarDeepSeek(req: LlmRequest, options: LlmOptions): Promise<LlmResponse> {
+  if (!env.DEEPSEEK_API_KEY) throw new LlmHttpError(401, "DEEPSEEK_API_KEY ausente");
+  deepseek ??= new OpenAI({ apiKey: env.DEEPSEEK_API_KEY, baseURL: DEEPSEEK_URL, maxRetries: 0 });
+  const esforco = raciocinioDeepSeek(req);
+  return chamarChatCompletions(
+    deepseek, "DeepSeek",
+    { ...req, max_tokens: Math.max(req.max_tokens, MIN_SAIDA_DEEPSEEK) },
+    options,
+    { reasoning_effort: esforco, thinking: { type: esforco === "none" ? "disabled" : "enabled" } },
+    true,
+  );
 }
 
 // ---------------------------------------------------------------- Anthropic
@@ -365,6 +405,7 @@ async function despachar(req: LlmRequest, options: LlmOptions): Promise<LlmRespo
   switch (fornecedorDe(req.model)) {
     case "google": return chamarGoogle(req, options);
     case "openai": return chamarOpenAI(req, options);
+    case "deepseek": return chamarDeepSeek(req, options);
     default: return chamarAnthropic(req, options);
   }
 }

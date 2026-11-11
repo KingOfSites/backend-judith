@@ -21,11 +21,15 @@ global.fetch = async (url, init) => {
   return { ok: r.status === 200, status: r.status, text: async () => JSON.stringify(r.body) };
 };
 
-replace(base + 'config/env.js', { env: { GEMINI_API_KEY: 'chave-gemini', OPENAI_API_KEY: 'chave-openai', ANTHROPIC_API_KEY: 'chave-claude', JUDITH_MODEL_HAIKU: 'gemini-3.8-flash', JUDITH_MODEL_SONNET: 'gpt-4.1', JUDITH_MODEL_FALLBACK: 'gpt-4.1-mini' } });
+replace(base + 'config/env.js', { env: { GEMINI_API_KEY: 'chave-gemini', OPENAI_API_KEY: 'chave-openai', DEEPSEEK_API_KEY: 'chave-deepseek', ANTHROPIC_API_KEY: 'chave-claude', JUDITH_MODEL_HAIKU: 'gemini-3.8-flash', JUDITH_MODEL_SONNET: 'gpt-4.1', JUDITH_MODEL_FALLBACK: 'gpt-4.1-mini', JUDITH_DEEPSEEK_RACIOCINIO: 'low' } });
 replace('openai', class {
-  constructor(o) { assert.equal(o.apiKey, 'chave-openai'); assert.equal(o.maxRetries, 0); }
+  constructor(o) {
+    // O mesmo SDK atende a OpenAI (sem baseURL) e a DeepSeek (baseURL própria, chave própria).
+    this.baseURL = o.baseURL ?? null;
+    assert.equal(o.apiKey, this.baseURL ? 'chave-deepseek' : 'chave-openai'); assert.equal(o.maxRetries, 0);
+  }
   chat = { completions: { create: async (req) => {
-    state.openai.push(req);
+    state.openai.push({ ...req, _baseURL: this.baseURL });
     const r = state.openaiRespostas.shift();
     if (r instanceof Error) throw r;
     return r ?? { id: 'o-1', model: req.model + '-2025', choices: [{ finish_reason: 'stop', message: { content: 'RESPOSTA OPENAI' } }], usage: { prompt_tokens: 200, completion_tokens: 9, prompt_tokens_details: { cached_tokens: 150 } } };
@@ -33,7 +37,7 @@ replace('openai', class {
 });
 replace('@anthropic-ai/sdk', class { messages = { create: async (req) => { state.anthropic.push(req); return { id: 'a-1', model: req.model, content: [{ type: 'text', text: 'RESPOSTA CLAUDE' }], stop_reason: 'end_turn', usage: { input_tokens: 1, output_tokens: 1 } }; } }; });
 
-const { Llm, gerar, fornecedorDe, schemaParaGemini, retry, MARGEM_RACIOCINIO_GEMINI } = require(base + 'llm/client.js');
+const { Llm, gerar, fornecedorDe, schemaParaGemini, retry, MARGEM_RACIOCINIO_GEMINI, DEEPSEEK_URL, MIN_SAIDA_DEEPSEEK } = require(base + 'llm/client.js');
 retry.esperasMs = [0, 0];
 
 const FERRAMENTA = { name: 'grounded_answer', description: 'd', input_schema: { type: 'object', properties: { answer: { type: 'string' }, ctx: { anyOf: [{ type: 'string' }, { type: 'null' }] }, itens: { type: 'array', items: { type: 'object', properties: { n: { type: 'integer', minimum: 0 } }, required: ['n'], additionalProperties: false } } }, required: ['answer'], additionalProperties: false } };
@@ -42,6 +46,8 @@ test('despacho pelo id do modelo', () => {
   assert.equal(fornecedorDe('gemini-3.8-flash'), 'google');
   assert.equal(fornecedorDe('gpt-4.1'), 'openai');
   assert.equal(fornecedorDe('gpt-4.1-mini'), 'openai');
+  assert.equal(fornecedorDe('deepseek-v4-pro'), 'deepseek');
+  assert.equal(fornecedorDe('deepseek-flash'), 'deepseek');
   assert.equal(fornecedorDe('claude-haiku-4-5-20251001'), 'anthropic');
   assert.equal(fornecedorDe('mock-haiku'), 'anthropic');
 });
@@ -194,4 +200,47 @@ test('argumentos de ferramenta inválidos do OpenAI viram falha', async () => {
   retry.esperasMs = [0];
   await assert.rejects(gerar({ model: 'gpt-4.1', max_tokens: 50, messages: [{ role: 'user', content: 'p' }] }, { maxRetries: 0 }), /não são JSON/);
   retry.esperasMs = [0, 0];
+});
+
+test('DeepSeek: redação no v4-pro vai com raciocínio low, piso de saída e cache automático', async () => {
+  reset({ openaiRespostas: [{ id: 'd-1', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'stop', message: { content: 'CONTRATO', reasoning_content: 'pensei' } }], usage: { prompt_tokens: 3000, completion_tokens: 900, prompt_tokens_details: { cached_tokens: 2500 }, prompt_cache_hit_tokens: 2500, prompt_cache_miss_tokens: 500 } }] });
+  const r = await gerar({ model: 'deepseek-v4-pro', max_tokens: 4096, system: [{ type: 'text', text: 'A' }, { type: 'text', text: 'B' }], messages: [{ role: 'user', content: 'redige' }] });
+  const q = state.openai[0];
+  assert.equal(q._baseURL, DEEPSEEK_URL);
+  assert.equal(q.model, 'deepseek-v4-pro');
+  assert.equal(q.reasoning_effort, 'low');
+  assert.deepEqual(q.thinking, { type: 'enabled' });
+  assert.equal(q.max_tokens, MIN_SAIDA_DEEPSEEK);
+  assert.deepEqual(q.messages, [{ role: 'system', content: 'A\n\nB' }, { role: 'user', content: 'redige' }]);
+  assert.deepEqual(r.content, [{ type: 'text', text: 'CONTRATO' }]);
+  assert.deepEqual(r.usage, { input_tokens: 500, output_tokens: 900, cache_read_input_tokens: 2500, cache_creation_input_tokens: 0 });
+});
+
+test('DeepSeek: ferramenta forçada e o flash rodam sem raciocínio, porque a API recusa tool_choice fixo em modo thinking', async () => {
+  reset({ openaiRespostas: [
+    { id: 'd-2', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'tool_calls', message: { content: null, tool_calls: [{ id: 'c1', type: 'function', function: { name: 'grounded_answer', arguments: '{"answer":"ok"}' } }] } }], usage: { prompt_tokens: 10, completion_tokens: 5 } },
+    { id: 'd-3', model: 'deepseek-flash', choices: [{ finish_reason: 'stop', message: { content: 'trabalhista' } }], usage: { prompt_tokens: 10, completion_tokens: 2 } },
+  ] });
+  const r = await gerar({ model: 'deepseek-v4-pro', max_tokens: 1024, temperature: 0, system: 'S', messages: [{ role: 'user', content: 'p' }], tools: [FERRAMENTA], tool_choice: { type: 'tool', name: 'grounded_answer' } });
+  assert.equal(state.openai[0].reasoning_effort, 'none');
+  assert.deepEqual(state.openai[0].thinking, { type: 'disabled' });
+  assert.deepEqual(state.openai[0].tool_choice, { type: 'function', function: { name: 'grounded_answer' } });
+  assert.deepEqual(r.content, [{ type: 'tool_use', id: 'c1', name: 'grounded_answer', input: { answer: 'ok' } }]);
+  await gerar({ model: 'deepseek-flash', max_tokens: 40, temperature: 0, system: 'S', messages: [{ role: 'user', content: 'p' }] });
+  assert.equal(state.openai[1].reasoning_effort, 'none');
+  assert.equal(state.openai[1].max_tokens, MIN_SAIDA_DEEPSEEK);
+});
+
+test('DeepSeek: resposta cortada ou vazia nunca vai ao cliente: tenta de novo e cai no gpt-4.1-mini', async () => {
+  const cortada = { id: 'd-4', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'length', message: { content: 'metade de um contr' } }], usage: { prompt_tokens: 10, completion_tokens: 8192 } };
+  const vazia = { id: 'd-5', model: 'deepseek-v4-pro', choices: [{ finish_reason: 'stop', message: { content: '' } }], usage: { prompt_tokens: 10, completion_tokens: 0 } };
+  reset({ openaiRespostas: [cortada, vazia, cortada] });
+  const r = await gerar({ model: 'deepseek-v4-pro', max_tokens: 4096, system: 'S', messages: [{ role: 'user', content: 'redige' }] });
+  assert.equal(state.openai.length, 4);
+  assert.deepEqual(state.openai.slice(0, 3).map(q => q.model), ['deepseek-v4-pro', 'deepseek-v4-pro', 'deepseek-v4-pro']);
+  assert.equal(state.openai[3].model, 'gpt-4.1-mini');
+  assert.equal(state.openai[3]._baseURL, null);
+  assert.deepEqual(r.content, [{ type: 'text', text: 'RESPOSTA OPENAI' }]);
+  assert.equal(r.fallback.from, 'deepseek-v4-pro');
+  assert.match(r.fallback.reason, /cortou/);
 });

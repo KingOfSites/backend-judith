@@ -44,6 +44,11 @@ const schema = z.object({
   EVOLUTION_INSTANCE: z.string().min(1),
 
   OPENAI_API_KEY: z.string().optional(),
+  // DeepSeek (deepseek-v4-pro, deepseek-flash): API compatível com a da OpenAI em api.deepseek.com.
+  DEEPSEEK_API_KEY: z.string().optional(),
+  // Esforço de raciocínio do deepseek-v4-pro (o flash roda sempre sem raciocínio, e qualquer chamada
+  // com ferramenta forçada também, porque a API recusa tool_choice fixo em modo thinking).
+  JUDITH_DEEPSEEK_RACIOCINIO: z.enum(["none", "low", "high", "max"]).default("low"),
   LOCAL_EMBEDDINGS_URL: z.string().url().default("http://embeddings:8080"),
   KNOWLEDGE_WORKER_ENABLED: z.enum(["true", "false"]).default("false").transform(v => v === "true"),
   JUDITH_DOMAIN: z.string().default("judith.com.br"),
@@ -64,9 +69,10 @@ if (!parsed.success) {
 }
 
 // Cada modelo configurado precisa da chave do fornecedor dele. Falha na subida, não na conversa.
-const CHAVE_DO_FORNECEDOR: [RegExp, "GEMINI_API_KEY" | "OPENAI_API_KEY" | "ANTHROPIC_API_KEY"][] = [
+const CHAVE_DO_FORNECEDOR: [RegExp, "GEMINI_API_KEY" | "OPENAI_API_KEY" | "DEEPSEEK_API_KEY" | "ANTHROPIC_API_KEY"][] = [
   [/^gemini/i, "GEMINI_API_KEY"],
   [/^(gpt|o\d|chatgpt)/i, "OPENAI_API_KEY"],
+  [/^deepseek/i, "DEEPSEEK_API_KEY"],
   [/./, "ANTHROPIC_API_KEY"],
 ];
 const faltando = new Set<string>();
